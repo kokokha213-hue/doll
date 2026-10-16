@@ -1,5 +1,6 @@
 /* ============================================================
-   MY PERSONAL AI — Phase 1 (Clean, no memory dialog)
+   MY PERSONAL AI — Phase 1 (Clean & Working)
+   Settings hidden until user clicks ⚙️
    ============================================================ */
 
 const state = {
@@ -18,9 +19,9 @@ const state = {
 };
 
 const LS = {
-  CONVOS: "mpai_conversations_v3",
-  MEMS: "mpai_memories_v3",
-  SETTINGS: "mpai_settings_v3",
+  CONVOS: "mpai_conversations_v4",
+  MEMS: "mpai_memories_v4",
+  SETTINGS: "mpai_settings_v4",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -46,6 +47,7 @@ const els = {
   openSettingsBtn: $("openSettingsBtn"),
   topbarSettings: $("topbarSettings"),
   settingsPanel: $("settingsPanel"),
+  settingsOverlay: $("settingsOverlay"),
   closeSettingsBtn: $("closeSettingsBtn"),
   memoryToggle: $("memoryToggle"),
   autoMemoryToggle: $("autoMemoryToggle"),
@@ -57,6 +59,9 @@ const els = {
   clearHistoryBtn: $("clearHistoryBtn"),
 };
 
+/* ============================================================
+   INIT
+   ============================================================ */
 function init() {
   loadFromStorage();
   applySettingsToUI();
@@ -67,7 +72,12 @@ function init() {
   attachEventListeners();
   autoResizeTextarea();
   updateSendButton();
-  console.log("✅ My Personal AI ready — no memory dialog.");
+
+  // Force settings to be hidden on load
+  els.settingsPanel.hidden = true;
+  els.settingsOverlay.hidden = true;
+
+  console.log("✅ My Personal AI ready. Settings hidden by default.");
 }
 
 function loadFromStorage() {
@@ -90,6 +100,9 @@ function saveSettings() {
   try { localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings)); } catch(e){}
 }
 
+/* ============================================================
+   CONVERSATIONS
+   ============================================================ */
 function createConversation() {
   const conv = {
     id: "c_" + Date.now(),
@@ -179,6 +192,9 @@ function deleteConversation(id) {
   renderHistory(els.historySearch.value);
 }
 
+/* ============================================================
+   MESSAGES
+   ============================================================ */
 function renderMessage(role, text, attachments = [], animate = true) {
   els.welcome.hidden = true;
 
@@ -252,6 +268,9 @@ function scrollToBottom() {
   });
 }
 
+/* ============================================================
+   SEND
+   ============================================================ */
 async function handleSend() {
   const text = els.userInput.value.trim();
   const attachments = [...state.pendingAttachments];
@@ -311,6 +330,9 @@ function fakeAIResponse(userText, attachments) {
   });
 }
 
+/* ============================================================
+   MEMORY (managed only via Settings)
+   ============================================================ */
 function addMemory(text) {
   state.memories.unshift({ id: "m_" + Date.now(), text, ts: Date.now() });
   saveMemories();
@@ -322,324 +344,4 @@ function renderMemories() {
   if (!state.memories.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
-    empty.textContent = "No memories saved yet.";
-    els.memoriesList.appendChild(empty);
-    return;
-  }
-
-  state.memories.forEach((mem) => {
-    const div = document.createElement("div");
-    div.className = "memory-item";
-
-    const text = document.createElement("div");
-    text.className = "mem-text";
-    text.textContent = mem.text;
-
-    const del = document.createElement("button");
-    del.className = "del-mem";
-    del.textContent = "🗑";
-    del.onclick = () => {
-      state.memories = state.memories.filter((m) => m.id !== mem.id);
-      saveMemories();
-      renderMemories();
-    };
-
-    div.appendChild(text);
-    div.appendChild(del);
-    els.memoriesList.appendChild(div);
-  });
-}
-
-function handleImageUpload(files) {
-  [...files].forEach((file) => {
-    if (!file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      state.pendingAttachments.push({
-        type: "image",
-        name: file.name,
-        dataUrl: e.target.result,
-      });
-      renderAttachmentPreview();
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function handleDocUpload(files) {
-  [...files].forEach((file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      state.pendingAttachments.push({
-        type: "file",
-        name: file.name,
-        textContent: e.target.result,
-      });
-      renderAttachmentPreview();
-    };
-    if (/\.(txt|md)$/i.test(file.name)) {
-      reader.readAsText(file);
-    } else {
-      reader.readAsArrayBuffer(file);
-    }
-  });
-}
-
-function renderAttachmentPreview() {
-  els.attachmentItems.innerHTML = "";
-  if (!state.pendingAttachments.length) {
-    els.attachmentPreview.hidden = true;
-    updateSendButton();
-    return;
-  }
-  els.attachmentPreview.hidden = false;
-
-  state.pendingAttachments.forEach((att, i) => {
-    const chip = document.createElement("div");
-    chip.className = "att-chip";
-
-    if (att.type === "image") {
-      const img = document.createElement("img");
-      img.src = att.dataUrl;
-      chip.appendChild(img);
-    }
-
-    const label = document.createElement("span");
-    label.textContent = att.type === "image" ? "🖼 " + att.name : "📄 " + att.name;
-    chip.appendChild(label);
-
-    const remove = document.createElement("span");
-    remove.className = "remove-att";
-    remove.textContent = "✕";
-    remove.onclick = () => {
-      state.pendingAttachments.splice(i, 1);
-      renderAttachmentPreview();
-    };
-    chip.appendChild(remove);
-
-    els.attachmentItems.appendChild(chip);
-  });
-
-  updateSendButton();
-}
-
-function clearAttachments() {
-  state.pendingAttachments = [];
-  renderAttachmentPreview();
-}
-
-let recognition = null;
-
-function initSpeechRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return null;
-  const rec = new SR();
-  rec.continuous = false;
-  rec.interimResults = false;
-  rec.lang = "en-US";
-
-  rec.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    els.userInput.value = (els.userInput.value + " " + transcript).trim();
-    autoResizeTextarea();
-    updateSendButton();
-  };
-  rec.onend = () => {
-    state.isRecording = false;
-    els.micBtn.classList.remove("recording");
-  };
-  rec.onerror = (e) => {
-    console.warn("Speech error:", e.error);
-    state.isRecording = false;
-    els.micBtn.classList.remove("recording");
-    if (e.error === "not-allowed") {
-      alert("Microphone blocked. Please allow it in browser settings.");
-    }
-  };
-  return rec;
-}
-
-function toggleRecording() {
-  if (!recognition) {
-    alert("Voice input not supported. Try Chrome or Edge.");
-    return;
-  }
-  if (state.isRecording) {
-    recognition.stop();
-    state.isRecording = false;
-    els.micBtn.classList.remove("recording");
-  } else {
-    try {
-      recognition.start();
-      state.isRecording = true;
-      els.micBtn.classList.add("recording");
-    } catch (e) { console.warn(e); }
-  }
-}
-
-function populateVoices() {
-  if (!("speechSynthesis" in window)) return;
-  const load = () => {
-    const voices = speechSynthesis.getVoices();
-    els.voiceSelect.innerHTML = "";
-    voices.forEach((v) => {
-      const opt = document.createElement("option");
-      opt.value = v.voiceURI;
-      opt.textContent = `${v.name} (${v.lang})`;
-      if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
-      els.voiceSelect.appendChild(opt);
-    });
-  };
-  load();
-  speechSynthesis.onvoiceschanged = load;
-}
-
-function speakText(text) {
-  if (!("speechSynthesis" in window)) return;
-  const utt = new SpeechSynthesisUtterance(text);
-  if (state.settings.voiceURI) {
-    const v = speechSynthesis.getVoices().find((x) => x.voiceURI === state.settings.voiceURI);
-    if (v) utt.voice = v;
-  }
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utt);
-}
-
-function applySettingsToUI() {
-  els.memoryToggle.checked = state.settings.memoryEnabled;
-  els.autoMemoryToggle.checked = state.settings.autoMemory;
-  els.speakToggle.checked = state.settings.speakReplies;
-  els.historyToggle.checked = state.settings.saveHistory;
-  if (state.settings.voiceURI) els.voiceSelect.value = state.settings.voiceURI;
-}
-
-function openSettings() {
-  els.settingsPanel.hidden = false;
-  closeSidebarMobile();
-}
-function closeSettings() {
-  els.settingsPanel.hidden = true;
-}
-
-function openSidebarMobile() {
-  els.sidebar.classList.add("open");
-  els.overlay.hidden = false;
-}
-function closeSidebarMobile() {
-  els.sidebar.classList.remove("open");
-  els.overlay.hidden = true;
-}
-
-function autoResizeTextarea() {
-  els.userInput.style.height = "auto";
-  els.userInput.style.height = Math.min(els.userInput.scrollHeight, 160) + "px";
-}
-
-function updateSendButton() {
-  const hasText = els.userInput.value.trim().length > 0;
-  const hasAtt = state.pendingAttachments.length > 0;
-  els.sendBtn.disabled = !(hasText || hasAtt);
-}
-
-function renderWelcomeChips() {
-  document.querySelectorAll(".chip").forEach((chip) => {
-    chip.onclick = () => {
-      els.userInput.value = chip.dataset.prompt;
-      autoResizeTextarea();
-      updateSendButton();
-      els.userInput.focus();
-    };
-  });
-}
-
-function attachEventListeners() {
-  els.menuToggle.onclick = openSidebarMobile;
-  els.overlay.onclick = closeSidebarMobile;
-
-  els.newChatBtn.onclick = () => {
-    createConversation();
-    els.userInput.focus();
-    closeSidebarMobile();
-  };
-
-  els.historySearch.oninput = (e) => renderHistory(e.target.value);
-
-  els.userInput.addEventListener("input", () => {
-    autoResizeTextarea();
-    updateSendButton();
-  });
-  els.userInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      if (!els.sendBtn.disabled) handleSend();
-    }
-  });
-
-  els.sendBtn.onclick = handleSend;
-
-  els.attachImageBtn.onclick = () => els.imageInput.click();
-  els.attachDocBtn.onclick = () => els.docInput.click();
-  els.imageInput.onchange = (e) => {
-    handleImageUpload(e.target.files);
-    e.target.value = "";
-  };
-  els.docInput.onchange = (e) => {
-    handleDocUpload(e.target.files);
-    e.target.value = "";
-  };
-
-  recognition = initSpeechRecognition();
-  els.micBtn.onclick = toggleRecording;
-
-  els.openSettingsBtn.onclick = openSettings;
-  els.topbarSettings.onclick = openSettings;
-  els.closeSettingsBtn.onclick = closeSettings;
-
-  els.memoryToggle.onchange = (e) => {
-    state.settings.memoryEnabled = e.target.checked;
-    saveSettings();
-  };
-  els.autoMemoryToggle.onchange = (e) => {
-    state.settings.autoMemory = e.target.checked;
-    saveSettings();
-  };
-  els.speakToggle.onchange = (e) => {
-    state.settings.speakReplies = e.target.checked;
-    saveSettings();
-  };
-  els.historyToggle.onchange = (e) => {
-    state.settings.saveHistory = e.target.checked;
-    saveSettings();
-  };
-  els.voiceSelect.onchange = (e) => {
-    state.settings.voiceURI = e.target.value;
-    saveSettings();
-  };
-
-  els.clearMemoriesBtn.onclick = () => {
-    if (confirm("Delete ALL saved memories?")) {
-      state.memories = [];
-      saveMemories();
-      renderMemories();
-    }
-  };
-  els.clearHistoryBtn.onclick = () => {
-    if (confirm("Delete ALL conversations?")) {
-      state.conversations = [];
-      state.currentId = null;
-      saveConversations();
-      renderHistory();
-      clearMessagesView();
-      els.welcome.hidden = false;
-    }
-  };
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (!els.settingsPanel.hidden) closeSettings();
-      else if (els.sidebar.classList.contains("open")) closeSidebarMobile();
-    }
-  });
-}
-
-document.addEventListener("DOMContentLoaded", init);
+    empty.textContent =
