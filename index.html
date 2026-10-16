@@ -428,7 +428,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>🤖 AI Provider</h3>
-      <p class="settings-desc">Apni Groq API key yahan paste karo. Free key yahan se milti hai: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+      <p class="settings-desc">Apni Groq API key yahan paste karo. Free key: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
 
       <label class="settings-label">
         Groq API Key
@@ -443,10 +443,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <label class="settings-label" style="margin-top:16px">
         Model
         <select id="modelSelect">
+          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fast)</option>
           <option value="llama-3.3-70b-versatile">Llama 3.3 70B (best)</option>
-          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fastest)</option>
-          <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+          <option value="openai/gpt-oss-20b">GPT OSS 20B (balanced)</option>
+          <option value="openai/gpt-oss-120b">GPT OSS 120B (powerful)</option>
           <option value="gemma2-9b-it">Gemma 2 9B</option>
+          <option value="qwen/qwen3-32b">Qwen 3 32B</option>
         </select>
       </label>
     </section>
@@ -490,7 +492,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>ℹ️ About</h3>
-      <p class="settings-desc">My Personal AI — Groq-powered. Aapki API key sirf aapke browser mein save hoti hai. Kisi server pe nahi jaati.</p>
+      <p class="settings-desc">My Personal AI — Groq-powered. API key sirf aapke browser mein save hoti hai.</p>
     </section>
 
   </div>
@@ -500,7 +502,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
 <script>
 /* ============================================================
-   MY PERSONAL AI — Groq API powered
+   MY PERSONAL AI — Groq API powered (v2 with new models)
    ============================================================ */
 
 const state = {
@@ -514,13 +516,13 @@ const state = {
     saveHistory: true,
     voiceURI: null,
     apiKey: "",
-    model: "llama-3.3-70b-versatile",
+    model: "llama-3.1-8b-instant",
   },
   pendingAttachments: [],
   isRecording: false,
 };
 
-const LS = { CONVOS: "mpai_c_v7", MEMS: "mpai_m_v7", SETTINGS: "mpai_s_v7" };
+const LS = { CONVOS: "mpai_c_v8", MEMS: "mpai_m_v8", SETTINGS: "mpai_s_v8" };
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -545,6 +547,10 @@ const els = {
 
 function init() {
   loadFromStorage();
+  // Force new default model if old one is set
+  if (state.settings.model === "llama-3.3-70b-versatile" && !localStorage.getItem(LS.SETTINGS)) {
+    state.settings.model = "llama-3.1-8b-instant";
+  }
   applySettingsToUI();
   renderHistory();
   renderMemories();
@@ -554,7 +560,7 @@ function init() {
   autoResizeTextarea();
   updateSendButton();
   updateKeyStatus();
-  console.log("✅ My Personal AI ready.");
+  console.log("✅ My Personal AI ready. Model:", state.settings.model);
 }
 
 function loadFromStorage() {
@@ -717,7 +723,7 @@ async function handleSend() {
   saveConversations();
   renderHistory(els.historySearch.value);
 
-  // If no API key — use smart demo
+  // No API key — smart demo
   if (!state.settings.apiKey) {
     renderTyping();
     const demoReply = smartDemoReply(text, attachments);
@@ -731,11 +737,10 @@ async function handleSend() {
   }
 
   // Real AI via Groq
-  const bubble = renderTyping();
+  renderTyping();
   let fullReply = "";
 
   try {
-    // Build messages array with history
     const historyMessages = conv.messages
       .filter(m => m.text || (m.attachments && m.attachments.length))
       .slice(-10)
@@ -748,19 +753,12 @@ async function handleSend() {
         return { role: m.role === "ai" ? "assistant" : "user", content };
       });
 
-    // Add memory context
+    let systemPrompt = "You are a helpful, friendly personal AI assistant. Reply naturally. If the user writes in Hindi/Urdu (Roman script), reply in the same language. Keep replies concise but helpful.";
     if (state.memories.length) {
       const memText = state.memories.map(m => "- " + m.text).join("\n");
-      historyMessages.unshift({
-        role: "system",
-        content: "You are a helpful personal AI assistant. Reply in a friendly, natural tone. If the user writes in Hindi/Urdu (Roman), reply in the same. Here are things you remember about the user:\n" + memText
-      });
-    } else {
-      historyMessages.unshift({
-        role: "system",
-        content: "You are a helpful personal AI assistant. Reply in a friendly, natural tone. If the user writes in Hindi/Urdu (Roman), reply in the same language/style."
-      });
+      systemPrompt += "\n\nThings you remember about the user:\n" + memText;
     }
+    historyMessages.unshift({ role: "system", content: systemPrompt });
 
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -779,7 +777,20 @@ async function handleSend() {
 
     if (!res.ok) {
       const errText = await res.text();
-      throw new Error("API " + res.status + ": " + errText.slice(0, 200));
+      let errMsg = "API " + res.status;
+      try {
+        const errJson = JSON.parse(errText);
+        errMsg = errJson.error?.message || errMsg;
+      } catch (e) { errMsg += ": " + errText.slice(0, 150); }
+
+      // Special handling: model not found → auto-switch
+      if (errMsg.includes("model") && (errMsg.includes("not exist") || errMsg.includes("not found") || errMsg.includes("does not exist"))) {
+        removeTyping();
+        const autoReply = "⚠️ Model `" + state.settings.model + "` Groq pe available nahi hai.\n\nKripya Settings → Model mein koi dusra model select karo. Recommended:\n\n• `Llama 3.1 8B (fast)`\n• `Gemma 2 9B`\n• `GPT OSS 20B`";
+        renderMessage("ai", autoReply);
+        return;
+      }
+      throw new Error(errMsg);
     }
 
     const data = await res.json();
@@ -792,7 +803,7 @@ async function handleSend() {
     if (state.settings.speakReplies) speakText(fullReply);
   } catch (err) {
     removeTyping();
-    const errMsg = "❌ AI error: " + err.message + "\n\nApni API key check karo (Settings → Groq API Key).";
+    const errMsg = "❌ Error: " + err.message + "\n\nSettings check karo: API Key aur Model sahi hone chahiye.";
     renderMessage("ai", errMsg);
     conv.messages.push({ role: "ai", text: errMsg, attachments: [], ts: Date.now() });
     saveConversations();
@@ -1101,7 +1112,6 @@ function attachEventListeners() {
   els.closeSettingsBtn.onclick = closeSettings;
   els.settingsOverlay.onclick = closeSettings;
 
-  // API key handling
   els.keyToggleBtn.onclick = () => {
     if (els.apiKeyInput.type === "password") {
       els.apiKeyInput.type = "text";
@@ -1117,9 +1127,6 @@ function attachEventListeners() {
       alert("Key khaali hai. Pehle Groq se key banao: console.groq.com/keys");
       return;
     }
-    if (!key.startsWith("gsk_")) {
-      if (!confirm("Key 'gsk_' se shuru nahi hoti. Kya phir bhi save karna hai?")) return;
-    }
     state.settings.apiKey = key;
     saveSettings();
     updateKeyStatus();
@@ -1127,7 +1134,6 @@ function attachEventListeners() {
   };
 
   els.modelSelect.onchange = (e) => { state.settings.model = e.target.value; saveSettings(); };
-
   els.memoryToggle.onchange = (e) => { state.settings.memoryEnabled = e.target.checked; saveSettings(); };
   els.autoMemoryToggle.onchange = (e) => { state.settings.autoMemory = e.target.checked; saveSettings(); };
   els.speakToggle.onchange = (e) => { state.settings.speakReplies = e.target.checked; saveSettings(); };
