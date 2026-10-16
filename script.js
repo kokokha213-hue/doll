@@ -1,5 +1,5 @@
 /* ============================================================
-   MY PERSONAL AI — Phase 1 (Fully Working)
+   MY PERSONAL AI — Phase 1 (Memory Dialog DISABLED)
    ============================================================ */
 
 /* ---------- STATE ---------- */
@@ -8,7 +8,7 @@ const state = {
   currentId: null,
   memories: [],
   settings: {
-    memoryEnabled: true,
+    memoryEnabled: false,
     autoMemory: false,
     speakReplies: false,
     saveHistory: true,
@@ -16,8 +16,6 @@ const state = {
   },
   pendingAttachments: [],
   isRecording: false,
-  memoryDialogOpen: false,
-  pendingMemoryText: null,
 };
 
 const LS = {
@@ -77,7 +75,11 @@ function init() {
   attachEventListeners();
   autoResizeTextarea();
   updateSendButton();
-  console.log("✅ My Personal AI ready.");
+
+  // Dialog ko hamesha band rakho
+  if (els.memoryModal) els.memoryModal.hidden = true;
+
+  console.log("✅ My Personal AI ready — memory dialog disabled.");
 }
 
 function loadFromStorage() {
@@ -306,11 +308,11 @@ async function handleSend() {
 
   if (state.settings.speakReplies) speakText(reply);
 
-  maybeOfferMemory(text);
+  // ⛔ MEMORY DIALOG DISABLED — kuch nahi hoga
 }
 
 /* ============================================================
-   FAKE AI (Phase 2 mein Ollama se replace hoga)
+   FAKE AI
    ============================================================ */
 function fakeAIResponse(userText, attachments) {
   return new Promise((resolve) => {
@@ -323,14 +325,14 @@ function fakeAIResponse(userText, attachments) {
         const parts = [];
         if (imgs) parts.push(`${imgs} image(s)`);
         if (docs) parts.push(`${docs} document(s)`);
-        reply += `Got it — I received ${parts.join(" and ")}. (Phase 3 mein main innhe actually read karunga.)\n\n`;
+        reply += `Got it — I received ${parts.join(" and ")}.\n\n`;
       }
 
       if (userText) {
         reply += `You said: "${userText}"\n\n`;
       }
 
-      reply += `Main aapka Phase 1 frontend demo hun. Abhi placeholder reply de raha hun. Jald hi local Ollama model se connect ho jaunga.`;
+      reply += `Main aapka Phase 1 frontend demo hun. Jald hi local Ollama model se connect ho jaunga.`;
 
       resolve(reply);
     }, 700 + Math.random() * 500);
@@ -338,49 +340,11 @@ function fakeAIResponse(userText, attachments) {
 }
 
 /* ============================================================
-   MEMORY (FIXED — no more annoying dialogs)
+   MEMORY — DIALOG COMPLETELY DISABLED
    ============================================================ */
-function maybeOfferMemory(userText) {
-  if (!state.settings.memoryEnabled) return;
-  if (!userText || !userText.trim()) return;
-
-  // Sirf YAQEENI personal baaton pe trigger
-  const patterns = [
-    /\bmy name is\b/i,
-    /\bremember that\b/i,
-    /\bmy favorite (color|food|movie|song|book|place|sport) is\b/i,
-    /\bi live in\b/i,
-  ];
-  const matched = patterns.some((p) => p.test(userText));
-  if (!matched) return;
-
-  // Agar same baat pehle se saved hai, skip
-  const already = state.memories.some(
-    (m) => m.text.trim().toLowerCase() === userText.trim().toLowerCase()
-  );
-  if (already) return;
-
-  // Agar dialog pehle se khula hai, skip
-  if (state.memoryDialogOpen) return;
-
-  if (state.settings.autoMemory) {
-    addMemory(userText.trim());
-    return;
-  }
-  askMemoryPermission(userText.trim());
-}
-
-function askMemoryPermission(text) {
-  state.memoryDialogOpen = true;
-  state.pendingMemoryText = text;
-  els.memoryModalText.textContent = `"${text}"`;
-  els.memoryModal.hidden = false;
-}
-
-function closeMemoryDialog() {
-  state.memoryDialogOpen = false;
-  state.pendingMemoryText = null;
-  els.memoryModal.hidden = true;
+function maybeOfferMemory() {
+  // 🚫 DISABLED — dialog kabhi nahi khulega
+  return;
 }
 
 function addMemory(text) {
@@ -729,30 +693,21 @@ function attachEventListeners() {
     }
   };
 
-  // MEMORY MODAL — FIXED
-  els.memoryAllowBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (state.pendingMemoryText) {
-      addMemory(state.pendingMemoryText);
-    }
-    closeMemoryDialog();
-  });
-
-  els.memoryDenyBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    closeMemoryDialog();
-  });
-
-  // Modal ke bahar click karne pe band
-  els.memoryModal.addEventListener("click", (e) => {
-    if (e.target === els.memoryModal) closeMemoryDialog();
-  });
+  // Memory modal buttons — ab ye kabhi nahi khulega, lekin safe side
+  if (els.memoryAllowBtn) {
+    els.memoryAllowBtn.onclick = () => {
+      els.memoryModal.hidden = true;
+    };
+  }
+  if (els.memoryDenyBtn) {
+    els.memoryDenyBtn.onclick = () => {
+      els.memoryModal.hidden = true;
+    };
+  }
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      if (!els.memoryModal.hidden) closeMemoryDialog();
+      if (els.memoryModal) els.memoryModal.hidden = true;
       else if (!els.settingsPanel.hidden) closeSettings();
       else if (els.sidebar.classList.contains("open")) closeSidebarMobile();
     }
