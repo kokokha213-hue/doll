@@ -3,242 +3,445 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a0a0f">
+<meta name="theme-color" content="#000000">
 <title>My Personal AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0a0f;
-  --bg-elev:rgba(23,23,28,0.75);
-  --bg-elev-2:rgba(35,35,45,0.65);
-  --bg-glass:rgba(255,255,255,0.04);
-  --bg-glass-2:rgba(255,255,255,0.07);
-  --border:rgba(255,255,255,0.08);
-  --border-hi:rgba(255,255,255,0.15);
-  --text:#f0f0f5;
-  --text-dim:#8a8a9a;
+  --bg:#000000;
+  --bg-1:#0a0a0b;
+  --bg-2:#131315;
+  --bg-3:#1a1a1d;
+  --glass:rgba(255,255,255,0.03);
+  --glass-2:rgba(255,255,255,0.06);
+  --glass-3:rgba(255,255,255,0.09);
+  --border:rgba(255,255,255,0.06);
+  --border-2:rgba(255,255,255,0.12);
+  --border-3:rgba(255,255,255,0.18);
+  --text:#f5f5f7;
+  --text-2:#a1a1a6;
+  --text-3:#6e6e73;
   --accent:#10a37f;
-  --accent-2:#0ea5e9;
-  --accent-hover:#14c896;
-  --accent-glow:rgba(16,163,127,0.35);
-  --danger:#e5484d;
+  --accent-2:#1fd1a4;
+  --accent-3:#0ea5e9;
+  --accent-glow:rgba(16,163,127,0.4);
+  --accent-glow-2:rgba(31,209,164,0.25);
+  --danger:#ff453a;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --orange:#ff9500;
+  --radius-sm:10px;
   --radius:14px;
   --radius-lg:20px;
-  --sidebar-w:270px;
-  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
-  --shadow-md:0 8px 24px rgba(0,0,0,0.4);
-  --shadow-lg:0 20px 60px rgba(0,0,0,0.6);
+  --radius-xl:26px;
+  --sidebar-w:280px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.5);
+  --shadow:0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg:0 20px 50px rgba(0,0,0,0.7);
+  --shadow-glow:0 0 30px var(--accent-glow);
 }
 html,body{
   height:100%;
-  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,"Noto Naskh Arabic",sans-serif;
-  background:var(--bg);color:var(--text);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
   overflow:hidden;
   -webkit-tap-highlight-color:transparent;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  letter-spacing:-0.01em;
 }
+
+/* Ambient background */
 body::before{
-  content:"";position:fixed;inset:0;
+  content:"";
+  position:fixed;
+  inset:0;
   background:
-    radial-gradient(circle at 15% 20%, rgba(16,163,127,0.12) 0%, transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(139,92,246,0.10) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(14,165,233,0.06) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(16,163,127,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 60% at 85% 85%, rgba(139,92,246,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(14,165,233,0.05) 0%, transparent 60%);
   z-index:-1;
-  animation:bgShift 20s ease-in-out infinite;
+  animation:bgShift 25s ease-in-out infinite;
+  pointer-events:none;
 }
 @keyframes bgShift{
   0%,100%{transform:scale(1) rotate(0deg)}
-  50%{transform:scale(1.1) rotate(3deg)}
+  50%{transform:scale(1.15) rotate(2deg)}
 }
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;transition:all .2s ease}
+
+button{
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  background:none;
+  color:inherit;
+  transition:all .18s cubic-bezier(.4,0,.2,1);
+  user-select:none;
+  -webkit-user-select:none;
+}
 input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .app{display:flex;height:100dvh;width:100vw;position:relative}
 
+/* ============ SIDEBAR ============ */
 .sidebar{
-  width:var(--sidebar-w);background:var(--bg-elev);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  width:var(--sidebar-w);
+  background:linear-gradient(180deg,var(--bg-1) 0%,var(--bg) 100%);
   border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  padding:16px 12px;gap:14px;
-  z-index:30;transition:transform .3s cubic-bezier(.4,0,.2,1);
+  display:flex;
+  flex-direction:column;
+  padding:14px 10px;
+  gap:12px;
+  z-index:30;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
   flex-shrink:0;
 }
+.sidebar-header{display:flex}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;margin-bottom:4px;
+}
+.brand-logo{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 50%,var(--accent-3) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  box-shadow:0 4px 14px var(--accent-glow);
+}
+.brand-name{
+  font-family:'Poppins',sans-serif;
+  font-size:14px;font-weight:600;
+  background:linear-gradient(135deg,#fff 0%,#a1a1a6 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:-0.02em;
+}
 .new-chat-btn{
-  width:100%;padding:13px 16px;
-  background:linear-gradient(135deg,#10a37f 0%,#0ea5e9 100%);
+  width:100%;
+  padding:12px 16px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);
   border-radius:var(--radius);
-  font-weight:600;font-size:14px;color:#fff;
+  font-weight:600;font-size:13.5px;
+  color:#fff;
   display:flex;align-items:center;gap:8px;justify-content:center;
-  box-shadow:0 4px 16px rgba(16,163,127,0.3);
+  box-shadow:0 4px 18px var(--accent-glow);
   position:relative;overflow:hidden;
+  letter-spacing:-0.01em;
 }
 .new-chat-btn::before{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,0.2) 0%,transparent 50%);
-  opacity:0;transition:opacity .3s;
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.25) 0%,transparent 50%);
+  opacity:0;transition:opacity .25s;
 }
-.new-chat-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(16,163,127,0.5)}
+.new-chat-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 28px var(--accent-glow);
+}
 .new-chat-btn:hover::before{opacity:1}
-.new-chat-btn:active{transform:translateY(0)}
-.plus-icon{font-size:18px;font-weight:300}
+.new-chat-btn:active{transform:translateY(0) scale(0.98)}
+.new-chat-btn .plus-icon{
+  font-size:18px;font-weight:300;
+  transition:transform .3s;
+}
+.new-chat-btn:hover .plus-icon{transform:rotate(90deg)}
+
 .sidebar-search input{
-  width:100%;padding:11px 14px;
-  background:var(--bg-glass);border:1px solid var(--border);
-  border-radius:var(--radius);font-size:13px;outline:none;
+  width:100%;
+  padding:10px 14px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  outline:none;
   transition:all .2s ease;
 }
-.sidebar-search input::placeholder{color:var(--text-dim)}
+.sidebar-search input::placeholder{color:var(--text-3)}
 .sidebar-search input:focus{
-  border-color:var(--accent);background:var(--bg-glass-2);
-  box-shadow:0 0 0 3px var(--accent-glow);
-}
-.history-list{
-  flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px;
-  -webkit-overflow-scrolling:touch;padding-right:2px;
-}
-.history-item{
-  padding:11px 14px;border-radius:10px;font-size:13px;
-  color:var(--text-dim);cursor:pointer;
-  display:flex;justify-content:space-between;align-items:center;gap:8px;
-  transition:all .2s ease;position:relative;
-}
-.history-item::before{
-  content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
-  width:3px;height:0;background:var(--accent);
-  border-radius:0 3px 3px 0;transition:height .2s ease;
-}
-.history-item:hover{background:var(--bg-glass);color:var(--text)}
-.history-item.active{background:var(--bg-glass-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border-hi)}
-.history-item.active::before{height:60%}
-.history-item .title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-.history-item .delete-conv{opacity:0;font-size:12px;transition:opacity .2s}
-.history-item:hover .delete-conv{opacity:.7}
-.sidebar-footer{
-  display:flex;flex-direction:column;gap:8px;
-  padding-top:12px;border-top:1px solid var(--border);
-}
-.sidebar-btn{
-  padding:11px 14px;border-radius:10px;font-size:13px;
-  text-align:left;color:var(--text-dim);
-  display:flex;align-items:center;gap:8px;
-}
-.sidebar-btn:hover{background:var(--bg-glass);color:var(--text);transform:translateX(2px)}
-.privacy-badge{
-  font-size:11px;color:var(--text-dim);text-align:center;
-  padding:8px;background:var(--bg-glass);border-radius:8px;
+  border-color:var(--accent);
+  background:var(--glass-2);
+  box-shadow:0 0 0 3px var(--accent-glow-2);
 }
 
-.main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+.history-list{
+  flex:1;
+  overflow-y:auto;
+  display:flex;flex-direction:column;gap:3px;
+  -webkit-overflow-scrolling:touch;
+  padding-right:2px;
+  scrollbar-width:thin;
+}
+.history-list::-webkit-scrollbar{width:5px}
+.history-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.history-item{
+  padding:10px 12px;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  color:var(--text-2);
+  cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  transition:all .15s ease;
+  position:relative;
+}
+.history-item::before{
+  content:"";
+  position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:0;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  border-radius:0 3px 3px 0;
+  transition:height .2s ease;
+}
+.history-item:hover{background:var(--glass);color:var(--text)}
+.history-item.active{
+  background:var(--glass-2);
+  color:var(--text);
+  box-shadow:inset 0 0 0 1px var(--border-2);
+}
+.history-item.active::before{height:60%}
+.history-item .title{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
+  font-weight:500;
+}
+.history-item .delete-conv{
+  opacity:0;font-size:12px;
+  transition:opacity .15s,transform .15s;
+  padding:2px 4px;border-radius:4px;
+}
+.history-item:hover .delete-conv{opacity:.6}
+.history-item .delete-conv:hover{
+  opacity:1 !important;
+  color:var(--danger);
+  background:rgba(255,69,58,0.1);
+}
+
+.sidebar-footer{
+  display:flex;flex-direction:column;gap:6px;
+  padding-top:10px;
+  border-top:1px solid var(--border);
+}
+.sidebar-btn{
+  padding:10px 12px;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  text-align:left;
+  color:var(--text-2);
+  display:flex;align-items:center;gap:10px;
+  font-weight:500;
+}
+.sidebar-btn:hover{
+  background:var(--glass);
+  color:var(--text);
+  transform:translateX(2px);
+}
+.privacy-badge{
+  font-size:10.5px;
+  color:var(--text-3);
+  text-align:center;
+  padding:7px;
+  background:var(--glass);
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+
+/* ============ MAIN ============ */
+.main{
+  flex:1;display:flex;flex-direction:column;
+  min-width:0;position:relative;
+}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;background:rgba(15,15,20,0.6);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:12px 20px;
+  background:rgba(10,10,11,0.7);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
   border-bottom:1px solid var(--border);
-  flex-shrink:0;z-index:10;
+  flex-shrink:0;
+  z-index:10;
 }
 .topbar-title{
-  font-size:15px;font-weight:600;
-  background:linear-gradient(135deg,#10a37f 0%,#0ea5e9 50%,#8b5cf6 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;letter-spacing:.3px;
+  font-family:'Poppins',sans-serif;
+  font-size:14px;font-weight:600;
+  background:linear-gradient(135deg,#fff 0%,var(--accent-2) 50%,var(--accent-3) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:-0.02em;
 }
-.icon-btn{padding:9px 12px;border-radius:10px;font-size:16px}
-.icon-btn:hover{background:var(--bg-glass-2);transform:scale(1.05)}
+.icon-btn{
+  padding:8px 11px;
+  border-radius:var(--radius-sm);
+  font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);
+}
+.icon-btn:hover{
+  background:var(--glass-2);
+  color:var(--text);
+  transform:scale(1.05);
+}
 .icon-btn:active{transform:scale(0.95)}
 #menuToggle{display:none}
 
+/* ============ MESSAGES ============ */
 .messages{
-  flex:1;overflow-y:auto;padding:28px 20px 190px;
-  display:flex;flex-direction:column;gap:22px;
-  -webkit-overflow-scrolling:touch;scroll-behavior:smooth;
+  flex:1;
+  overflow-y:auto;
+  padding:28px 20px 190px;
+  display:flex;flex-direction:column;gap:20px;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+  scrollbar-width:thin;
 }
+.messages::-webkit-scrollbar{width:8px}
+.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.messages::-webkit-scrollbar-thumb:hover{background:var(--border-2)}
+
 .welcome{
-  max-width:640px;margin:auto;text-align:center;
-  display:flex;flex-direction:column;align-items:center;gap:16px;
-  padding:40px 20px;animation:fadeInUp .6s ease;
+  max-width:680px;
+  margin:auto;
+  text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+  gap:16px;
+  padding:40px 20px;
+  animation:fadeInUp .7s cubic-bezier(.4,0,.2,1);
 }
 @keyframes fadeInUp{
-  from{opacity:0;transform:translateY(20px)}
+  from{opacity:0;transform:translateY(24px)}
   to{opacity:1;transform:translateY(0)}
 }
 .welcome-logo{
-  font-size:64px;
-  animation:float 3s ease-in-out infinite;
-  filter:drop-shadow(0 0 20px rgba(16,163,127,0.4));
+  font-size:68px;
+  animation:float 3.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px var(--accent-glow));
 }
 @keyframes float{
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
+  50%{transform:translateY(-10px)}
 }
 .welcome h2{
-  font-size:28px;
-  background:linear-gradient(135deg,#f0f0f5 0%,#8a8a9a 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  font-family:'Poppins',sans-serif;
+  font-size:30px;
+  font-weight:600;
+  background:linear-gradient(135deg,#fff 0%,var(--text-2) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
   background-clip:text;
+  letter-spacing:-0.03em;
+  line-height:1.2;
 }
-.welcome p{color:var(--text-dim);font-size:14px;line-height:1.6;max-width:480px}
-.welcome-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px}
+.welcome p{
+  color:var(--text-2);
+  font-size:14.5px;
+  line-height:1.65;
+  max-width:520px;
+}
+.welcome-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-top:8px;
+}
 .chip{
-  padding:10px 18px;border:1px solid var(--border);
-  border-radius:999px;font-size:13px;color:var(--text-dim);
-  background:var(--bg-glass);backdrop-filter:blur(10px);
+  padding:10px 18px;
+  border:1px solid var(--border-2);
+  border-radius:999px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--text-2);
+  background:var(--glass);
+  backdrop-filter:blur(10px);
+  transition:all .2s ease;
 }
 .chip:hover{
-  border-color:var(--accent);color:var(--text);
-  background:var(--bg-glass-2);transform:translateY(-2px);
-  box-shadow:0 4px 12px rgba(16,163,127,0.2);
+  border-color:var(--accent);
+  color:var(--text);
+  background:var(--glass-2);
+  transform:translateY(-2px);
+  box-shadow:0 4px 16px var(--accent-glow-2);
 }
-.chip:active{transform:translateY(0)}
+.chip:active{transform:translateY(0) scale(0.98)}
+
 .msg{
-  display:flex;gap:12px;max-width:820px;width:100%;margin:0 auto;
+  display:flex;
+  gap:12px;
+  max-width:840px;
+  width:100%;
+  margin:0 auto;
   animation:msgIn .3s cubic-bezier(.4,0,.2,1);
 }
 @keyframes msgIn{
-  from{opacity:0;transform:translateY(10px)}
+  from{opacity:0;transform:translateY(12px)}
   to{opacity:1;transform:translateY(0)}
 }
 .msg .avatar{
-  width:36px;height:36px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:16px;
+  width:34px;height:34px;border-radius:50%;
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;
+  font-weight:600;
 }
 .msg.user .avatar{
-  background:linear-gradient(135deg,#10a37f,#0ea5e9);
-  color:#fff;box-shadow:0 4px 12px rgba(16,163,127,0.3);
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-3) 100%);
+  color:#fff;
+  box-shadow:0 4px 14px var(--accent-glow);
 }
 .msg.ai .avatar{
-  background:var(--bg-glass-2);border:1px solid var(--border);
-  backdrop-filter:blur(10px);
+  background:linear-gradient(135deg,var(--bg-3) 0%,var(--bg-2) 100%);
+  border:1px solid var(--border-2);
+  box-shadow:0 4px 14px rgba(0,0,0,0.4);
 }
 .msg .bubble{
-  padding:14px 18px;border-radius:var(--radius-lg);
-  font-size:15px;line-height:1.65;
-  white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;
-  max-width:100%;font-family:inherit;
+  padding:14px 18px;
+  border-radius:var(--radius-lg);
+  font-size:15px;
+  line-height:1.7;
+  white-space:pre-wrap;
+  word-wrap:break-word;
+  overflow-wrap:anywhere;
+  max-width:100%;
+  letter-spacing:-0.005em;
 }
 .msg .bubble.rtl{
-  direction:rtl;text-align:right;font-size:17px;line-height:2;
-  font-family:"Noto Naskh Arabic",-apple-system,sans-serif;
+  direction:rtl;
+  text-align:right;
+  font-size:17px;
+  line-height:2;
+  font-family:'Noto Naskh Arabic',-apple-system,sans-serif;
 }
 .msg.user .bubble{
-  background:linear-gradient(135deg,rgba(16,163,127,0.15) 0%,rgba(14,165,233,0.12) 100%);
-  border:1px solid rgba(16,163,127,0.2);
-  box-shadow:0 2px 12px rgba(16,163,127,0.15);
+  background:linear-gradient(135deg,rgba(16,163,127,0.14) 0%,rgba(14,165,233,0.10) 100%);
+  border:1px solid rgba(16,163,127,0.22);
+  box-shadow:0 3px 14px rgba(16,163,127,0.12);
 }
 .msg.ai .bubble{
-  background:var(--bg-glass);border:1px solid var(--border);
+  background:var(--glass);
+  border:1px solid var(--border);
   backdrop-filter:blur(10px);
 }
 .msg .bubble img.attachment-img{
-  max-width:240px;max-height:240px;border-radius:12px;
-  margin-top:8px;display:block;box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  max-width:280px;max-height:280px;
+  border-radius:12px;
+  margin-top:8px;display:block;
+  box-shadow:0 6px 20px rgba(0,0,0,0.4);
+  cursor:pointer;
 }
 .msg .bubble .attachment-file{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--bg-glass-2);padding:8px 12px;border-radius:10px;
-  font-size:12px;color:var(--text-dim);margin-top:8px;
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--glass-2);
+  padding:8px 12px;border-radius:10px;
+  font-size:12.5px;
+  color:var(--text-2);
+  margin-top:8px;
   border:1px solid var(--border);
+  font-weight:500;
 }
-.typing{display:inline-flex;gap:5px;padding:8px 0}
+
+.typing{display:inline-flex;gap:5px;padding:6px 0}
 .typing span{
   width:8px;height:8px;border-radius:50%;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
@@ -248,87 +451,163 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .typing span:nth-child(3){animation-delay:.4s}
 @keyframes typingBounce{
   0%,80%,100%{opacity:.4;transform:translateY(0) scale(1)}
-  40%{opacity:1;transform:translateY(-6px) scale(1.1)}
+  40%{opacity:1;transform:translateY(-6px) scale(1.15)}
 }
+
 .cursor-blink{
-  display:inline-block;width:8px;height:16px;
-  background:var(--accent);margin-left:2px;
-  animation:cursorBlink 1s infinite;vertical-align:text-bottom;
+  display:inline-block;
+  width:8px;height:16px;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  margin-left:2px;
+  border-radius:1px;
+  animation:cursorBlink 1s infinite;
+  vertical-align:text-bottom;
 }
 @keyframes cursorBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
 
+/* ============ ATTACHMENT PREVIEW ============ */
 .attachment-preview{
-  position:absolute;bottom:96px;left:0;right:0;
-  padding:0 20px;z-index:5;animation:fadeInUp .3s ease;
+  position:absolute;
+  bottom:100px;left:0;right:0;
+  padding:0 20px;
+  z-index:5;
+  animation:fadeInUp .3s ease;
 }
 .attachment-items{
-  max-width:820px;margin:0 auto;
+  max-width:840px;margin:0 auto;
   display:flex;flex-wrap:wrap;gap:10px;
 }
 .att-chip{
   display:flex;align-items:center;gap:10px;
-  background:var(--bg-elev-2);backdrop-filter:blur(10px);
-  border:1px solid var(--border);border-radius:12px;
-  padding:8px 12px;font-size:12px;box-shadow:var(--shadow-sm);
+  background:linear-gradient(135deg,var(--bg-2) 0%,var(--bg-3) 100%);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border-2);
+  border-radius:14px;
+  padding:8px 12px;
+  font-size:12.5px;
+  font-weight:500;
+  box-shadow:var(--shadow);
+  animation:fadeInUp .25s ease;
 }
-.att-chip img{width:36px;height:36px;object-fit:cover;border-radius:8px}
-.att-chip .remove-att{color:var(--text-dim);font-size:14px;cursor:pointer}
-.att-chip .remove-att:hover{color:var(--danger)}
+.att-chip img{
+  width:40px;height:40px;object-fit:cover;
+  border-radius:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+.att-chip .remove-att{
+  color:var(--text-3);
+  font-size:15px;
+  cursor:pointer;
+  padding:2px 6px;
+  border-radius:6px;
+  transition:all .15s;
+}
+.att-chip .remove-att:hover{
+  color:var(--danger);
+  background:rgba(255,69,58,0.15);
+}
 
+/* ============ COMPOSER ============ */
 .composer{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:16px 20px 24px;
-  background:linear-gradient(to top,var(--bg) 60%,transparent);
+  position:absolute;
+  bottom:0;left:0;right:0;
+  padding:14px 20px 22px;
+  background:linear-gradient(to top,var(--bg) 65%,transparent);
   z-index:6;
 }
 .composer-inner{
-  max-width:820px;margin:0 auto;
+  max-width:840px;margin:0 auto;
   display:flex;align-items:flex-end;gap:8px;
-  background:var(--bg-elev-2);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid var(--border);
-  border-radius:26px;padding:8px 10px;
-  box-shadow:var(--shadow-md);transition:all .3s ease;
+  background:linear-gradient(135deg,rgba(26,26,29,0.95) 0%,rgba(19,19,21,0.95) 100%);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-xl);
+  padding:8px 10px;
+  box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,0.05);
+  transition:all .25s cubic-bezier(.4,0,.2,1);
 }
 .composer-inner:focus-within{
-  border-color:var(--accent);
-  box-shadow:var(--shadow-md),0 0 0 4px var(--accent-glow);
+  border-color:rgba(16,163,127,0.4);
+  box-shadow:var(--shadow-lg),0 0 0 4px var(--accent-glow-2),inset 0 1px 0 rgba(255,255,255,0.08);
 }
 .composer-icon{
-  width:40px;height:40px;border-radius:50%;font-size:17px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  width:40px;height:40px;border-radius:50%;
+  font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  color:var(--text-2);
+  position:relative;
 }
-.composer-icon:hover{background:var(--bg-glass-2);transform:scale(1.08)}
-.composer-icon:active{transform:scale(0.95)}
-.composer-icon.recording{background:var(--danger);animation:pulse 1.2s infinite}
-@keyframes pulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,0.6)}
-  50%{box-shadow:0 0 0 12px rgba(229,72,77,0)}
+.composer-icon:hover{
+  background:var(--glass-2);
+  color:var(--text);
+  transform:scale(1.08);
+}
+.composer-icon:active{transform:scale(0.94)}
+.composer-icon.recording{
+  background:linear-gradient(135deg,var(--danger),#ef4444);
+  color:#fff;
+  animation:pulseRing 1.4s infinite;
+}
+@keyframes pulseRing{
+  0%{box-shadow:0 0 0 0 rgba(255,69,58,0.6)}
+  70%{box-shadow:0 0 0 14px rgba(255,69,58,0)}
+  100%{box-shadow:0 0 0 0 rgba(255,69,58,0)}
 }
 #userInput{
-  flex:1;resize:none;background:transparent;border:none;
-  outline:none;padding:11px 8px;font-size:15px;
-  line-height:1.5;max-height:160px;min-height:22px;
+  flex:1;
+  resize:none;
+  background:transparent;
+  border:none;
+  outline:none;
+  padding:11px 8px;
+  font-size:15px;
+  line-height:1.5;
+  max-height:180px;
+  min-height:22px;
+  color:var(--text);
+  letter-spacing:-0.005em;
 }
-#userInput::placeholder{color:var(--text-dim)}
+#userInput::placeholder{color:var(--text-3)}
 .send-btn{
   width:40px;height:40px;border-radius:50%;
-  background:linear-gradient(135deg,#10a37f 0%,#0ea5e9 100%);
-  color:#fff;font-size:16px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);
+  color:#fff;
+  font-size:15px;
   display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;box-shadow:0 4px 12px rgba(16,163,127,0.4);
+  flex-shrink:0;
+  box-shadow:0 4px 14px var(--accent-glow);
+  transition:all .2s cubic-bezier(.4,0,.2,1);
 }
-.send-btn:disabled{opacity:.35;cursor:not-allowed;background:var(--bg-glass-2);box-shadow:none}
-.send-btn:not(:disabled):hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(16,163,127,0.6)}
-.send-btn:not(:disabled):active{transform:scale(0.95)}
-.send-btn.stop{background:linear-gradient(135deg,#e5484d,#ef4444);animation:pulse 1s infinite}
+.send-btn:disabled{
+  opacity:.3;
+  cursor:not-allowed;
+  background:var(--glass-2);
+  box-shadow:none;
+  color:var(--text-3);
+}
+.send-btn:not(:disabled):hover{
+  transform:scale(1.08);
+  box-shadow:0 6px 24px var(--accent-glow);
+}
+.send-btn:not(:disabled):active{transform:scale(0.94)}
+.send-btn.stop{
+  background:linear-gradient(135deg,var(--danger),#ef4444);
+  animation:pulseRing 1.2s infinite;
+}
 
+/* ============ SETTINGS PANEL ============ */
 .settings-panel{
-  position:fixed;top:0;right:0;width:440px;max-width:100vw;height:100dvh;
-  background:var(--bg-elev);
-  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  position:fixed;
+  top:0;right:0;
+  width:460px;max-width:100vw;height:100dvh;
+  background:linear-gradient(180deg,var(--bg-1) 0%,var(--bg) 100%);
+  backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);
   border-left:1px solid var(--border);
-  z-index:100;display:flex;flex-direction:column;
+  z-index:100;
+  display:flex;flex-direction:column;
   transform:translateX(100%);
   transition:transform .35s cubic-bezier(.4,0,.2,1);
   box-shadow:var(--shadow-lg);
@@ -336,188 +615,342 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .settings-panel.open{transform:translateX(0)}
 .settings-header{
   display:flex;justify-content:space-between;align-items:center;
-  padding:18px 22px;border-bottom:1px solid var(--border);flex-shrink:0;
+  padding:18px 24px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
 }
 .settings-header h2{
-  font-size:19px;font-weight:600;
-  background:linear-gradient(135deg,#10a37f 0%,#0ea5e9 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  font-family:'Poppins',sans-serif;
+  font-size:18px;
+  font-weight:600;
+  background:linear-gradient(135deg,#fff 0%,var(--accent-2) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
   background-clip:text;
+  letter-spacing:-0.02em;
 }
 .settings-body{
-  flex:1;overflow-y:auto;padding:20px 22px 48px;
-  display:flex;flex-direction:column;gap:28px;
+  flex:1;
+  overflow-y:auto;
+  padding:20px 24px 48px;
+  display:flex;flex-direction:column;gap:24px;
   -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
 }
-.settings-section h3{font-size:15px;font-weight:600;margin-bottom:10px}
-.settings-section h4{font-size:13px;color:var(--text-dim);margin:14px 0 8px}
-.settings-desc{font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:14px}
-.settings-desc a{color:var(--accent);text-decoration:none;font-weight:500}
+.settings-body::-webkit-scrollbar{width:6px}
+.settings-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.settings-section{
+  padding:16px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+}
+.settings-section h3{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:6px;
+  display:flex;align-items:center;gap:6px;
+  letter-spacing:-0.01em;
+}
+.settings-section h4{
+  font-size:12.5px;
+  color:var(--text-2);
+  margin:14px 0 8px;
+  font-weight:600;
+}
+.settings-desc{
+  font-size:12.5px;
+  color:var(--text-2);
+  line-height:1.6;
+  margin-bottom:12px;
+}
+.settings-desc a{
+  color:var(--accent-2);
+  text-decoration:none;
+  font-weight:500;
+}
 .settings-desc a:hover{text-decoration:underline}
+
 .toggle-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:12px 0;font-size:14px;gap:12px;
+  padding:10px 0;
+  font-size:13.5px;
+  gap:12px;
   border-bottom:1px solid var(--border);
+  font-weight:500;
 }
 .toggle-row:last-of-type{border-bottom:none}
 .toggle-row input[type="checkbox"]{
   appearance:none;-webkit-appearance:none;
   width:44px;height:26px;
-  background:var(--bg-glass-2);border:1px solid var(--border);
-  border-radius:999px;position:relative;cursor:pointer;flex-shrink:0;
-  transition:background .25s ease,border-color .25s ease;
+  background:var(--glass-2);
+  border:1px solid var(--border-2);
+  border-radius:999px;
+  position:relative;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
 }
 .toggle-row input[type="checkbox"]::after{
-  content:"";position:absolute;top:2px;left:2px;
+  content:"";
+  position:absolute;
+  top:2px;left:2px;
   width:20px;height:20px;border-radius:50%;
-  background:#8a8a9a;
-  transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;
-  box-shadow:0 1px 3px rgba(0,0,0,0.3);
+  background:#6e6e73;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 1px 3px rgba(0,0,0,0.4);
 }
 .toggle-row input[type="checkbox"]:checked{
-  background:linear-gradient(135deg,#10a37f,#0ea5e9);
-  border-color:var(--accent);box-shadow:0 0 12px rgba(16,163,127,0.4);
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  border-color:var(--accent);
+  box-shadow:0 0 14px var(--accent-glow);
 }
-.toggle-row input[type="checkbox"]:checked::after{transform:translateX(18px);background:#fff}
+.toggle-row input[type="checkbox"]:checked::after{
+  transform:translateX(18px);
+  background:#fff;
+}
+
 .settings-label{
-  display:flex;flex-direction:column;gap:8px;
-  font-size:13px;color:var(--text-dim);margin-top:12px;font-weight:500;
+  display:flex;flex-direction:column;gap:7px;
+  font-size:12.5px;
+  color:var(--text-2);
+  margin-top:10px;
+  font-weight:500;
 }
 .settings-label select,
 .settings-label input[type="text"],
 .settings-label input[type="password"]{
-  padding:11px 14px;background:var(--bg-glass);
-  border:1px solid var(--border);border-radius:10px;
-  font-size:14px;outline:none;transition:all .2s ease;color:var(--text);
+  padding:10px 14px;
+  background:var(--glass-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);
+  font-size:13.5px;
+  outline:none;
+  transition:all .2s;
+  color:var(--text);
+  font-family:inherit;
 }
 .settings-label select:focus,
 .settings-label input[type="text"]:focus,
 .settings-label input[type="password"]:focus{
-  border-color:var(--accent);background:var(--bg-glass-2);
-  box-shadow:0 0 0 3px var(--accent-glow);
+  border-color:var(--accent);
+  background:var(--glass-3);
+  box-shadow:0 0 0 3px var(--accent-glow-2);
 }
+.settings-label select{
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1a6' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:36px;
+}
+
 .api-key-row{display:flex;gap:8px;align-items:center}
 .api-key-row input{flex:1}
 .key-toggle{
-  padding:11px 14px;background:var(--bg-glass);
-  border:1px solid var(--border);border-radius:10px;
-  font-size:14px;flex-shrink:0;
+  padding:10px 14px;
+  background:var(--glass-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);
+  font-size:14px;
+  flex-shrink:0;
+  color:var(--text-2);
 }
-.key-toggle:hover{background:var(--bg-glass-2)}
+.key-toggle:hover{background:var(--glass-3);color:var(--text)}
+
 .key-status{
-  font-size:12px;margin-top:10px;padding:10px 14px;
-  border-radius:10px;text-align:center;font-weight:500;
+  font-size:12px;
+  margin-top:10px;
+  padding:10px 14px;
+  border-radius:var(--radius-sm);
+  text-align:center;
+  font-weight:500;
+  transition:all .3s;
 }
 .key-status.ok{
-  background:linear-gradient(135deg,rgba(16,163,127,0.15),rgba(14,165,233,0.1));
-  color:var(--accent);border:1px solid rgba(16,163,127,0.3);
+  background:linear-gradient(135deg,rgba(16,163,127,0.15),rgba(14,165,233,0.08));
+  color:var(--accent-2);
+  border:1px solid rgba(16,163,127,0.3);
 }
 .key-status.missing{
-  background:rgba(229,72,77,0.1);color:var(--danger);
-  border:1px solid rgba(229,72,77,0.25);
+  background:rgba(255,69,58,0.1);
+  color:var(--danger);
+  border:1px solid rgba(255,69,58,0.25);
 }
+
 .memories-list{
-  display:flex;flex-direction:column;gap:8px;
-  max-height:240px;overflow-y:auto;margin-bottom:12px;
+  display:flex;flex-direction:column;gap:6px;
+  max-height:240px;
+  overflow-y:auto;
+  margin-bottom:10px;
 }
 .memory-item{
   display:flex;justify-content:space-between;align-items:flex-start;
-  gap:10px;padding:12px 14px;background:var(--bg-glass);
-  border:1px solid var(--border);border-radius:10px;
-  font-size:13px;line-height:1.5;
+  gap:10px;
+  padding:11px 13px;
+  background:var(--glass-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:12.5px;
+  line-height:1.5;
+  transition:all .15s;
 }
-.memory-item:hover{background:var(--bg-glass-2);border-color:var(--border-hi)}
+.memory-item:hover{
+  background:var(--glass-3);
+  border-color:var(--border-2);
+}
 .memory-item .mem-text{flex:1}
 .memory-item .del-mem{
-  color:var(--text-dim);font-size:13px;cursor:pointer;
-  padding:2px 6px;border-radius:6px;
+  color:var(--text-3);
+  font-size:13px;
+  cursor:pointer;
+  padding:2px 6px;
+  border-radius:6px;
 }
-.memory-item .del-mem:hover{color:var(--danger);background:rgba(229,72,77,0.1)}
+.memory-item .del-mem:hover{
+  color:var(--danger);
+  background:rgba(255,69,58,0.15);
+}
+
 .empty-state{
-  font-size:13px;color:var(--text-dim);text-align:center;
-  padding:20px;background:var(--bg-glass);border-radius:10px;
+  font-size:12.5px;
+  color:var(--text-3);
+  text-align:center;
+  padding:20px;
+  background:var(--glass);
+  border-radius:var(--radius-sm);
   border:1px dashed var(--border);
 }
+
 .danger-btn{
-  width:100%;padding:12px;background:transparent;
-  border:1px solid rgba(229,72,77,0.4);color:var(--danger);
-  border-radius:10px;font-size:13px;font-weight:500;
+  width:100%;
+  padding:11px;
+  background:transparent;
+  border:1px solid rgba(255,69,58,0.35);
+  color:var(--danger);
+  border-radius:var(--radius-sm);
+  font-size:12.5px;
+  font-weight:600;
+  transition:all .2s;
 }
-.danger-btn:hover{background:rgba(229,72,77,0.1);border-color:var(--danger);transform:translateY(-1px)}
+.danger-btn:hover{
+  background:rgba(255,69,58,0.12);
+  border-color:var(--danger);
+  transform:translateY(-1px);
+}
 .danger-btn:active{transform:translateY(0)}
+
 .save-btn{
-  width:100%;padding:12px;
-  background:linear-gradient(135deg,#10a37f 0%,#0ea5e9 100%);
-  color:#fff;border-radius:10px;font-size:13px;font-weight:600;
-  margin-top:12px;box-shadow:0 4px 16px rgba(16,163,127,0.3);
+  width:100%;
+  padding:11px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);
+  color:#fff;
+  border-radius:var(--radius-sm);
+  font-size:12.5px;
+  font-weight:600;
+  margin-top:10px;
+  box-shadow:0 4px 16px var(--accent-glow);
+  letter-spacing:-0.005em;
 }
-.save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(16,163,127,0.5)}
+.save-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 24px var(--accent-glow);
+}
 .save-btn:active{transform:translateY(0)}
+
+/* ============ OVERLAYS ============ */
 .overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.6);
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-  z-index:25;opacity:0;pointer-events:none;transition:opacity .3s ease;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  z-index:25;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
 }
 .overlay.show{opacity:1;pointer-events:auto}
+
 .settings-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.65);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  z-index:90;opacity:0;pointer-events:none;transition:opacity .3s ease;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  z-index:90;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
 }
 .settings-overlay.show{opacity:1;pointer-events:auto}
+
+/* ============ SCROLLBARS ============ */
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+::-webkit-scrollbar-thumb:hover{background:var(--border-2)}
 
+/* ============ MOBILE ============ */
 @media (max-width:768px){
   .sidebar{
     position:fixed;top:0;left:0;bottom:0;
-    width:85vw;max-width:320px;
+    width:82vw;max-width:320px;
     transform:translateX(-100%);
-    box-shadow:4px 0 30px rgba(0,0,0,0.5);
+    box-shadow:4px 0 40px rgba(0,0,0,0.6);
+    border-right:1px solid var(--border-2);
   }
   .sidebar.open{transform:translateX(0)}
-  #menuToggle{display:block}
+  #menuToggle{display:flex}
   .messages{padding:20px 14px 190px}
-  .composer{padding:10px 12px 18px}
-  .composer-inner{padding:6px 8px;border-radius:24px}
-  .composer-icon{width:38px;height:38px;font-size:16px}
+  .composer{padding:10px 12px 16px}
+  .composer-inner{padding:6px 8px;border-radius:22px}
+  .composer-icon{width:38px;height:38px;font-size:15px}
   .send-btn{width:38px;height:38px}
   .msg .bubble{font-size:14px;padding:12px 15px}
   .msg .bubble.rtl{font-size:16px}
-  .msg .avatar{width:32px;height:32px;font-size:15px}
+  .msg .avatar{width:32px;height:32px;font-size:14px}
   .settings-panel{width:100vw;border-left:none}
-  .topbar{padding:12px 14px}
-  .topbar-title{font-size:14px}
-  .icon-btn{font-size:17px;padding:8px 10px}
-  .welcome-logo{font-size:52px}
-  .welcome h2{font-size:22px}
-  .welcome{padding:28px 16px;gap:12px}
-  .welcome p{font-size:13px}
-  .chip{padding:8px 14px;font-size:12px}
-  .attachment-preview{bottom:92px;padding:0 14px}
+  .topbar{padding:10px 14px}
+  .topbar-title{font-size:13.5px}
+  .icon-btn{font-size:16px;padding:7px 10px}
+  .welcome-logo{font-size:56px}
+  .welcome h2{font-size:24px}
+  .welcome{padding:28px 16px;gap:14px}
+  .welcome p{font-size:13.5px}
+  .chip{padding:9px 15px;font-size:12.5px}
+  .attachment-preview{bottom:96px;padding:0 14px}
+  .settings-section{padding:14px}
 }
-@media (max-width:360px){
-  .msg .bubble{font-size:13px;padding:11px 14px}
+@media (max-width:380px){
+  .msg .bubble{font-size:13.5px;padding:11px 14px}
   .msg .bubble.rtl{font-size:15px}
-  .composer-icon{width:36px;height:36px;font-size:15px}
+  .composer-icon{width:36px;height:36px;font-size:14px}
   .send-btn{width:36px;height:36px}
   .topbar-title{font-size:13px}
-  .welcome-logo{font-size:44px}
-  .welcome h2{font-size:20px}
+  .welcome-logo{font-size:48px}
+  .welcome h2{font-size:22px}
 }
+
+/* ============ FOCUS / SELECTION ============ */
+::selection{background:var(--accent);color:#fff}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
 <body>
 
 <div class="app">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <button class="new-chat-btn" id="newChatBtn">
-        <span class="plus-icon">+</span> New Chat
-      </button>
+      <div class="brand">
+        <div class="brand-logo">🤖</div>
+        <div class="brand-name">Personal AI</div>
+      </div>
     </div>
+    <button class="new-chat-btn" id="newChatBtn">
+      <span class="plus-icon">+</span> New Chat
+    </button>
     <div class="sidebar-search">
       <input type="text" id="historySearch" placeholder="Search conversations..." autocomplete="off">
     </div>
@@ -528,6 +961,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     </div>
   </aside>
 
+  <!-- MAIN -->
   <main class="main">
     <header class="topbar">
       <button class="icon-btn" id="menuToggle">☰</button>
@@ -539,11 +973,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <div class="welcome" id="welcome">
         <div class="welcome-logo">🤖</div>
         <h2>Hi, I'm your Personal AI</h2>
-        <p>Chat in any language — English, Urdu, Roman Urdu, or Pashto. I'll reply in the same language automatically.</p>
+        <p>Chat in any language. Upload images and I'll actually see them. I remember what you tell me.</p>
         <div class="welcome-chips">
-          <button class="chip" data-prompt="Hello! How are you?">Hello!</button>
-          <button class="chip" data-prompt="السلام علیکم، آپ کیسے ہیں؟">السلام علیکم</button>
-          <button class="chip" data-prompt="Assalam o alaikum, kya haal hai?">Assalam o alaikum</button>
+          <button class="chip" data-prompt="Hello! How are you today?">Say hello</button>
+          <button class="chip" data-prompt="Describe this image in detail: [upload image]">Describe an image</button>
+          <button class="chip" data-prompt="Write a short story about a brave cat.">Write a story</button>
+          <button class="chip" data-prompt="Explain quantum physics in simple words.">Explain physics</button>
         </div>
       </div>
     </section>
@@ -554,13 +989,13 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <footer class="composer">
       <div class="composer-inner">
-        <button class="composer-icon" id="attachImageBtn">🖼️</button>
-        <button class="composer-icon" id="attachDocBtn">📄</button>
+        <button class="composer-icon" id="attachImageBtn" title="Upload image">🖼️</button>
+        <button class="composer-icon" id="attachDocBtn" title="Upload document">📄</button>
         <textarea id="userInput" placeholder="Message in any language..." rows="1"></textarea>
-        <button class="composer-icon" id="micBtn">🎤</button>
-        <button class="send-btn" id="sendBtn" disabled>➤</button>
+        <button class="composer-icon" id="micBtn" title="Voice input">🎤</button>
+        <button class="send-btn" id="sendBtn" title="Send" disabled>➤</button>
       </div>
-      <input type="file" id="imageInput" accept="image/*" style="display:none">
+      <input type="file" id="imageInput" accept="image/*" style="display:none" multiple>
       <input type="file" id="docInput" accept=".pdf,.txt,.md,.doc,.docx" style="display:none">
     </footer>
   </main>
@@ -568,6 +1003,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   <div class="overlay" id="overlay"></div>
 </div>
 
+<!-- SETTINGS PANEL -->
 <div class="settings-panel" id="settingsPanel">
   <div class="settings-header">
     <h2>Settings</h2>
@@ -577,7 +1013,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>🤖 AI Provider</h3>
-      <p class="settings-desc">Paste your Groq API key here. Free key: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+      <p class="settings-desc">Paste your Groq API key. Free: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
       <label class="settings-label">
         Groq API Key
         <div class="api-key-row">
@@ -587,34 +1023,45 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       </label>
       <div class="key-status missing" id="keyStatus">❌ No key — demo mode</div>
       <button class="save-btn" id="saveKeyBtn">Save Key</button>
-      <label class="settings-label" style="margin-top:16px">
-        Model
+
+      <label class="settings-label" style="margin-top:14px">
+        Text Model
         <select id="modelSelect">
-          <option value="openai/gpt-oss-120b">GPT OSS 120B (best quality)</option>
-          <option value="openai/gpt-oss-20b">GPT OSS 20B (faster)</option>
-          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (versatile)</option>
-          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fastest)</option>
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (best text)</option>
+          <option value="openai/gpt-oss-120b">GPT OSS 120B</option>
+          <option value="openai/gpt-oss-20b">GPT OSS 20B</option>
+          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fast)</option>
           <option value="qwen/qwen3-32b">Qwen 3 32B</option>
-          <option value="gemma2-9b-it">Gemma 2 9B</option>
         </select>
       </label>
-      <label class="settings-label" style="margin-top:12px">
-        AI Response Style
+
+      <label class="settings-label">
+        Vision Model (for images)
+        <select id="visionModelSelect">
+          <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (best vision)</option>
+          <option value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama 4 Maverick</option>
+          <option value="llama-3.2-90b-vision-preview">Llama 3.2 90B Vision</option>
+          <option value="llama-3.2-11b-vision-preview">Llama 3.2 11B Vision (fast)</option>
+        </select>
+      </label>
+
+      <label class="settings-label">
+        Response Style
         <select id="reasoningSelect">
-          <option value="low">⚡ Fast (low reasoning)</option>
-          <option value="medium" selected>⚖️ Balanced (medium)</option>
-          <option value="high">🧠 Deep thinking (high)</option>
+          <option value="low">⚡ Fast</option>
+          <option value="medium" selected>⚖️ Balanced</option>
+          <option value="high">🧠 Deep thinking</option>
         </select>
       </label>
     </section>
 
     <section class="settings-section">
       <h3>🌍 Reply Language</h3>
-      <p class="settings-desc"><b>Auto:</b> AI replies in the same language you write — English, Urdu script, Roman Urdu, or Pashto.</p>
+      <p class="settings-desc"><b>Auto:</b> AI matches your language (English, Urdu script, Roman Urdu, Pashto).</p>
       <label class="settings-label">
         Language Mode
         <select id="langSelect">
-          <option value="auto">🌐 Auto (match my language)</option>
+          <option value="auto">🌐 Auto (match me)</option>
           <option value="english">🇬🇧 Always English</option>
           <option value="urdu">🇵🇰 Always Urdu (اردو)</option>
           <option value="roman-urdu">📝 Always Roman Urdu</option>
@@ -624,19 +1071,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     </section>
 
     <section class="settings-section">
-      <h3>🧠 Personal Memory</h3>
-      <p class="settings-desc">Your AI saves things you tell it, only when you give permission.</p>
-      <label class="toggle-row"><span>Allow AI to ask to save memories</span><input type="checkbox" id="memoryToggle" checked></label>
-      <label class="toggle-row"><span>Auto-save important facts</span><input type="checkbox" id="autoMemoryToggle"></label>
-      <h4>Saved Memories</h4>
-      <div class="memories-list" id="memoriesList"></div>
-      <button class="danger-btn" id="clearMemoriesBtn">Delete All Memories</button>
-    </section>
-
-    <section class="settings-section">
       <h3>🔊 Voice &amp; Speech</h3>
-      <label class="toggle-row"><span>Speak AI replies aloud</span><input type="checkbox" id="speakToggle"></label>
-      <p class="settings-desc" style="font-size:12px;margin-top:8px">Voice auto-matches reply language. Install Google Neural voices for a more real, natural sound.</p>
+      <label class="toggle-row">
+        <span>Speak AI replies aloud</span>
+        <input type="checkbox" id="speakToggle">
+      </label>
+      <p class="settings-desc" style="font-size:11.5px;margin-top:6px">Voice auto-matches reply language. Best quality with Google Neural voices.</p>
       <label class="settings-label">
         Voice
         <select id="voiceSelect">
@@ -646,10 +1086,10 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <label class="settings-label">
         Voice Speed
         <select id="rateSelect">
-          <option value="0.85">Slow (0.85x)</option>
-          <option value="1.0" selected>Normal (1.0x)</option>
-          <option value="1.15">Fast (1.15x)</option>
-          <option value="1.3">Very Fast (1.3x)</option>
+          <option value="0.85">Slow</option>
+          <option value="1.0" selected>Normal</option>
+          <option value="1.15">Fast</option>
+          <option value="1.3">Very Fast</option>
         </select>
       </label>
       <label class="settings-label">
@@ -664,14 +1104,28 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     </section>
 
     <section class="settings-section">
+      <h3>🧠 Personal Memory</h3>
+      <label class="toggle-row">
+        <span>Allow AI to ask to save memories</span>
+        <input type="checkbox" id="memoryToggle" checked>
+      </label>
+      <h4>Saved Memories</h4>
+      <div class="memories-list" id="memoriesList"></div>
+      <button class="danger-btn" id="clearMemoriesBtn">Delete All Memories</button>
+    </section>
+
+    <section class="settings-section">
       <h3>🔒 Privacy</h3>
-      <label class="toggle-row"><span>Save chat history</span><input type="checkbox" id="historyToggle" checked></label>
+      <label class="toggle-row">
+        <span>Save chat history</span>
+        <input type="checkbox" id="historyToggle" checked>
+      </label>
       <button class="danger-btn" id="clearHistoryBtn">Delete All Conversations</button>
     </section>
 
     <section class="settings-section">
       <h3>ℹ️ About</h3>
-      <p class="settings-desc">My Personal AI — Groq-powered with streaming. API key stays only in your browser.</p>
+      <p class="settings-desc">My Personal AI — Groq-powered with streaming. Your API key stays in your browser only.</p>
     </section>
 
   </div>
@@ -681,27 +1135,28 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
 <script>
 /* ============================================================
-   MY PERSONAL AI — Streaming + Real Voice + Speed
+   MY PERSONAL AI — Premium Streaming + Vision
    ============================================================ */
 
 const state = {
   conversations: [], currentId: null, memories: [],
   settings: {
-    memoryEnabled: false, autoMemory: false,
-    speakReplies: false, saveHistory: true,
+    memoryEnabled: true,
+    speakReplies: false,
+    saveHistory: true,
     voiceURI: "", apiKey: "",
-    model: "openai/gpt-oss-120b",
+    model: "llama-3.3-70b-versatile",
+    visionModel: "meta-llama/llama-4-scout-17b-16e-instruct",
     lang: "auto",
     rate: 1.0,
     pitch: 1.0,
     reasoning: "medium",
   },
   pendingAttachments: [], isRecording: false,
-  isStreaming: false,
-  abortController: null,
+  isStreaming: false, abortController: null,
 };
 
-const LS = { CONVOS: "mpai_c_v14", MEMS: "mpai_m_v14", SETTINGS: "mpai_s_v14" };
+const LS = { CONVOS: "mpai_c_v20", MEMS: "mpai_m_v20", SETTINGS: "mpai_s_v20" };
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -717,9 +1172,9 @@ const els = {
   closeSettingsBtn: $("closeSettingsBtn"),
   apiKeyInput: $("apiKeyInput"), keyToggleBtn: $("keyToggleBtn"),
   keyStatus: $("keyStatus"), saveKeyBtn: $("saveKeyBtn"),
-  modelSelect: $("modelSelect"), reasoningSelect: $("reasoningSelect"),
-  langSelect: $("langSelect"),
-  memoryToggle: $("memoryToggle"), autoMemoryToggle: $("autoMemoryToggle"),
+  modelSelect: $("modelSelect"), visionModelSelect: $("visionModelSelect"),
+  reasoningSelect: $("reasoningSelect"), langSelect: $("langSelect"),
+  memoryToggle: $("memoryToggle"),
   speakToggle: $("speakToggle"), historyToggle: $("historyToggle"),
   voiceSelect: $("voiceSelect"), rateSelect: $("rateSelect"),
   pitchSelect: $("pitchSelect"),
@@ -734,45 +1189,20 @@ function detectLanguage(text) {
   if (!text) return "english";
   const t = text.trim();
   if (!t) return "english";
-
   if (/[\u0600-\u06FF\u0750-\u077F]/.test(t)) {
-    if (/[ځڅډړږښږګڼۍې]/.test(t)) return "pashto";
-    if (/[ٹڈڑںھہیے]/.test(t)) return "urdu";
+    if (/[ځڅډړږښګڼۍې]/.test(t)) return "pashto";
     return "urdu";
   }
-
-  const romanUrduWords = [
-    "kya","kaise","kaisa","kaisi","hai","hain","ho","hun","tha","thi","the",
-    "aap","tum","main","hum","wo","yeh","ye","is","us","ka","ki","ke",
-    "aur","ya","lekin","magar","phir","bhi","nahi","nahin","haan","ji",
-    "salam","alaikum","assalam","shukriya","meherbani","khuda","hafiz",
-    "acha","achha","theek","thik","bura","bohat","bahut","zyada","kam",
-    "khana","pani","ghar","kaam","dost","bhai","behen","maa","baap",
-    "kab","kahan","kyun","kyu","kaun","konsa","kitna","kitne",
-    "batao","bata","suno","dekho","dekha","karo","kar","karna","karunga",
-    "raha","rahi","rahe","gaya","gayi","gaye","chala","chali","chale",
-    "mujhe","tujhe","humein","tumhein","apko","aapko","unhe","inhe",
-    "mera","meri","mere","tera","teri","tere","hamara","hamari","hamare",
-    "aapka","aapki","aapke","tumhara","tumhari","tumhare"
-  ];
+  const ruWords = ["kya","kaise","kaisa","kaisi","hai","hain","ho","hun","tha","thi","the","aap","tum","main","hum","wo","yeh","ye","is","us","ka","ki","ke","aur","ya","lekin","magar","phir","bhi","nahi","nahin","haan","ji","salam","alaikum","assalam","shukriya","acha","achha","theek","thik","bohat","bahut","zyada","kam","kab","kahan","kyun","kaun","batao","bata","suno","dekho","karo","kar","karna","raha","rahi","rahe","mujhe","mera","meri","mere","aapka","aapki","aapke"];
   const words = t.toLowerCase().split(/\s+/).filter(w => w.length > 1);
-  if (words.length === 0) return "english";
-  let matches = 0;
-  words.forEach(w => {
-    const clean = w.replace(/[^a-z]/g, "");
-    if (romanUrduWords.includes(clean)) matches++;
-  });
-  if (matches / words.length >= 0.15 || matches >= 2) return "roman-urdu";
+  if (!words.length) return "english";
+  let m = 0;
+  words.forEach(w => { if (ruWords.includes(w.replace(/[^a-z]/g, ""))) m++; });
+  if (m / words.length >= 0.15 || m >= 2) return "roman-urdu";
   return "english";
 }
-
-function isArabicScript(text) {
-  return /[\u0600-\u06FF\u0750-\u077F]/.test(text || "");
-}
-function applyRTF(el, text) {
-  if (isArabicScript(text)) el.classList.add("rtl");
-  else el.classList.remove("rtl");
-}
+function isArabicScript(t){return /[\u0600-\u06FF\u0750-\u077F]/.test(t || "")}
+function applyRTF(el, text){ if(isArabicScript(text)) el.classList.add("rtl"); else el.classList.remove("rtl"); }
 
 /* ============================================================
    INIT
@@ -788,7 +1218,7 @@ function init() {
   autoResizeTextarea();
   updateSendButton();
   updateKeyStatus();
-  console.log("✅ Ready. Model:", state.settings.model, "Lang:", state.settings.lang);
+  console.log("✅ Premium AI ready. Model:", state.settings.model);
 }
 
 function loadFromStorage() {
@@ -817,15 +1247,12 @@ function createConversation() {
   els.welcome.style.display = "flex";
   return conv;
 }
-function getCurrentConversation() {
-  return state.conversations.find((c) => c.id === state.currentId) || null;
-}
-function clearMessagesView() {
-  [...els.messages.querySelectorAll(".msg")].forEach((el) => el.remove());
-}
+function getCurrentConversation() { return state.conversations.find(c => c.id === state.currentId) || null; }
+function clearMessagesView() { [...els.messages.querySelectorAll(".msg")].forEach(el => el.remove()); }
+
 function renderHistory(filter = "") {
   els.historyList.innerHTML = "";
-  const list = state.conversations.filter((c) => c.title.toLowerCase().includes(filter.toLowerCase()));
+  const list = state.conversations.filter(c => c.title.toLowerCase().includes(filter.toLowerCase()));
   if (!list.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
@@ -833,7 +1260,7 @@ function renderHistory(filter = "") {
     els.historyList.appendChild(empty);
     return;
   }
-  list.forEach((conv) => {
+  list.forEach(conv => {
     const div = document.createElement("div");
     div.className = "history-item" + (conv.id === state.currentId ? " active" : "");
     const title = document.createElement("span");
@@ -855,17 +1282,14 @@ function openConversation(id) {
   clearMessagesView();
   if (conv.messages.length) {
     els.welcome.style.display = "none";
-    conv.messages.forEach((m) => renderMessage(m.role, m.text, m.attachments, false));
+    conv.messages.forEach(m => renderMessage(m.role, m.text, m.attachments, false));
     scrollToBottom();
-  } else { els.welcome.style.display = "flex"; }
+  } else els.welcome.style.display = "flex";
   closeSidebarMobile();
 }
 function deleteConversation(id) {
-  state.conversations = state.conversations.filter((c) => c.id !== id);
-  if (state.currentId === id) {
-    state.currentId = null; clearMessagesView();
-    els.welcome.style.display = "flex";
-  }
+  state.conversations = state.conversations.filter(c => c.id !== id);
+  if (state.currentId === id) { state.currentId = null; clearMessagesView(); els.welcome.style.display = "flex"; }
   saveConversations(); renderHistory(els.historySearch.value);
 }
 function renderMessage(role, text, attachments = [], animate = true) {
@@ -879,15 +1303,15 @@ function renderMessage(role, text, attachments = [], animate = true) {
   bubble.className = "bubble";
   const textEl = document.createElement("div");
   textEl.className = "msg-text";
-  if (text) {
-    textEl.textContent = text;
-    applyRTF(textEl, text);
-  }
+  if (text) { textEl.textContent = text; applyRTF(textEl, text); }
   bubble.appendChild(textEl);
   if (attachments && attachments.length) {
-    attachments.forEach((att) => {
+    attachments.forEach(att => {
       if (att.type === "image" && att.dataUrl) {
-        const img = document.createElement("img"); img.src = att.dataUrl; img.className = "attachment-img"; bubble.appendChild(img);
+        const img = document.createElement("img");
+        img.src = att.dataUrl; img.className = "attachment-img";
+        img.onclick = () => { const w = window.open(""); w.document.write('<img src="' + att.dataUrl + '" style="max-width:100%;">'); };
+        bubble.appendChild(img);
       } else if (att.type === "file") {
         const f = document.createElement("div"); f.className = "attachment-file"; f.textContent = "📄 " + att.name; bubble.appendChild(f);
       }
@@ -911,19 +1335,44 @@ function removeTyping() { const el = document.getElementById("typingIndicator");
 function scrollToBottom() { requestAnimationFrame(() => { els.messages.scrollTop = els.messages.scrollHeight; }); }
 
 /* ============================================================
-   GROQ API — Streaming
+   SYSTEM PROMPT
+   ============================================================ */
+function getSystemPrompt(userText) {
+  const mode = state.settings.lang;
+  let prompt = "You are a helpful, warm, friendly personal AI assistant. Your replies should be thoughtful, detailed, and natural. ";
+  if (mode === "auto") {
+    const detected = detectLanguage(userText);
+    if (detected === "english") prompt += "The user just wrote in ENGLISH. Reply ONLY in English.";
+    else if (detected === "urdu") prompt += "The user just wrote in URDU (Arabic script). Reply ONLY in Urdu using proper Arabic/Urdu script. Do NOT use Roman Urdu or English. Use respectful tone (آپ).";
+    else if (detected === "roman-urdu") prompt += "The user just wrote in ROMAN URDU (Urdu in English letters). Reply ONLY in Roman Urdu using English letters. Do NOT use Arabic script. Example: 'Walaikum salam! Main theek hoon, aap kaise hain?'";
+    else if (detected === "pashto") prompt += "The user just wrote in PASHTO. Reply ONLY in Pashto using Arabic script.";
+  } else if (mode === "english") prompt += "ALWAYS reply in English.";
+  else if (mode === "urdu") prompt += "ALWAYS reply in Urdu (Arabic script: اردو). Do NOT use Roman Urdu.";
+  else if (mode === "roman-urdu") prompt += "ALWAYS reply in Roman Urdu (English letters).";
+  else if (mode === "pashto") prompt += "ALWAYS reply in Pashto (پښتو).";
+
+  prompt += " Give thoughtful, complete answers. Never reply with just 1-2 words. Explain things clearly. Keep tone warm and friendly.";
+
+  if (state.memories.length) {
+    const memText = state.memories.map(m => "- " + m.text).join("\n");
+    prompt += "\n\nThings you remember about the user:\n" + memText;
+  }
+  return prompt;
+}
+
+/* ============================================================
+   GROQ API — Streaming with Vision support
    ============================================================ */
 async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
   const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
   const reqBody = JSON.stringify({
     model: model,
     messages: messages,
-    temperature: 1,
+    temperature: 0.85,
     max_completion_tokens: 2048,
     top_p: 1,
     reasoning_effort: reasoning || "medium",
     stream: true,
-    stop: null,
   });
 
   const attempts = [
@@ -947,12 +1396,10 @@ async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
   let response = null, lastErr = null;
   for (let i = 0; i < attempts.length; i++) {
     try {
-      console.log("Stream attempt " + (i + 1));
       const res = await attempts[i]();
       if (res && (res.ok || res.status < 500)) { response = res; break; }
     } catch (e) {
       if (e.name === "AbortError") throw e;
-      console.warn("Attempt " + (i + 1) + " failed:", e.message);
       lastErr = e;
     }
   }
@@ -968,15 +1415,12 @@ async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
-
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
-
     const lines = buffer.split("\n");
     buffer = lines.pop();
-
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed || !trimmed.startsWith("data:")) continue;
@@ -992,42 +1436,11 @@ async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
 }
 
 /* ============================================================
-   SYSTEM PROMPT
-   ============================================================ */
-function getSystemPrompt(userText) {
-  const mode = state.settings.lang;
-  let prompt = "You are a helpful, warm, friendly personal AI assistant. ";
-
-  if (mode === "auto") {
-    const detected = detectLanguage(userText);
-    if (detected === "english") prompt += "The user just wrote in ENGLISH. Reply ONLY in English. Do not use any other language.";
-    else if (detected === "urdu") prompt += "The user just wrote in URDU (Arabic script: اردو). Reply ONLY in Urdu using proper Arabic/Urdu script. Do NOT use Roman Urdu. Do NOT reply in English. Use respectful tone (آپ).";
-    else if (detected === "roman-urdu") prompt += "The user just wrote in ROMAN URDU (Urdu written in English letters, e.g., 'kya haal hai bhai'). Reply ONLY in Roman Urdu using English letters. Do NOT use Arabic script. Do NOT reply in pure English. Example: 'Walaikum salam! Main theek hoon, aap kaise hain?'";
-    else if (detected === "pashto") prompt += "The user just wrote in PASHTO (پښتو). Reply ONLY in Pashto using Arabic script. Do NOT reply in Urdu or English.";
-  } else if (mode === "english") prompt += "ALWAYS reply in English.";
-  else if (mode === "urdu") prompt += "ALWAYS reply in Urdu (Arabic script: اردو). Do NOT use Roman Urdu. Do NOT reply in English.";
-  else if (mode === "roman-urdu") prompt += "ALWAYS reply in Roman Urdu (Urdu written with English letters). Example: 'Aap kaise hain? Main theek hoon.' Do NOT use Arabic script.";
-  else if (mode === "pashto") prompt += "ALWAYS reply in Pashto (پښتو) using Arabic script.";
-
-  prompt += " Keep replies warm, natural, and concise (2-4 sentences usually).";
-
-  if (state.memories.length) {
-    const memText = state.memories.map(m => "- " + m.text).join("\n");
-    prompt += "\n\nThings you remember about the user:\n" + memText;
-  }
-  return prompt;
-}
-
-/* ============================================================
-   HANDLE SEND — with Streaming
+   HANDLE SEND — with Vision detection
    ============================================================ */
 async function handleSend() {
   if (state.isStreaming) {
-    // Stop streaming
     if (state.abortController) state.abortController.abort();
-    state.isStreaming = false;
-    els.sendBtn.classList.remove("stop");
-    els.sendBtn.textContent = "➤";
     return;
   }
 
@@ -1038,20 +1451,21 @@ async function handleSend() {
   let conv = getCurrentConversation();
   if (!conv) conv = createConversation();
   conv.messages.push({ role: "user", text, attachments, ts: Date.now() });
-  if (conv.title === "New Chat" && text) {
-    conv.title = text.slice(0, 40) + (text.length > 40 ? "…" : "");
-  }
+  if (conv.title === "New Chat" && text) conv.title = text.slice(0, 40) + (text.length > 40 ? "…" : "");
 
   renderMessage("user", text, attachments);
   els.userInput.value = ""; autoResizeTextarea(); clearAttachments(); updateSendButton();
   saveConversations(); renderHistory(els.historySearch.value);
 
-  // Demo mode
+  // Check if any image attachments (vision)
+  const images = attachments.filter(a => a.type === "image" && a.dataUrl);
+  const hasImages = images.length > 0;
+
   if (!state.settings.apiKey) {
     renderTyping();
-    const demoReply = smartDemoReply(text, attachments);
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise(r => setTimeout(r, 500));
     removeTyping();
+    const demoReply = smartDemoReply(text, attachments);
     renderMessage("ai", demoReply);
     conv.messages.push({ role: "ai", text: demoReply, attachments: [], ts: Date.now() });
     saveConversations();
@@ -1059,7 +1473,6 @@ async function handleSend() {
     return;
   }
 
-  // Real AI — streaming
   renderTyping();
   state.isStreaming = true;
   state.abortController = new AbortController();
@@ -1067,28 +1480,51 @@ async function handleSend() {
   els.sendBtn.textContent = "■";
 
   try {
-    const historyMessages = conv.messages
-      .filter(m => m.text || (m.attachments && m.attachments.length))
-      .slice(-10)
-      .map(m => {
-        let content = m.text || "";
-        if (m.attachments && m.attachments.length) {
-          const names = m.attachments.map(a => a.name).join(", ");
-          content += (content ? "\n" : "") + "[Attached: " + names + "]";
-        }
-        return { role: m.role === "ai" ? "assistant" : "user", content };
-      });
+    // Build message history
+    const historyMessages = [];
+    historyMessages.push({ role: "system", content: getSystemPrompt(text) });
 
-    historyMessages.unshift({ role: "system", content: getSystemPrompt(text) });
+    // Previous turns
+    const prevMsgs = conv.messages.slice(-10, -1);
+    for (const m of prevMsgs) {
+      if (m.attachments && m.attachments.length && m.attachments.some(a => a.type === "image")) {
+        // Previous image messages — send as text description only
+        let content = m.text || "(image shared)";
+        historyMessages.push({ role: m.role === "ai" ? "assistant" : "user", content });
+      } else {
+        historyMessages.push({ role: m.role === "ai" ? "assistant" : "user", content: m.text || "" });
+      }
+    }
 
-    // Start streaming
+    // Current user message — with images if present
+    if (hasImages) {
+      const content = [];
+      if (text) content.push({ type: "text", text: text });
+      else content.push({ type: "text", text: "What is in this image? Describe it in detail." });
+      for (const img of images) {
+        content.push({ type: "image_url", image_url: { url: img.dataUrl } });
+      }
+      historyMessages.push({ role: "user", content: content });
+    } else {
+      let content = text || "";
+      if (attachments.length) {
+        const names = attachments.map(a => a.name).join(", ");
+        content += (content ? "\n" : "") + "[Attached: " + names + "]";
+      }
+      historyMessages.push({ role: "user", content: content });
+    }
+
+    // Choose model
+    const modelToUse = hasImages ? state.settings.visionModel : state.settings.model;
+    console.log("Using model:", modelToUse, "| images:", hasImages);
+
     let fullReply = "";
-    let aiMsgEl = null;
+    let aiTextEl = null;
     let firstChunk = true;
 
     for await (const chunk of streamGroqAPI(
       state.settings.apiKey,
-      state.settings.model,
+      modelToUse,
       historyMessages,
       state.settings.reasoning,
       state.abortController.signal
@@ -1096,39 +1532,36 @@ async function handleSend() {
       if (firstChunk) {
         removeTyping();
         const rendered = renderMessage("ai", "", [], true);
-        aiMsgEl = rendered.textEl;
+        aiTextEl = rendered.textEl;
         firstChunk = false;
       }
       fullReply += chunk;
-      if (aiMsgEl) {
-        aiMsgEl.textContent = fullReply;
-        applyRTF(aiMsgEl, fullReply);
+      if (aiTextEl) {
+        aiTextEl.textContent = fullReply;
+        applyRTF(aiTextEl, fullReply);
         scrollToBottom();
       }
     }
 
-    if (!fullReply) {
-      removeTyping();
-      renderMessage("ai", "(empty response)");
-    } else {
+    if (!fullReply) { removeTyping(); renderMessage("ai", "(empty response)"); }
+    else {
       conv.messages.push({ role: "ai", text: fullReply, attachments: [], ts: Date.now() });
       saveConversations();
       if (state.settings.speakReplies) speakText(fullReply);
     }
   } catch (err) {
     removeTyping();
-    if (err.name === "AbortError") {
-      console.log("Streaming stopped by user");
-    } else {
+    if (err.name === "AbortError") { console.log("Stopped"); }
+    else {
       let errMsg = "❌ Error: " + err.message;
       if (err.message.includes("Invalid API Key") || err.message.includes("401")) {
         errMsg = "🔑 Invalid API key. Check Settings → Groq API Key.";
       } else if (err.message.includes("model") && (err.message.includes("not exist") || err.message.includes("does not exist"))) {
-        errMsg = "⚠️ Model unavailable. Try Settings → Model → GPT OSS 20B or Llama 3.1 8B.";
+        errMsg = "⚠️ Model unavailable.\n\nTry Settings → Model: Llama 3.3 70B.\nVision: Llama 4 Scout.";
       } else if (err.message.includes("rate_limit") || err.message.includes("429")) {
-        errMsg = "⏳ Rate limit. Please wait a moment.";
+        errMsg = "⏳ Rate limit reached. Wait a moment.";
       } else {
-        errMsg += "\n\n• Check internet\n• Turn off VPN/Ad blocker";
+        errMsg += "\n\n• Check internet\n• Try switching networks";
       }
       renderMessage("ai", errMsg);
       conv.messages.push({ role: "ai", text: errMsg, attachments: [], ts: Date.now() });
@@ -1139,46 +1572,27 @@ async function handleSend() {
     state.abortController = null;
     els.sendBtn.classList.remove("stop");
     els.sendBtn.textContent = "➤";
+    updateSendButton();
   }
 }
 
 /* ============================================================
-   DEMO REPLY
+   DEMO
    ============================================================ */
 function smartDemoReply(userText, attachments) {
-  let reply = "";
   const detected = detectLanguage(userText);
-
+  let reply = "";
   if (attachments && attachments.length) {
     const imgs = attachments.filter(a => a.type === "image").length;
     const docs = attachments.filter(a => a.type === "file").length;
-    if (detected === "urdu") {
-      if (imgs) reply += imgs + " تصویر موصول ہوئی۔ 📷\n\n";
-      if (docs) reply += docs + " دستاویز موصول ہوئی۔ 📄\n\n";
-    } else if (detected === "roman-urdu") {
-      if (imgs) reply += imgs + " image mil gayi. 📷\n\n";
-      if (docs) reply += docs + " document mil gaya. 📄\n\n";
-    } else {
-      if (imgs) reply += "Got " + imgs + " image(s). 📷\n\n";
-      if (docs) reply += "Got " + docs + " document(s). 📄\n\n";
-    }
+    if (imgs) reply += imgs + " image(s) received. 📷\n";
+    if (docs) reply += docs + " document(s) received. 📄\n";
+    reply += "\n(Add your Groq API key in Settings to see AI analysis.)\n\n";
   }
-
-  const lower = (userText || "").toLowerCase();
-  if (detected === "urdu") {
-    if (/سلام|ہیلو|کیسے|کیا حال/.test(userText)) reply += "وعلیکم السلام! 🌙 میں ٹھیک ہوں، آپ کیسے ہیں؟";
-    else if (userText) reply += "آپ نے کہا: \"" + userText + "\"\n\n💡 اصلی AI کے لیے سیٹنگز میں Groq API key ڈالیں۔";
-  } else if (detected === "roman-urdu") {
-    if (/salam|assalam|hello|hi|kaise|haal/.test(lower)) reply += "Walaikum Assalam! 🌙 Main theek hoon, aap kaise hain?";
-    else if (userText) reply += "Aapne kaha: \"" + userText + "\"\n\n💡 Asli AI ke liye Settings mein Groq API key daalein.";
-  } else if (detected === "pashto") {
-    if (/سلام|salam/.test(lower)) reply += "وعلیکم السلام! 🌙 زه ښه یم، تاسو څنګه یاست؟";
-    else if (userText) reply += "تاسو وویل: \"" + userText + "\"\n\n💡 د اصلي AI لپاره په Settings کې Groq API key کیږدئ.";
-  } else {
-    if (/hello|hi|hey/.test(lower)) reply += "Hello! 👋 I'm doing well, how are you?";
-    else if (/time|waqt/.test(lower)) reply += "Current time: " + new Date().toLocaleTimeString();
-    else if (userText) reply += "You said: \"" + userText + "\"\n\n💡 For real AI, add your Groq API key in Settings (free: console.groq.com/keys).";
-  }
+  if (detected === "urdu" && userText) reply += "آپ نے کہا: \"" + userText + "\"\n\n💡 اصلی AI کے لیے سیٹنگز میں Groq API key ڈالیں۔";
+  else if (detected === "roman-urdu" && userText) reply += "Aapne kaha: \"" + userText + "\"\n\n💡 Asli AI ke liye Settings mein Groq API key daalein.";
+  else if (userText) reply += "You said: \"" + userText + "\"\n\n💡 For real AI, add your Groq API key in Settings (free: console.groq.com/keys).";
+  else reply += "Add your Groq API key in Settings to chat with real AI.";
   return reply;
 }
 
@@ -1191,12 +1605,12 @@ function renderMemories() {
     const empty = document.createElement("div"); empty.className = "empty-state";
     empty.textContent = "No memories saved yet."; els.memoriesList.appendChild(empty); return;
   }
-  state.memories.forEach((mem) => {
+  state.memories.forEach(mem => {
     const div = document.createElement("div"); div.className = "memory-item";
     const text = document.createElement("div"); text.className = "mem-text"; text.textContent = mem.text;
     if (isArabicScript(mem.text)) text.style.direction = "rtl";
     const del = document.createElement("button"); del.className = "del-mem"; del.textContent = "🗑";
-    del.onclick = () => { state.memories = state.memories.filter((m) => m.id !== mem.id); saveMemories(); renderMemories(); };
+    del.onclick = () => { state.memories = state.memories.filter(m => m.id !== mem.id); saveMemories(); renderMemories(); };
     div.appendChild(text); div.appendChild(del);
     els.memoriesList.appendChild(div);
   });
@@ -1206,17 +1620,23 @@ function renderMemories() {
    ATTACHMENTS
    ============================================================ */
 function handleImageUpload(files) {
-  [...files].forEach((file) => {
+  [...files].forEach(file => {
     if (!file.type.startsWith("image/")) return;
     const reader = new FileReader();
-    reader.onload = (e) => { state.pendingAttachments.push({ type: "image", name: file.name, dataUrl: e.target.result }); renderAttachmentPreview(); };
+    reader.onload = (e) => {
+      state.pendingAttachments.push({ type: "image", name: file.name, dataUrl: e.target.result });
+      renderAttachmentPreview();
+    };
     reader.readAsDataURL(file);
   });
 }
 function handleDocUpload(files) {
-  [...files].forEach((file) => {
+  [...files].forEach(file => {
     const reader = new FileReader();
-    reader.onload = (e) => { state.pendingAttachments.push({ type: "file", name: file.name, textContent: e.target.result }); renderAttachmentPreview(); };
+    reader.onload = (e) => {
+      state.pendingAttachments.push({ type: "file", name: file.name, textContent: e.target.result });
+      renderAttachmentPreview();
+    };
     if (/\.(txt|md)$/i.test(file.name)) reader.readAsText(file);
     else reader.readAsArrayBuffer(file);
   });
@@ -1229,7 +1649,7 @@ function renderAttachmentPreview() {
     const chip = document.createElement("div"); chip.className = "att-chip";
     if (att.type === "image") { const img = document.createElement("img"); img.src = att.dataUrl; chip.appendChild(img); }
     const label = document.createElement("span");
-    label.textContent = (att.type === "image" ? "🖼 " : "📄 ") + att.name;
+    label.textContent = (att.type === "image" ? "🖼 " : "📄 ") + att.name.slice(0, 20);
     chip.appendChild(label);
     const remove = document.createElement("span"); remove.className = "remove-att"; remove.textContent = "✕";
     remove.onclick = () => { state.pendingAttachments.splice(i, 1); renderAttachmentPreview(); };
@@ -1250,7 +1670,11 @@ function initSpeechRecognition() {
   const rec = new SR();
   rec.continuous = false; rec.interimResults = false;
   rec.lang = "en-IN";
-  rec.onresult = (e) => { const t = e.results[0][0].transcript; els.userInput.value = (els.userInput.value + " " + t).trim(); autoResizeTextarea(); updateSendButton(); };
+  rec.onresult = (e) => {
+    const t = e.results[0][0].transcript;
+    els.userInput.value = (els.userInput.value + " " + t).trim();
+    autoResizeTextarea(); updateSendButton();
+  };
   rec.onend = () => { state.isRecording = false; els.micBtn.classList.remove("recording"); };
   rec.onerror = (e) => { state.isRecording = false; els.micBtn.classList.remove("recording"); if (e.error === "not-allowed") alert("Microphone blocked."); };
   return rec;
@@ -1270,19 +1694,15 @@ function populateVoices() {
     const voices = speechSynthesis.getVoices();
     els.voiceSelect.innerHTML = "";
     const autoOpt = document.createElement("option");
-    autoOpt.value = "";
-    autoOpt.textContent = "🌐 Auto (match language)";
+    autoOpt.value = ""; autoOpt.textContent = "🌐 Auto (match language)";
     els.voiceSelect.appendChild(autoOpt);
-
     const priority = { "ur": 1, "ur-pk": 1, "hi": 2, "hi-in": 2, "ps": 3, "en-in": 4, "en-gb": 5, "en-us": 5 };
     const sorted = [...voices].sort((a, b) => {
-      const aL = a.lang.toLowerCase(); const bL = b.lang.toLowerCase();
-      const aP = priority[aL] || priority[aL.split("-")[0]] || 99;
-      const bP = priority[bL] || priority[bL.split("-")[0]] || 99;
+      const aP = priority[a.lang.toLowerCase()] || priority[a.lang.toLowerCase().split("-")[0]] || 99;
+      const bP = priority[b.lang.toLowerCase()] || priority[b.lang.toLowerCase().split("-")[0]] || 99;
       return aP - bP;
     });
-
-    sorted.forEach((v) => {
+    sorted.forEach(v => {
       const opt = document.createElement("option");
       opt.value = v.voiceURI;
       let label = v.name + " (" + v.lang + ")";
@@ -1293,85 +1713,55 @@ function populateVoices() {
       opt.textContent = label;
       els.voiceSelect.appendChild(opt);
     });
-
     els.voiceSelect.value = state.settings.voiceURI || "";
   };
   load();
   speechSynthesis.onvoiceschanged = load;
 }
-
 function findVoiceForLanguage(lang) {
   const all = speechSynthesis.getVoices();
   if (!all.length) return null;
-
   if (state.settings.voiceURI) {
     const manual = all.find(x => x.voiceURI === state.settings.voiceURI);
     if (manual) return manual;
   }
-
-  const femaleKeywords = ["female","woman","zira","samantha","victoria","karen","moira","tessa","google uk english female","google us english","en-in-x-ene"];
-
+  const femaleK = ["female","woman","zira","samantha","victoria","karen","moira","tessa","google uk english female","google us english","en-in-x-ene"];
   if (lang === "urdu" || lang === "pashto") {
-    return (
-      all.find(v => v.lang.toLowerCase().startsWith("ur-pk")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("ps")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("hi-in")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("en")) ||
-      all[0]
-    );
+    return all.find(v => v.lang.toLowerCase().startsWith("ur-pk")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("ps")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("hi-in")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("en")) || all[0];
   }
-
   if (lang === "roman-urdu") {
-    return (
-      all.find(v => v.lang.toLowerCase().startsWith("hi-in")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("en-gb")) ||
-      all.find(v => v.lang.toLowerCase().startsWith("en")) ||
-      all[0]
-    );
+    return all.find(v => v.lang.toLowerCase().startsWith("hi-in")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
+           all.find(v => v.lang.toLowerCase().startsWith("en")) || all[0];
   }
-
-  return (
-    all.find(v => { const n = (v.name + " " + v.voiceURI).toLowerCase(); return femaleKeywords.some(k => n.includes(k)) && v.lang.toLowerCase().startsWith("en"); }) ||
-    all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
-    all.find(v => v.lang.toLowerCase().startsWith("en-gb")) ||
-    all.find(v => v.lang.toLowerCase().startsWith("en")) ||
-    all[0]
-  );
+  return all.find(v => { const n = (v.name + " " + v.voiceURI).toLowerCase(); return femaleK.some(k => n.includes(k)) && v.lang.toLowerCase().startsWith("en"); }) ||
+         all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
+         all.find(v => v.lang.toLowerCase().startsWith("en-gb")) ||
+         all.find(v => v.lang.toLowerCase().startsWith("en")) || all[0];
 }
-
 function speakText(text) {
   if (!("speechSynthesis" in window)) return;
-
-  const clean = text
-    .replace(/[*_`#>]/g, "")
-    .replace(/[\u{1F300}-\u{1F9FF}]/gu, "")
-    .replace(/[\u{2600}-\u{27BF}]/gu, "")
-    .replace(/[\u{1F000}-\u{1F2FF}]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
+  const clean = text.replace(/[*_`#>]/g, "").replace(/[\u{1F300}-\u{1F9FF}]/gu, "").replace(/[\u{2600}-\u{27BF}]/gu, "").replace(/[\u{1F000}-\u{1F2FF}]/gu, "").replace(/\s+/g, " ").trim();
   if (!clean) return;
-
   const lang = detectLanguage(clean);
   const voice = findVoiceForLanguage(lang);
-
   const utt = new SpeechSynthesisUtterance(clean);
   if (voice) { utt.voice = voice; utt.lang = voice.lang; }
   else if (lang === "urdu" || lang === "pashto") utt.lang = "ur-PK";
   else if (lang === "roman-urdu") utt.lang = "hi-IN";
   else utt.lang = "en-IN";
-
   utt.rate = parseFloat(state.settings.rate) || 1.0;
   utt.pitch = parseFloat(state.settings.pitch) || 1.0;
   utt.volume = 1.0;
-
   speechSynthesis.cancel();
-  setTimeout(() => speechSynthesis.speak(utt), 50);
+  setTimeout(() => speechSynthesis.speak(utt), 60);
 }
 
 /* ============================================================
@@ -1379,10 +1769,10 @@ function speakText(text) {
    ============================================================ */
 function applySettingsToUI() {
   els.memoryToggle.checked = state.settings.memoryEnabled;
-  els.autoMemoryToggle.checked = state.settings.autoMemory;
   els.speakToggle.checked = state.settings.speakReplies;
   els.historyToggle.checked = state.settings.saveHistory;
   els.modelSelect.value = state.settings.model;
+  els.visionModelSelect.value = state.settings.visionModel;
   els.reasoningSelect.value = state.settings.reasoning;
   els.langSelect.value = state.settings.lang;
   els.rateSelect.value = String(state.settings.rate);
@@ -1392,7 +1782,7 @@ function applySettingsToUI() {
 }
 function updateKeyStatus() {
   if (state.settings.apiKey && state.settings.apiKey.startsWith("gsk_")) {
-    els.keyStatus.textContent = "✅ Key saved — real AI is active";
+    els.keyStatus.textContent = "✅ Key saved — real AI active";
     els.keyStatus.className = "key-status ok";
   } else {
     els.keyStatus.textContent = "❌ No key — demo mode";
@@ -1403,10 +1793,10 @@ function openSettings() { els.settingsPanel.classList.add("open"); els.settingsO
 function closeSettings() { els.settingsPanel.classList.remove("open"); els.settingsOverlay.classList.remove("show"); }
 function openSidebarMobile() { els.sidebar.classList.add("open"); els.overlay.classList.add("show"); }
 function closeSidebarMobile() { els.sidebar.classList.remove("open"); els.overlay.classList.remove("show"); }
-function autoResizeTextarea() { els.userInput.style.height = "auto"; els.userInput.style.height = Math.min(els.userInput.scrollHeight, 160) + "px"; }
+function autoResizeTextarea() { els.userInput.style.height = "auto"; els.userInput.style.height = Math.min(els.userInput.scrollHeight, 180) + "px"; }
 function updateSendButton() { const h = els.userInput.value.trim().length > 0; const a = state.pendingAttachments.length > 0; els.sendBtn.disabled = !(h || a) && !state.isStreaming; }
 function renderWelcomeChips() {
-  document.querySelectorAll(".chip").forEach((chip) => {
+  document.querySelectorAll(".chip").forEach(chip => {
     chip.onclick = () => { els.userInput.value = chip.dataset.prompt; autoResizeTextarea(); updateSendButton(); els.userInput.focus(); };
   });
 }
@@ -1434,17 +1824,17 @@ function attachEventListeners() {
   };
   els.saveKeyBtn.onclick = () => {
     const key = els.apiKeyInput.value.trim();
-    if (!key) { alert("Key is empty. Get one from console.groq.com/keys"); return; }
+    if (!key) { alert("Key is empty. Get one: console.groq.com/keys"); return; }
     state.settings.apiKey = key; saveSettings(); updateKeyStatus();
     alert("✅ Key saved!");
   };
   els.modelSelect.onchange = (e) => { state.settings.model = e.target.value; saveSettings(); };
+  els.visionModelSelect.onchange = (e) => { state.settings.visionModel = e.target.value; saveSettings(); };
   els.reasoningSelect.onchange = (e) => { state.settings.reasoning = e.target.value; saveSettings(); };
   els.langSelect.onchange = (e) => { state.settings.lang = e.target.value; saveSettings(); };
   els.rateSelect.onchange = (e) => { state.settings.rate = parseFloat(e.target.value); saveSettings(); };
   els.pitchSelect.onchange = (e) => { state.settings.pitch = parseFloat(e.target.value); saveSettings(); };
   els.memoryToggle.onchange = (e) => { state.settings.memoryEnabled = e.target.checked; saveSettings(); };
-  els.autoMemoryToggle.onchange = (e) => { state.settings.autoMemory = e.target.checked; saveSettings(); };
   els.speakToggle.onchange = (e) => { state.settings.speakReplies = e.target.checked; saveSettings(); };
   els.historyToggle.onchange = (e) => { state.settings.saveHistory = e.target.checked; saveSettings(); };
   els.voiceSelect.onchange = (e) => { state.settings.voiceURI = e.target.value; saveSettings(); };
