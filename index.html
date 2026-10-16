@@ -87,7 +87,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(10,10,11,0.7);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10}
 .topbar-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;background:linear-gradient(135deg,#fff 0%,var(--accent-2) 50%,var(--accent-3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em}
-.topbar-left{display:flex;align-items:center;gap:8px}
+.topbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 
 .provider-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:linear-gradient(135deg,rgba(16,163,127,0.15),rgba(14,165,233,0.08));border:1px solid rgba(16,163,127,0.3);border-radius:999px;font-size:11px;font-weight:600;color:var(--accent-2);letter-spacing:0.2px}
 .provider-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:#10a37f;box-shadow:0 0 8px #10a37f;animation:pulseBadge 2s infinite}
@@ -160,7 +160,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .send-btn:not(:disabled):active{transform:scale(0.94)}
 .send-btn.stop{background:linear-gradient(135deg,var(--danger),#ef4444);animation:pulseRing 1.2s infinite}
 
-.settings-panel{position:fixed;top:0;right:0;width:460px;max-width:100vw;height:100dvh;background:linear-gradient(180deg,var(--bg-1) 0%,var(--bg) 100%);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-left:1px solid var(--border);z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:var(--shadow-lg)}
+.settings-panel{position:fixed;top:0;right:0;width:480px;max-width:100vw;height:100dvh;background:linear-gradient(180deg,var(--bg-1) 0%,var(--bg) 100%);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-left:1px solid var(--border);z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:var(--shadow-lg)}
 .settings-panel.open{transform:translateX(0)}
 .settings-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border);flex-shrink:0}
 .settings-header h2{font-family:'Poppins',sans-serif;font-size:18px;font-weight:600;background:linear-gradient(135deg,#fff 0%,var(--accent-2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em}
@@ -174,6 +174,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .settings-desc{font-size:12.5px;color:var(--text-2);line-height:1.6;margin-bottom:12px}
 .settings-desc a{color:var(--accent-2);text-decoration:none;font-weight:500}
 .settings-desc a:hover{text-decoration:underline}
+.settings-desc code{background:var(--bg-3);padding:2px 6px;border-radius:4px;font-family:'SF Mono',monospace;font-size:11px;color:var(--accent-2)}
 
 .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:13.5px;gap:12px;border-bottom:1px solid var(--border);font-weight:500}
 .toggle-row:last-of-type{border-bottom:none}
@@ -202,6 +203,22 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .key-status{font-size:12px;margin-top:10px;padding:10px 14px;border-radius:var(--radius-sm);text-align:center;font-weight:500;transition:all .3s}
 .key-status.ok{background:linear-gradient(135deg,rgba(16,163,127,0.15),rgba(14,165,233,0.08));color:var(--accent-2);border:1px solid rgba(16,163,127,0.3)}
 .key-status.missing{background:rgba(255,69,58,0.1);color:var(--danger);border:1px solid rgba(255,69,58,0.25)}
+.key-status.detected{background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(139,92,246,0.1));color:var(--accent-3);border:1px solid rgba(14,165,233,0.35)}
+
+.detected-provider{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(135deg,rgba(14,165,233,0.1),rgba(139,92,246,0.05));border:1px solid rgba(14,165,233,0.3);border-radius:var(--radius-sm);margin-top:10px;animation:fadeInUp .3s ease}
+.detected-provider .prov-icon{font-size:22px}
+.detected-provider .prov-info{flex:1}
+.detected-provider .prov-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.detected-provider .prov-url{font-size:11px;color:var(--text-3);margin-top:2px;font-family:'SF Mono',monospace;word-break:break-all}
+.detected-provider .prov-change{padding:5px 10px;background:var(--glass-2);border-radius:6px;font-size:10.5px;font-weight:600;color:var(--text-2);cursor:pointer}
+.detected-provider .prov-change:hover{background:var(--glass-3);color:var(--text)}
+
+.advanced-toggle{display:flex;align-items:center;gap:6px;padding:8px 0;font-size:12px;color:var(--text-3);cursor:pointer;user-select:none;margin-top:10px}
+.advanced-toggle:hover{color:var(--text-2)}
+.advanced-toggle .arrow{transition:transform .2s}
+.advanced-toggle.open .arrow{transform:rotate(90deg)}
+.advanced-section{display:none;padding:12px;background:var(--glass);border:1px dashed var(--border-2);border-radius:var(--radius-sm);margin-top:8px}
+.advanced-section.show{display:block}
 
 .memories-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto;margin-bottom:10px}
 .memory-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--glass-2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12.5px;line-height:1.5;transition:all .15s}
@@ -214,11 +231,9 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
 .danger-btn{width:100%;padding:11px;background:transparent;border:1px solid rgba(255,69,58,0.35);color:var(--danger);border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;transition:all .2s}
 .danger-btn:hover{background:rgba(255,69,58,0.12);border-color:var(--danger);transform:translateY(-1px)}
-.danger-btn:active{transform:translateY(0)}
 
 .save-btn{width:100%;padding:11px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);color:#fff;border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;margin-top:10px;box-shadow:0 4px 16px var(--accent-glow)}
 .save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px var(--accent-glow)}
-.save-btn:active{transform:translateY(0)}
 
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:25;opacity:0;pointer-events:none;transition:opacity .3s ease}
 .overlay.show{opacity:1;pointer-events:auto}
@@ -318,12 +333,11 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <div class="welcome" id="welcome">
         <div class="welcome-logo">🤖</div>
         <h2>Hi, I'm your Personal AI</h2>
-        <p>Chat in any language. Upload images and I'll see them. Press 🔴 for live voice.</p>
+        <p>Paste ANY AI API key (Groq, Gemini, OpenAI, Mistral, Cohere, etc.) — I'll auto-detect and use it. Live voice, vision, streaming — all included.</p>
         <div class="welcome-chips">
           <button class="chip" data-prompt="Hello! How are you today?">Say hello</button>
           <button class="chip" data-prompt="Write a short story about a brave cat.">Write a story</button>
           <button class="chip" data-prompt="Explain quantum physics in simple words.">Explain physics</button>
-          <button class="chip" data-prompt="Assalam o alaikum, kya haal hai?">Assalam o alaikum</button>
         </div>
       </div>
     </section>
@@ -356,7 +370,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 </div>
 
 <div class="demo-banner" id="demoBanner">
-  <span>⚠️ Demo mode — real AI ke liye API key add karo</span>
+  <span>⚠️ No API key — demo mode. Add any AI key to activate.</span>
   <button id="demoBannerBtn">Add Key</button>
 </div>
 
@@ -368,40 +382,87 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   <div class="settings-body">
 
     <section class="settings-section">
-      <h3>🤖 AI Provider</h3>
-      <p class="settings-desc">Paste your Groq API key. Free: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+      <h3>🔑 Universal API Key</h3>
+      <p class="settings-desc">
+        Paste <b>any AI provider's API key</b> — Groq, Gemini, OpenAI, Anthropic, OpenRouter, Mistral, Cohere, DeepSeek, Together, Fireworks, Perplexity, HuggingFace, and more. 
+        I'll <b>auto-detect</b> the provider and use it. Everything is encrypted locally.
+      </p>
+      
       <label class="settings-label">
-        Groq API Key
+        Paste Your API Key
         <div class="api-key-row">
-          <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off">
-          <button class="key-toggle" id="keyToggleBtn" type="button">👁</button>
+          <input type="password" id="universalKeyInput" placeholder="Paste any API key..." autocomplete="off">
+          <button class="key-toggle" id="universalToggleBtn" type="button">👁</button>
         </div>
       </label>
-      <div class="secure-key-display missing" id="secureKeyDisplay">
-        <span class="lock-icon">🔒</span>
-        <span class="key-masked" id="keyMaskedText">No key saved</span>
-        <span class="verify-btn" id="verifyKeyBtn">Verify</span>
+      
+      <div class="key-status missing" id="universalStatus">❌ No key — demo mode</div>
+      
+      <div class="detected-provider" id="detectedProvider" style="display:none">
+        <span class="prov-icon" id="detectedIcon">🟢</span>
+        <div class="prov-info">
+          <div class="prov-name" id="detectedName">Groq detected</div>
+          <div class="prov-url" id="detectedUrl">https://api.groq.com/...</div>
+        </div>
+        <span class="prov-change" id="detectedChange">Change</span>
       </div>
-      <div class="key-status missing" id="keyStatus">❌ No key — demo mode</div>
-      <button class="save-btn" id="saveKeyBtn">🔐 Save Key Securely</button>
+      
+      <button class="save-btn" id="saveUniversalBtn">🔐 Save Key Securely</button>
+      
+      <div class="advanced-toggle" id="advancedToggle">
+        <span class="arrow">▶</span>
+        <span>Advanced (manual setup for uncommon providers)</span>
+      </div>
+      
+      <div class="advanced-section" id="advancedSection">
+        <label class="settings-label">
+          Provider Name (for display)
+          <input type="text" id="advName" placeholder="e.g. My Custom AI" autocomplete="off">
+        </label>
+        <label class="settings-label">
+          Base URL (chat completions endpoint)
+          <input type="text" id="advUrl" placeholder="https://api.example.com/v1/chat/completions" autocomplete="off">
+        </label>
+        <label class="settings-label">
+          Model Name
+          <input type="text" id="advModel" placeholder="e.g. llama-3.3-70b" autocomplete="off">
+        </label>
+        <label class="settings-label">
+          API Key
+          <input type="password" id="advKey" placeholder="..." autocomplete="off">
+        </label>
+        <label class="toggle-row" style="border:none">
+          <span>Supports image/vision</span>
+          <input type="checkbox" id="advVision">
+        </label>
+        <button class="save-btn" id="saveAdvancedBtn">Save Custom Provider</button>
+      </div>
+      
+      <div style="margin-top:14px">
+        <h4>Quick links to get free keys:</h4>
+        <p class="settings-desc" style="font-size:11.5px;line-height:2">
+          🟢 <a href="https://console.groq.com/keys" target="_blank">Groq</a> (fast, free) · 
+          🔵 <a href="https://aistudio.google.com/apikey" target="_blank">Gemini</a> (free) · 
+          🟠 <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a> (free models) · 
+          ⚫ <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI</a> · 
+          🟣 <a href="https://console.anthropic.com/settings/keys" target="_blank">Anthropic</a> · 
+          🔷 <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek</a> · 
+          🟡 <a href="https://api.together.xyz/settings/api-keys" target="_blank">Together</a> · 
+          🟢 <a href="https://console.mistral.ai/api-keys/" target="_blank">Mistral</a> · 
+          🟡 <a href="https://dashboard.cohere.com/api-keys" target="_blank">Cohere</a>
+        </p>
+      </div>
+    </section>
 
-      <label class="settings-label" style="margin-top:14px">
-        Text Model
-        <select id="modelSelect">
-          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (best text)</option>
-          <option value="openai/gpt-oss-120b">GPT OSS 120B</option>
-          <option value="openai/gpt-oss-20b">GPT OSS 20B</option>
-          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fast)</option>
-        </select>
+    <section class="settings-section">
+      <h3>🎛️ Model & Response</h3>
+      <label class="settings-label">
+        Model
+        <input type="text" id="modelInput" placeholder="Model name (auto-filled)" autocomplete="off">
       </label>
       <label class="settings-label">
         Vision Model (for images)
-        <select id="visionModelSelect">
-          <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (best)</option>
-          <option value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama 4 Maverick</option>
-          <option value="llama-3.2-90b-vision-preview">Llama 3.2 90B Vision</option>
-          <option value="llama-3.2-11b-vision-preview">Llama 3.2 11B Vision (fast)</option>
-        </select>
+        <input type="text" id="visionModelInput" placeholder="Vision model name (optional)" autocomplete="off">
       </label>
       <label class="settings-label">
         Response Style
@@ -415,7 +476,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>🌍 Reply Language</h3>
-      <p class="settings-desc"><b>Auto:</b> AI matches your language.</p>
       <label class="settings-label">
         Language Mode
         <select id="langSelect">
@@ -431,7 +491,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     <section class="settings-section">
       <h3>🔊 Voice &amp; Speech</h3>
       <label class="toggle-row"><span>Speak AI replies aloud</span><input type="checkbox" id="speakToggle"></label>
-      <p class="settings-desc" style="font-size:11.5px;margin-top:6px">Live mode (🔴) requires this ON.</p>
       <label class="settings-label">
         Voice
         <select id="voiceSelect"><option value="">🌐 Auto (match language)</option></select>
@@ -458,7 +517,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>🎙️ ElevenLabs (Real Human Voice)</h3>
-      <p class="settings-desc">Optional — natural voice. Free: <a href="https://elevenlabs.io" target="_blank">elevenlabs.io</a></p>
       <label class="toggle-row"><span>Use ElevenLabs voice</span><input type="checkbox" id="useElevenToggle"></label>
       <label class="settings-label">
         ElevenLabs API Key
@@ -487,7 +545,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>ℹ️ About</h3>
-      <p class="settings-desc">My Personal AI — Groq-powered with streaming, vision, live voice. API key encrypted in your browser only.</p>
+      <p class="settings-desc">Universal AI client — works with any OpenAI-compatible API. Keys encrypted in your browser only.</p>
     </section>
 
   </div>
@@ -497,9 +555,9 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
 <script>
 /* ============================================================
-   SECURE KEY ENCRYPTION (client-side XOR, not crypto-grade)
+   SECURE KEY ENCRYPTION
    ============================================================ */
-const SECURE_KEY = "mpai-secure-v2-x9k7";
+const SECURE_KEY = "mpai-secure-v3-x9k7";
 function encryptKey(text) {
   if (!text) return "";
   try {
@@ -528,16 +586,103 @@ function maskKey(key) {
 }
 
 /* ============================================================
+   PROVIDER DETECTION MAP
+   ============================================================ */
+const PROVIDER_PATTERNS = [
+  { id: "groq", name: "Groq", icon: "🟢", prefix: "gsk_",
+    baseUrl: "https://api.groq.com/openai/v1/chat/completions",
+    model: "llama-3.3-70b-versatile",
+    visionModel: "meta-llama/llama-4-scout-17b-16e-instruct" },
+  { id: "gemini", name: "Google Gemini", icon: "🔵", prefix: "AIza",
+    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    model: "gemini-2.0-flash-exp",
+    visionModel: "gemini-2.0-flash-exp" },
+  { id: "anthropic", name: "Anthropic Claude", icon: "🟣", prefix: "sk-ant-",
+    baseUrl: "https://api.anthropic.com/v1/messages",
+    model: "claude-3-5-sonnet-20241022",
+    visionModel: "claude-3-5-sonnet-20241022",
+    isAnthropic: true },
+  { id: "openrouter", name: "OpenRouter", icon: "🟠", prefix: "sk-or-",
+    baseUrl: "https://openrouter.ai/api/v1/chat/completions",
+    model: "meta-llama/llama-3.3-70b-instruct:free",
+    visionModel: "google/gemini-2.0-flash-exp:free" },
+  { id: "openai", name: "OpenAI", icon: "⚫", prefix: "sk-proj-",
+    baseUrl: "https://api.openai.com/v1/chat/completions",
+    model: "gpt-4o-mini",
+    visionModel: "gpt-4o-mini" },
+  { id: "openai", name: "OpenAI", icon: "⚫", prefix: "sk-",
+    baseUrl: "https://api.openai.com/v1/chat/completions",
+    model: "gpt-4o-mini",
+    visionModel: "gpt-4o-mini" },
+  { id: "mistral", name: "Mistral AI", icon: "🟢", prefix: "",
+    keyRegex: /^[A-Za-z0-9]{32}$/,
+    baseUrl: "https://api.mistral.ai/v1/chat/completions",
+    model: "mistral-large-latest",
+    visionModel: "pixtral-large-latest" },
+  { id: "cohere", name: "Cohere", icon: "🟡", prefix: "",
+    keyRegex: /^[A-Za-z0-9]{40}$/,
+    baseUrl: "https://api.cohere.ai/compatibility/v1/chat/completions",
+    model: "command-r-plus-08-2024",
+    visionModel: "" },
+  { id: "deepseek", name: "DeepSeek", icon: "🔷", prefix: "sk-",
+    baseUrl: "https://api.deepseek.com/v1/chat/completions",
+    model: "deepseek-chat",
+    visionModel: "" },
+  { id: "perplexity", name: "Perplexity", icon: "🔵", prefix: "pplx-",
+    baseUrl: "https://api.perplexity.ai/chat/completions",
+    model: "llama-3.1-sonar-large-128k-online",
+    visionModel: "" },
+  { id: "huggingface", name: "Hugging Face", icon: "🤗", prefix: "hf_",
+    baseUrl: "https://api-inference.huggingface.co/v1/chat/completions",
+    model: "meta-llama/Llama-3.3-70B-Instruct",
+    visionModel: "" },
+  { id: "together", name: "Together AI", icon: "🟡", prefix: "",
+    keyRegex: /^[a-f0-9]{64}$/,
+    baseUrl: "https://api.together.xyz/v1/chat/completions",
+    model: "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    visionModel: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo" },
+  { id: "fireworks", name: "Fireworks AI", icon: "🎆", prefix: "fw_",
+    baseUrl: "https://api.fireworks.ai/inference/v1/chat/completions",
+    model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
+    visionModel: "" },
+  { id: "deepinfra", name: "DeepInfra", icon: "🔷", prefix: "",
+    keyRegex: /^[A-Za-z0-9_-]{40,}$/,
+    baseUrl: "https://api.deepinfra.com/v1/openai/chat/completions",
+    model: "meta-llama/Llama-3.3-70B-Instruct",
+    visionModel: "" },
+];
+
+function detectProvider(key) {
+  if (!key) return null;
+  const k = key.trim();
+  // Check prefix-based
+  for (const p of PROVIDER_PATTERNS) {
+    if (p.prefix && k.startsWith(p.prefix)) return p;
+  }
+  // Check regex-based
+  for (const p of PROVIDER_PATTERNS) {
+    if (p.keyRegex && p.keyRegex.test(k)) return p;
+  }
+  return null;
+}
+
+/* ============================================================
    STATE
    ============================================================ */
 const state = {
   conversations: [], currentId: null, memories: [],
   settings: {
     memoryEnabled: true, speakReplies: false, saveHistory: true,
-    voiceURI: "", apiKey: "",
+    voiceURI: "",
+    /* Universal key */
+    universalKey: "",
+    provider: null,       // { id, name, icon, baseUrl, model, visionModel }
+    customProvider: null, // for advanced
+    /* Models */
     model: "llama-3.3-70b-versatile",
     visionModel: "meta-llama/llama-4-scout-17b-16e-instruct",
-    lang: "auto", rate: 1.0, pitch: 1.0, reasoning: "medium",
+    reasoning: "medium",
+    lang: "auto", rate: 1.0, pitch: 1.0,
     elevenKey: "", elevenVoiceId: "21m00Tcm4TlvDq8ikWAM", useEleven: false,
   },
   pendingAttachments: [], isRecording: false,
@@ -547,10 +692,11 @@ const state = {
 };
 
 const LS = {
-  CONVOS: "mpai_c_v26",
-  MEMS: "mpai_m_v26",
-  SETTINGS: "mpai_s_v26",
-  KEY_ENC: "mpai_keyenc_v26",
+  CONVOS: "mpai_c_v27",
+  MEMS: "mpai_m_v27",
+  SETTINGS: "mpai_s_v27",
+  KEY_ENC: "mpai_keyenc_v27",
+  PROVIDER: "mpai_provider_v27",
 };
 const $ = (id) => document.getElementById(id);
 
@@ -565,20 +711,23 @@ const els = {
   openSettingsBtn: $("openSettingsBtn"), topbarSettings: $("topbarSettings"),
   settingsPanel: $("settingsPanel"), settingsOverlay: $("settingsOverlay"),
   closeSettingsBtn: $("closeSettingsBtn"),
-  apiKeyInput: $("apiKeyInput"), keyToggleBtn: $("keyToggleBtn"),
-  keyStatus: $("keyStatus"), saveKeyBtn: $("saveKeyBtn"),
-  secureKeyDisplay: $("secureKeyDisplay"), keyMaskedText: $("keyMaskedText"),
-  verifyKeyBtn: $("verifyKeyBtn"), providerBadge: $("providerBadge"),
-  demoBanner: $("demoBanner"), demoBannerBtn: $("demoBannerBtn"),
-  modelSelect: $("modelSelect"), visionModelSelect: $("visionModelSelect"),
+  universalKeyInput: $("universalKeyInput"), universalToggleBtn: $("universalToggleBtn"),
+  universalStatus: $("universalStatus"), saveUniversalBtn: $("saveUniversalBtn"),
+  detectedProvider: $("detectedProvider"), detectedIcon: $("detectedIcon"),
+  detectedName: $("detectedName"), detectedUrl: $("detectedUrl"),
+  detectedChange: $("detectedChange"),
+  advancedToggle: $("advancedToggle"), advancedSection: $("advancedSection"),
+  advName: $("advName"), advUrl: $("advUrl"), advModel: $("advModel"),
+  advKey: $("advKey"), advVision: $("advVision"), saveAdvancedBtn: $("saveAdvancedBtn"),
+  modelInput: $("modelInput"), visionModelInput: $("visionModelInput"),
   reasoningSelect: $("reasoningSelect"), langSelect: $("langSelect"),
-  memoryToggle: $("memoryToggle"), speakToggle: $("speakToggle"),
-  historyToggle: $("historyToggle"), voiceSelect: $("voiceSelect"),
-  rateSelect: $("rateSelect"), pitchSelect: $("pitchSelect"),
+  speakToggle: $("speakToggle"), historyToggle: $("historyToggle"),
+  memoryToggle: $("memoryToggle"),
+  voiceSelect: $("voiceSelect"), rateSelect: $("rateSelect"), pitchSelect: $("pitchSelect"),
   memoriesList: $("memoriesList"),
   clearMemoriesBtn: $("clearMemoriesBtn"), clearHistoryBtn: $("clearHistoryBtn"),
-  liveBanner: $("liveBanner"), liveBannerText: $("liveBannerText"),
-  closeLiveBtn: $("closeLiveBtn"),
+  providerBadge: $("providerBadge"), demoBanner: $("demoBanner"), demoBannerBtn: $("demoBannerBtn"),
+  liveBanner: $("liveBanner"), liveBannerText: $("liveBannerText"), closeLiveBtn: $("closeLiveBtn"),
 };
 
 /* ============================================================
@@ -616,9 +765,8 @@ function init() {
   attachEventListeners();
   autoResizeTextarea();
   updateSendButton();
-  updateKeyStatus();
-  setTimeout(updateKeyStatus, 500);
-  console.log("✅ Premium AI ready.");
+  updateUniversalStatus();
+  console.log("✅ Universal AI ready.");
 }
 
 function loadFromStorage() {
@@ -627,8 +775,10 @@ function loadFromStorage() {
     state.memories = JSON.parse(localStorage.getItem(LS.MEMS) || "[]");
     const s = JSON.parse(localStorage.getItem(LS.SETTINGS) || "null");
     if (s) Object.assign(state.settings, s);
+    const p = JSON.parse(localStorage.getItem(LS.PROVIDER) || "null");
+    if (p) state.settings.provider = p;
     const encryptedKey = localStorage.getItem(LS.KEY_ENC);
-    if (encryptedKey) state.settings.apiKey = decryptKey(encryptedKey);
+    if (encryptedKey) state.settings.universalKey = decryptKey(encryptedKey);
   } catch (e) {}
 }
 function saveConversations() {
@@ -638,13 +788,16 @@ function saveConversations() {
 function saveMemories() { try { localStorage.setItem(LS.MEMS, JSON.stringify(state.memories)); } catch(e){} }
 function saveSettings() {
   try {
-    if (state.settings.apiKey) {
-      localStorage.setItem(LS.KEY_ENC, encryptKey(state.settings.apiKey));
+    if (state.settings.universalKey) {
+      localStorage.setItem(LS.KEY_ENC, encryptKey(state.settings.universalKey));
     } else {
       localStorage.removeItem(LS.KEY_ENC);
     }
+    if (state.settings.provider) {
+      localStorage.setItem(LS.PROVIDER, JSON.stringify(state.settings.provider));
+    }
     const safe = { ...state.settings };
-    delete safe.apiKey;
+    delete safe.universalKey;
     localStorage.setItem(LS.SETTINGS, JSON.stringify(safe));
   } catch (e) {}
 }
@@ -756,7 +909,7 @@ function getSystemPrompt(userText) {
   if (mode === "auto") {
     const detected = detectLanguage(userText);
     if (detected === "english") prompt += "The user just wrote in ENGLISH. Reply ONLY in English.";
-    else if (detected === "urdu") prompt += "The user just wrote in URDU. Reply ONLY in Urdu script. Do NOT use Roman Urdu or English. Use respectful tone (آپ).";
+    else if (detected === "urdu") prompt += "The user just wrote in URDU. Reply ONLY in Urdu script. Use respectful tone (آپ).";
     else if (detected === "roman-urdu") prompt += "The user just wrote in ROMAN URDU. Reply ONLY in Roman Urdu (English letters). Example: 'Walaikum salam! Main theek hoon, aap kaise hain?'";
     else if (detected === "pashto") prompt += "The user just wrote in PASHTO. Reply ONLY in Pashto using Arabic script.";
   } else if (mode === "english") prompt += "ALWAYS reply in English.";
@@ -772,20 +925,54 @@ function getSystemPrompt(userText) {
 }
 
 /* ============================================================
-   GROQ API
+   UNIVERSAL API STREAMER
+   Works with any OpenAI-compatible API
    ============================================================ */
-async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
-  const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+async function* streamUniversalAPI(provider, model, messages, reasoning, signal) {
+  if (!provider) throw new Error("No provider configured");
+  
+  // Anthropic uses different format
+  if (provider.isAnthropic) {
+    yield* streamAnthropic(provider, model, messages, signal);
+    return;
+  }
+  
+  const key = state.settings.universalKey;
+  const baseUrl = provider.baseUrl;
+  const headers = { "Content-Type": "application/json" };
+  
+  if (key && !provider.noKey) {
+    headers["Authorization"] = "Bearer " + key;
+  }
+  
+  // OpenRouter needs extra headers
+  if (provider.id === "openrouter") {
+    headers["HTTP-Referer"] = window.location.origin;
+    headers["X-Title"] = "My Personal AI";
+  }
+  
   const reqBody = JSON.stringify({
-    model, messages, temperature: 0.85,
-    max_completion_tokens: 2048, top_p: 1,
-    reasoning_effort: reasoning || "medium", stream: true,
+    model: model,
+    messages: messages,
+    temperature: 0.85,
+    max_tokens: 2048,
+    top_p: 1,
+    stream: true,
   });
+  
   const attempts = [
-    () => fetch(apiUrl, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: reqBody, signal }),
-    () => fetch("https://corsproxy.io/?" + encodeURIComponent(apiUrl), { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: reqBody, signal }),
-    () => fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(apiUrl), { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: reqBody, signal }),
+    () => fetch(baseUrl, { method: "POST", headers, body: reqBody, signal }),
   ];
+  
+  // CORS proxy fallbacks (for providers that block browser requests)
+  const needProxy = ["groq","openai","mistral","cohere","deepseek","perplexity","together","fireworks","deepinfra"].includes(provider.id);
+  if (needProxy) {
+    attempts.push(
+      () => fetch("https://corsproxy.io/?" + encodeURIComponent(baseUrl), { method: "POST", headers, body: reqBody, signal }),
+      () => fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(baseUrl), { method: "POST", headers, body: reqBody, signal })
+    );
+  }
+  
   let response = null, lastErr = null;
   for (let i = 0; i < attempts.length; i++) {
     try {
@@ -797,15 +984,18 @@ async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
     }
   }
   if (!response) throw new Error("Network error. " + (lastErr ? lastErr.message : ""));
+  
   if (!response.ok) {
     const errText = await response.text();
     let errMsg = "API " + response.status;
-    try { const j = JSON.parse(errText); errMsg = (j.error && j.error.message) || errMsg; } catch (e) { errMsg += ": " + errText.slice(0,150); }
+    try { const j = JSON.parse(errText); errMsg = (j.error && j.error.message) || errMsg; } catch (e) { errMsg += ": " + errText.slice(0, 200); }
     throw new Error(errMsg);
   }
+  
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -826,127 +1016,69 @@ async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
   }
 }
 
-/* ============================================================
-   LIVE VOICE
-   ============================================================ */
-function startLiveMode() {
-  if (state.liveMode) return;
-  if (!state.settings.speakReplies) {
-    state.settings.speakReplies = true;
-    saveSettings();
-    if (els.speakToggle) els.speakToggle.checked = true;
-  }
-  state.liveMode = true;
-  updateLiveButton();
-  showLiveBanner("🎤 Live mode ON — speak now");
-  setTimeout(() => startListening(), 400);
-}
-function stopLiveMode() {
-  state.liveMode = false;
-  state.isSpeaking = false;
-  state.isListening = false;
-  if (state.recognition) {
-    try { state.recognition.abort(); } catch (e) {}
-    try { state.recognition.stop(); } catch (e) {}
-    state.recognition = null;
-  }
-  if ("speechSynthesis" in window) {
-    try { speechSynthesis.cancel(); } catch (e) {}
-  }
-  if (state.currentAudio) { try { state.currentAudio.pause(); } catch (e) {} state.currentAudio = null; }
-  updateLiveButton();
-  hideLiveBanner();
-  updateMicVisual(false);
-}
-function updateLiveButton() {
-  if (!els.liveBtn) return;
-  if (state.liveMode) {
-    els.liveBtn.classList.add("live-active");
-    els.liveBtn.title = "Live voice ON — click to stop";
-    els.liveBtn.textContent = "⏹";
-  } else {
-    els.liveBtn.classList.remove("live-active");
-    els.liveBtn.title = "Start live voice mode";
-    els.liveBtn.textContent = "🔴";
-  }
-}
-function showLiveBanner(text) {
-  if (!els.liveBanner) return;
-  els.liveBannerText.textContent = text;
-  els.liveBanner.classList.add("show");
-}
-function hideLiveBanner() {
-  if (!els.liveBanner) return;
-  els.liveBanner.classList.remove("show");
-}
-function startListening() {
-  if (!state.liveMode || state.isListening || state.isSpeaking || state.isStreaming) return;
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { alert("Voice input not supported. Please use Chrome or Edge."); stopLiveMode(); return; }
-  const rec = new SR();
-  rec.continuous = false;
-  rec.interimResults = false;
-  rec.lang = getRecognitionLang();
-  rec.maxAlternatives = 1;
-  rec.onstart = () => {
-    state.isListening = true;
-    updateMicVisual(true);
-    showLiveBanner("🎧 Listening...");
+async function* streamAnthropic(provider, model, messages, signal) {
+  const key = state.settings.universalKey;
+  const systemMsg = messages.find(m => m.role === "system");
+  const otherMsgs = messages.filter(m => m.role !== "system");
+  
+  const body = {
+    model: model,
+    max_tokens: 2048,
+    system: systemMsg ? systemMsg.content : undefined,
+    messages: otherMsgs.map(m => {
+      if (Array.isArray(m.content)) {
+        return {
+          role: m.role,
+          content: m.content.map(c => {
+            if (c.type === "text") return { type: "text", text: c.text };
+            if (c.type === "image_url") {
+              const url = c.image_url.url;
+              const match = url.match(/^data:(image\/[^;]+);base64,(.+)$/);
+              if (match) return { type: "image", source: { type: "base64", media_type: match[1], data: match[2] } };
+            }
+            return null;
+          }).filter(Boolean),
+        };
+      }
+      return { role: m.role, content: m.content };
+    }),
+    stream: true,
   };
-  rec.onresult = (e) => {
-    const transcript = e.results[0][0].transcript.trim();
-    if (!transcript) return;
-    state.isListening = false;
-    updateMicVisual(false);
-    showLiveBanner("💭 Thinking...");
-    if (state.isSpeaking) {
-      if ("speechSynthesis" in window) speechSynthesis.cancel();
-      if (state.currentAudio) { state.currentAudio.pause(); state.currentAudio = null; }
-      state.isSpeaking = false;
+  
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body),
+    signal,
+  });
+  
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error("Anthropic " + res.status + ": " + errText.slice(0, 200));
+  }
+  
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop();
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      try {
+        const json = JSON.parse(trimmed.slice(5).trim());
+        if (json.type === "content_block_delta" && json.delta && json.delta.text) yield json.delta.text;
+      } catch (e) {}
     }
-    els.userInput.value = transcript;
-    autoResizeTextarea();
-    updateSendButton();
-    setTimeout(() => { if (state.liveMode) handleSend(); }, 200);
-  };
-  rec.onend = () => {
-    state.isListening = false;
-    updateMicVisual(false);
-    if (state.liveMode && !state.isSpeaking && !state.isStreaming) {
-      setTimeout(() => { if (state.liveMode && !state.isSpeaking && !state.isStreaming) startListening(); }, 300);
-    }
-  };
-  rec.onerror = (e) => {
-    state.isListening = false;
-    updateMicVisual(false);
-    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
-      alert("Microphone blocked. Please allow microphone access.");
-      stopLiveMode();
-      return;
-    }
-    if (state.liveMode && !state.isSpeaking && !state.isStreaming) {
-      setTimeout(() => { if (state.liveMode && !state.isSpeaking && !state.isStreaming) startListening(); }, 800);
-    }
-  };
-  state.recognition = rec;
-  try { rec.start(); } catch (e) { setTimeout(() => { if (state.liveMode) startListening(); }, 500); }
-}
-function getRecognitionLang() {
-  const mode = state.settings.lang;
-  if (mode === "urdu") return "ur-PK";
-  if (mode === "pashto") return "ps-AF";
-  if (mode === "roman-urdu") return "en-IN";
-  if (mode === "english") return "en-US";
-  return "en-IN";
-}
-function updateMicVisual(active) {
-  if (!els.micBtn) return;
-  if (active) els.micBtn.classList.add("recording");
-  else els.micBtn.classList.remove("recording");
-}
-function resumeListening() {
-  if (state.liveMode && !state.isSpeaking && !state.isStreaming) {
-    setTimeout(() => { if (state.liveMode && !state.isSpeaking && !state.isStreaming) startListening(); }, 400);
   }
 }
 
@@ -977,7 +1109,11 @@ async function handleSend() {
   const images = attachments.filter(a => a.type === "image" && a.dataUrl);
   const hasImages = images.length > 0;
 
-  if (!state.settings.apiKey) {
+  // Check if we have a provider + key
+  const hasProvider = state.settings.provider;
+  const hasKey = state.settings.universalKey;
+  
+  if (!hasProvider || !hasKey) {
     renderTyping();
     await new Promise(r => setTimeout(r, 500));
     removeTyping();
@@ -1022,12 +1158,14 @@ async function handleSend() {
       historyMessages.push({ role: "user", content });
     }
 
-    const modelToUse = hasImages ? state.settings.visionModel : state.settings.model;
+    let modelToUse = state.settings.model;
+    if (hasImages && state.settings.visionModel) modelToUse = state.settings.visionModel;
+    
     let fullReply = "";
     let aiTextEl = null;
     let firstChunk = true;
 
-    for await (const chunk of streamGroqAPI(state.settings.apiKey, modelToUse, historyMessages, state.settings.reasoning, state.abortController.signal)) {
+    for await (const chunk of streamUniversalAPI(state.settings.provider, modelToUse, historyMessages, state.settings.reasoning, state.abortController.signal)) {
       if (firstChunk) {
         removeTyping();
         const rendered = renderMessage("ai", "", [], true);
@@ -1050,9 +1188,9 @@ async function handleSend() {
     if (err.name === "AbortError") { console.log("Stopped"); }
     else {
       let errMsg = "❌ Error: " + err.message;
-      if (err.message.includes("Invalid API Key") || err.message.includes("401")) errMsg = "🔑 Invalid API key.";
-      else if (err.message.includes("model") && err.message.includes("not exist")) errMsg = "⚠️ Model unavailable. Change in Settings.";
-      else if (err.message.includes("rate_limit") || err.message.includes("429")) errMsg = "⏳ Rate limit. Wait a moment.";
+      if (err.message.includes("Invalid API Key") || err.message.includes("401")) errMsg = "🔑 Invalid API key for " + (state.settings.provider?.name || "provider") + ".";
+      else if (err.message.includes("model") && err.message.includes("not exist")) errMsg = "⚠️ Model '" + state.settings.model + "' unavailable. Change in Settings.";
+      else if (err.message.includes("rate_limit") || err.message.includes("429")) errMsg = "⏳ Rate limit reached. Wait a moment.";
       renderMessage("ai", errMsg);
       conv.messages.push({ role: "ai", text: errMsg, attachments: [], ts: Date.now() });
       saveConversations();
@@ -1075,12 +1213,12 @@ function smartDemoReply(userText, attachments) {
     const docs = attachments.filter(a => a.type === "file").length;
     if (imgs) reply += imgs + " image(s) received. 📷\n";
     if (docs) reply += docs + " document(s) received. 📄\n";
-    reply += "\n(Add your Groq API key in Settings to see AI analysis.)\n\n";
+    reply += "\n(Add any AI API key in Settings to see real analysis.)\n\n";
   }
-  if (detected === "urdu" && userText) reply += "آپ نے کہا: \"" + userText + "\"\n\n💡 اصلی AI کے لیے سیٹنگز میں Groq API key ڈالیں۔";
-  else if (detected === "roman-urdu" && userText) reply += "Aapne kaha: \"" + userText + "\"\n\n💡 Asli AI ke liye Settings mein Groq API key daalein.";
-  else if (userText) reply += "You said: \"" + userText + "\"\n\n💡 For real AI, add your Groq API key in Settings.";
-  else reply += "Add your Groq API key in Settings to chat with real AI.";
+  if (detected === "urdu" && userText) reply += "آپ نے کہا: \"" + userText + "\"\n\n💡 اصلی AI کے لیے سیٹنگز میں کوئی بھی API key ڈالیں۔";
+  else if (detected === "roman-urdu" && userText) reply += "Aapne kaha: \"" + userText + "\"\n\n💡 Asli AI ke liye Settings mein koi bhi API key daalein.";
+  else if (userText) reply += "You said: \"" + userText + "\"\n\n💡 Paste ANY AI API key in Settings to activate real AI (Groq, Gemini, OpenAI, Mistral, Cohere, and more).";
+  else reply += "Paste any AI API key in Settings to start.";
   return reply;
 }
 
@@ -1149,7 +1287,119 @@ function renderAttachmentPreview() {
 function clearAttachments() { state.pendingAttachments = []; renderAttachmentPreview(); }
 
 /* ============================================================
-   MIC
+   LIVE VOICE
+   ============================================================ */
+function startLiveMode() {
+  if (state.liveMode) return;
+  if (!state.settings.speakReplies) {
+    state.settings.speakReplies = true;
+    saveSettings();
+    if (els.speakToggle) els.speakToggle.checked = true;
+  }
+  state.liveMode = true;
+  updateLiveButton();
+  showLiveBanner("🎤 Live mode ON — speak now");
+  setTimeout(() => startListening(), 400);
+}
+function stopLiveMode() {
+  state.liveMode = false;
+  state.isSpeaking = false;
+  state.isListening = false;
+  if (state.recognition) {
+    try { state.recognition.abort(); } catch (e) {}
+    try { state.recognition.stop(); } catch (e) {}
+    state.recognition = null;
+  }
+  if ("speechSynthesis" in window) { try { speechSynthesis.cancel(); } catch (e) {} }
+  if (state.currentAudio) { try { state.currentAudio.pause(); } catch (e) {} state.currentAudio = null; }
+  updateLiveButton();
+  hideLiveBanner();
+  updateMicVisual(false);
+}
+function updateLiveButton() {
+  if (!els.liveBtn) return;
+  if (state.liveMode) {
+    els.liveBtn.classList.add("live-active");
+    els.liveBtn.textContent = "⏹";
+  } else {
+    els.liveBtn.classList.remove("live-active");
+    els.liveBtn.textContent = "🔴";
+  }
+}
+function showLiveBanner(text) {
+  if (!els.liveBanner) return;
+  els.liveBannerText.textContent = text;
+  els.liveBanner.classList.add("show");
+}
+function hideLiveBanner() { if (els.liveBanner) els.liveBanner.classList.remove("show"); }
+
+function startListening() {
+  if (!state.liveMode || state.isListening || state.isSpeaking || state.isStreaming) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert("Voice input not supported. Use Chrome or Edge."); stopLiveMode(); return; }
+  const rec = new SR();
+  rec.continuous = false; rec.interimResults = false;
+  rec.lang = getRecognitionLang();
+  rec.maxAlternatives = 1;
+  rec.onstart = () => { state.isListening = true; updateMicVisual(true); showLiveBanner("🎧 Listening..."); };
+  rec.onresult = (e) => {
+    const transcript = e.results[0][0].transcript.trim();
+    if (!transcript) return;
+    state.isListening = false;
+    updateMicVisual(false);
+    showLiveBanner("💭 Thinking...");
+    if (state.isSpeaking) {
+      if ("speechSynthesis" in window) speechSynthesis.cancel();
+      if (state.currentAudio) { state.currentAudio.pause(); state.currentAudio = null; }
+      state.isSpeaking = false;
+    }
+    els.userInput.value = transcript;
+    autoResizeTextarea(); updateSendButton();
+    setTimeout(() => { if (state.liveMode) handleSend(); }, 200);
+  };
+  rec.onend = () => {
+    state.isListening = false;
+    updateMicVisual(false);
+    if (state.liveMode && !state.isSpeaking && !state.isStreaming) {
+      setTimeout(() => { if (state.liveMode && !state.isSpeaking && !state.isStreaming) startListening(); }, 300);
+    }
+  };
+  rec.onerror = (e) => {
+    state.isListening = false;
+    updateMicVisual(false);
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      alert("Microphone blocked. Please allow access.");
+      stopLiveMode();
+      return;
+    }
+    if (state.liveMode && !state.isSpeaking && !state.isStreaming) {
+      setTimeout(() => { if (state.liveMode && !state.isSpeaking && !state.isStreaming) startListening(); }, 800);
+    }
+  };
+  state.recognition = rec;
+  try { rec.start(); } catch (e) { setTimeout(() => { if (state.liveMode) startListening(); }, 500); }
+}
+function getRecognitionLang() {
+  const mode = state.settings.lang;
+  if (mode === "urdu") return "ur-PK";
+  if (mode === "pashto") return "ps-AF";
+  if (mode === "roman-urdu") return "en-IN";
+  if (mode === "english") return "en-US";
+  return "en-IN";
+}
+function updateMicVisual(active) {
+  if (!els.micBtn) return;
+  if (active) els.micBtn.classList.add("recording");
+  else els.micBtn.classList.remove("recording");
+}
+function resumeListening() {
+  if (state.liveMode && !state.isSpeaking && !state.isStreaming) {
+    setTimeout(() => { if (state.liveMode && !state.isSpeaking && !state.isStreaming) startListening(); }, 400);
+  }
+}
+
+/* ============================================================
+   MIC (one-shot)
    ============================================================ */
 let recognition = null;
 function initSpeechRecognition() {
@@ -1290,12 +1540,12 @@ function applySettingsToUI() {
   els.memoryToggle.checked = state.settings.memoryEnabled;
   els.speakToggle.checked = state.settings.speakReplies;
   els.historyToggle.checked = state.settings.saveHistory;
-  els.modelSelect.value = state.settings.model;
-  els.visionModelSelect.value = state.settings.visionModel;
   els.reasoningSelect.value = state.settings.reasoning;
   els.langSelect.value = state.settings.lang;
   els.rateSelect.value = String(state.settings.rate);
   els.pitchSelect.value = String(state.settings.pitch);
+  els.modelInput.value = state.settings.model || "";
+  els.visionModelInput.value = state.settings.visionModel || "";
   els.voiceSelect.value = state.settings.voiceURI || "";
   const useElevenToggle = $("useElevenToggle");
   if (useElevenToggle) useElevenToggle.checked = state.settings.useEleven;
@@ -1304,41 +1554,31 @@ function applySettingsToUI() {
   const elevenVoiceInput = $("elevenVoiceInput");
   if (elevenVoiceInput) elevenVoiceInput.value = state.settings.elevenVoiceId || "21m00Tcm4TlvDq8ikWAM";
 }
-function updateKeyStatus() {
-  const key = state.settings.apiKey || "";
-  const hasKey = key.startsWith("gsk_");
-  if (hasKey) {
-    els.keyStatus.textContent = "✅ Key saved securely — real AI active";
-    els.keyStatus.className = "key-status ok";
+
+function updateUniversalStatus() {
+  const key = state.settings.universalKey || "";
+  const provider = state.settings.provider;
+  
+  if (key && provider) {
+    els.universalStatus.textContent = "✅ " + provider.name + " key saved — real AI active";
+    els.universalStatus.className = "key-status ok";
+    els.detectedProvider.style.display = "flex";
+    els.detectedIcon.textContent = provider.icon || "🟢";
+    els.detectedName.textContent = provider.name + " detected";
+    els.detectedUrl.textContent = provider.baseUrl;
+    els.providerBadge.textContent = provider.icon + " " + provider.name;
+    els.providerBadge.classList.remove("demo");
+    els.demoBanner.classList.remove("show");
   } else {
-    els.keyStatus.textContent = "❌ No key — demo mode";
-    els.keyStatus.className = "key-status missing";
-  }
-  if (els.keyMaskedText && els.secureKeyDisplay) {
-    if (hasKey) {
-      els.keyMaskedText.textContent = maskKey(key);
-      els.secureKeyDisplay.classList.remove("missing");
-    } else {
-      els.keyMaskedText.textContent = "No key saved";
-      els.secureKeyDisplay.classList.add("missing");
-    }
-  }
-  if (els.providerBadge) {
-    if (hasKey) {
-      const mn = state.settings.model || "Groq";
-      const short = mn.includes("/") ? mn.split("/")[1] : mn;
-      els.providerBadge.textContent = "🟢 " + short;
-      els.providerBadge.classList.remove("demo");
-    } else {
-      els.providerBadge.textContent = "🔴 Demo";
-      els.providerBadge.classList.add("demo");
-    }
-  }
-  if (els.demoBanner) {
-    if (hasKey) els.demoBanner.classList.remove("show");
-    else els.demoBanner.classList.add("show");
+    els.universalStatus.textContent = "❌ No key — demo mode";
+    els.universalStatus.className = "key-status missing";
+    els.detectedProvider.style.display = "none";
+    els.providerBadge.textContent = "🔴 Demo";
+    els.providerBadge.classList.add("demo");
+    els.demoBanner.classList.add("show");
   }
 }
+
 function openSettings() { els.settingsPanel.classList.add("open"); els.settingsOverlay.classList.add("show"); closeSidebarMobile(); }
 function closeSettings() { els.settingsPanel.classList.remove("open"); els.settingsOverlay.classList.remove("show"); }
 function openSidebarMobile() { els.sidebar.classList.add("open"); els.overlay.classList.add("show"); }
@@ -1371,45 +1611,96 @@ function attachEventListeners() {
   els.topbarSettings.onclick = openSettings;
   els.closeSettingsBtn.onclick = closeSettings;
   els.settingsOverlay.onclick = closeSettings;
-  els.keyToggleBtn.onclick = () => {
-    if (els.apiKeyInput.type === "password") { els.apiKeyInput.type = "text"; els.keyToggleBtn.textContent = "🙈"; }
-    else { els.apiKeyInput.type = "password"; els.keyToggleBtn.textContent = "👁"; }
+  
+  // Universal key input — live detection
+  els.universalToggleBtn.onclick = () => {
+    if (els.universalKeyInput.type === "password") { els.universalKeyInput.type = "text"; els.universalToggleBtn.textContent = "🙈"; }
+    else { els.universalKeyInput.type = "password"; els.universalToggleBtn.textContent = "👁"; }
   };
-  els.saveKeyBtn.onclick = () => {
-    const key = els.apiKeyInput.value.trim();
-    if (!key) { alert("Key is empty. Get one: console.groq.com/keys"); return; }
-    if (!key.startsWith("gsk_")) {
-      if (!confirm("Key 'gsk_' se shuru nahi hoti. Save anyway?")) return;
+  els.universalKeyInput.addEventListener("input", (e) => {
+    const key = e.target.value.trim();
+    if (!key) {
+      els.universalStatus.textContent = "❌ No key — demo mode";
+      els.universalStatus.className = "key-status missing";
+      els.detectedProvider.style.display = "none";
+      return;
     }
-    state.settings.apiKey = key;
+    const detected = detectProvider(key);
+    if (detected) {
+      els.universalStatus.textContent = "✨ " + detected.name + " detected! Click Save.";
+      els.universalStatus.className = "key-status detected";
+      els.detectedProvider.style.display = "flex";
+      els.detectedIcon.textContent = detected.icon;
+      els.detectedName.textContent = detected.name + " detected";
+      els.detectedUrl.textContent = detected.baseUrl;
+    } else {
+      els.universalStatus.textContent = "❓ Unknown provider — use Advanced setup below";
+      els.universalStatus.className = "key-status missing";
+      els.detectedProvider.style.display = "none";
+    }
+  });
+  
+  els.saveUniversalBtn.onclick = () => {
+    const key = els.universalKeyInput.value.trim();
+    if (!key) { alert("Please paste an API key"); return; }
+    const detected = detectProvider(key);
+    if (!detected) {
+      alert("Could not detect provider. Please use Advanced setup below.");
+      els.advancedToggle.classList.add("open");
+      els.advancedSection.classList.add("show");
+      return;
+    }
+    state.settings.universalKey = key;
+    state.settings.provider = detected;
+    state.settings.model = detected.model || "";
+    state.settings.visionModel = detected.visionModel || "";
     saveSettings();
-    updateKeyStatus();
-    els.apiKeyInput.value = "";
-    els.apiKeyInput.type = "password";
-    if (els.keyToggleBtn) els.keyToggleBtn.textContent = "👁";
-    alert("🔐 Key securely saved!");
+    updateUniversalStatus();
+    els.modelInput.value = state.settings.model;
+    els.visionModelInput.value = state.settings.visionModel;
+    els.universalKeyInput.value = "";
+    els.universalKeyInput.type = "password";
+    els.universalToggleBtn.textContent = "👁";
+    alert("🔐 " + detected.name + " key saved!\n\nModel: " + state.settings.model);
   };
-  if (els.verifyKeyBtn) {
-    els.verifyKeyBtn.onclick = async () => {
-      if (!state.settings.apiKey) { alert("Pehle key save karo."); return; }
-      els.verifyKeyBtn.textContent = "Testing...";
-      try {
-        const res = await fetch("https://api.groq.com/openai/v1/models", { headers: { "Authorization": "Bearer " + state.settings.apiKey } });
-        if (res.ok) { els.verifyKeyBtn.textContent = "✅ Valid"; }
-        else { els.verifyKeyBtn.textContent = "❌ Invalid"; }
-      } catch (e) { els.verifyKeyBtn.textContent = "⚠️ Error"; }
-      setTimeout(() => { els.verifyKeyBtn.textContent = "Verify"; }, 3000);
+  
+  els.detectedChange.onclick = () => {
+    els.universalKeyInput.focus();
+    els.universalKeyInput.value = "";
+    updateUniversalStatus();
+  };
+  
+  // Advanced toggle
+  els.advancedToggle.onclick = () => {
+    els.advancedToggle.classList.toggle("open");
+    els.advancedSection.classList.toggle("show");
+  };
+  
+  // Advanced save
+  els.saveAdvancedBtn.onclick = () => {
+    const name = els.advName.value.trim() || "Custom AI";
+    const url = els.advUrl.value.trim();
+    const model = els.advModel.value.trim();
+    const key = els.advKey.value.trim();
+    const hasVision = els.advVision.checked;
+    if (!url || !model || !key) { alert("Please fill URL, Model, and API Key"); return; }
+    state.settings.universalKey = key;
+    state.settings.provider = {
+      id: "custom", name: name, icon: "⚙️",
+      baseUrl: url, model: model, visionModel: hasVision ? model : "",
     };
-  }
-  if (els.demoBannerBtn) {
-    els.demoBannerBtn.onclick = () => { openSettings(); setTimeout(() => { if (els.apiKeyInput) els.apiKeyInput.focus(); }, 300); };
-  }
-  if (els.apiKeyInput) {
-    els.apiKeyInput.addEventListener("contextmenu", (e) => e.preventDefault());
-    els.apiKeyInput.addEventListener("copy", (e) => { if (els.apiKeyInput.type === "password") e.preventDefault(); });
-  }
-  els.modelSelect.onchange = (e) => { state.settings.model = e.target.value; saveSettings(); updateKeyStatus(); };
-  els.visionModelSelect.onchange = (e) => { state.settings.visionModel = e.target.value; saveSettings(); };
+    state.settings.model = model;
+    state.settings.visionModel = hasVision ? model : "";
+    saveSettings();
+    updateUniversalStatus();
+    els.modelInput.value = model;
+    els.visionModelInput.value = state.settings.visionModel;
+    alert("✅ Custom provider '" + name + "' saved!");
+  };
+  
+  // Model inputs
+  els.modelInput.onchange = (e) => { state.settings.model = e.target.value.trim(); saveSettings(); };
+  els.visionModelInput.onchange = (e) => { state.settings.visionModel = e.target.value.trim(); saveSettings(); };
   els.reasoningSelect.onchange = (e) => { state.settings.reasoning = e.target.value; saveSettings(); };
   els.langSelect.onchange = (e) => { state.settings.lang = e.target.value; saveSettings(); };
   els.rateSelect.onchange = (e) => { state.settings.rate = parseFloat(e.target.value); saveSettings(); };
@@ -1438,6 +1729,8 @@ function attachEventListeners() {
       renderHistory(); clearMessagesView(); els.welcome.style.display = "flex";
     }
   };
+  if (els.demoBannerBtn) els.demoBannerBtn.onclick = () => { openSettings(); setTimeout(() => { if (els.universalKeyInput) els.universalKeyInput.focus(); }, 300); };
+  
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (els.settingsPanel.classList.contains("open")) closeSettings();
