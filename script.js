@@ -1,8 +1,7 @@
 /* ============================================================
-   MY PERSONAL AI — Phase 1 (Memory Dialog DISABLED)
+   MY PERSONAL AI — Phase 1 (Clean, no memory dialog)
    ============================================================ */
 
-/* ---------- STATE ---------- */
 const state = {
   conversations: [],
   currentId: null,
@@ -19,9 +18,9 @@ const state = {
 };
 
 const LS = {
-  CONVOS: "mpai_conversations_v2",
-  MEMS: "mpai_memories_v2",
-  SETTINGS: "mpai_settings_v2",
+  CONVOS: "mpai_conversations_v3",
+  MEMS: "mpai_memories_v3",
+  SETTINGS: "mpai_settings_v3",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -56,15 +55,8 @@ const els = {
   memoriesList: $("memoriesList"),
   clearMemoriesBtn: $("clearMemoriesBtn"),
   clearHistoryBtn: $("clearHistoryBtn"),
-  memoryModal: $("memoryModal"),
-  memoryModalText: $("memoryModalText"),
-  memoryAllowBtn: $("memoryAllowBtn"),
-  memoryDenyBtn: $("memoryDenyBtn"),
 };
 
-/* ============================================================
-   INIT
-   ============================================================ */
 function init() {
   loadFromStorage();
   applySettingsToUI();
@@ -75,11 +67,7 @@ function init() {
   attachEventListeners();
   autoResizeTextarea();
   updateSendButton();
-
-  // Dialog ko hamesha band rakho
-  if (els.memoryModal) els.memoryModal.hidden = true;
-
-  console.log("✅ My Personal AI ready — memory dialog disabled.");
+  console.log("✅ My Personal AI ready — no memory dialog.");
 }
 
 function loadFromStorage() {
@@ -88,9 +76,7 @@ function loadFromStorage() {
     state.memories = JSON.parse(localStorage.getItem(LS.MEMS) || "[]");
     const s = JSON.parse(localStorage.getItem(LS.SETTINGS) || "null");
     if (s) Object.assign(state.settings, s);
-  } catch (e) {
-    console.warn("Storage load failed:", e);
-  }
+  } catch (e) { console.warn("Storage load failed:", e); }
 }
 
 function saveConversations() {
@@ -104,9 +90,6 @@ function saveSettings() {
   try { localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings)); } catch(e){}
 }
 
-/* ============================================================
-   CONVERSATIONS
-   ============================================================ */
 function createConversation() {
   const conv = {
     id: "c_" + Date.now(),
@@ -196,9 +179,6 @@ function deleteConversation(id) {
   renderHistory(els.historySearch.value);
 }
 
-/* ============================================================
-   MESSAGES
-   ============================================================ */
 function renderMessage(role, text, attachments = [], animate = true) {
   els.welcome.hidden = true;
 
@@ -272,9 +252,6 @@ function scrollToBottom() {
   });
 }
 
-/* ============================================================
-   SEND
-   ============================================================ */
 async function handleSend() {
   const text = els.userInput.value.trim();
   const attachments = [...state.pendingAttachments];
@@ -307,13 +284,8 @@ async function handleSend() {
   saveConversations();
 
   if (state.settings.speakReplies) speakText(reply);
-
-  // ⛔ MEMORY DIALOG DISABLED — kuch nahi hoga
 }
 
-/* ============================================================
-   FAKE AI
-   ============================================================ */
 function fakeAIResponse(userText, attachments) {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -337,14 +309,6 @@ function fakeAIResponse(userText, attachments) {
       resolve(reply);
     }, 700 + Math.random() * 500);
   });
-}
-
-/* ============================================================
-   MEMORY — DIALOG COMPLETELY DISABLED
-   ============================================================ */
-function maybeOfferMemory() {
-  // 🚫 DISABLED — dialog kabhi nahi khulega
-  return;
 }
 
 function addMemory(text) {
@@ -386,9 +350,6 @@ function renderMemories() {
   });
 }
 
-/* ============================================================
-   ATTACHMENTS
-   ============================================================ */
 function handleImageUpload(files) {
   [...files].forEach((file) => {
     if (!file.type.startsWith("image/")) return;
@@ -467,9 +428,6 @@ function clearAttachments() {
   renderAttachmentPreview();
 }
 
-/* ============================================================
-   VOICE INPUT
-   ============================================================ */
 let recognition = null;
 
 function initSpeechRecognition() {
@@ -515,15 +473,10 @@ function toggleRecording() {
       recognition.start();
       state.isRecording = true;
       els.micBtn.classList.add("recording");
-    } catch (e) {
-      console.warn(e);
-    }
+    } catch (e) { console.warn(e); }
   }
 }
 
-/* ============================================================
-   SPEECH OUTPUT
-   ============================================================ */
 function populateVoices() {
   if (!("speechSynthesis" in window)) return;
   const load = () => {
@@ -552,9 +505,6 @@ function speakText(text) {
   speechSynthesis.speak(utt);
 }
 
-/* ============================================================
-   SETTINGS
-   ============================================================ */
 function applySettingsToUI() {
   els.memoryToggle.checked = state.settings.memoryEnabled;
   els.autoMemoryToggle.checked = state.settings.autoMemory;
@@ -571,9 +521,6 @@ function closeSettings() {
   els.settingsPanel.hidden = true;
 }
 
-/* ============================================================
-   MOBILE SIDEBAR
-   ============================================================ */
 function openSidebarMobile() {
   els.sidebar.classList.add("open");
   els.overlay.hidden = false;
@@ -583,9 +530,6 @@ function closeSidebarMobile() {
   els.overlay.hidden = true;
 }
 
-/* ============================================================
-   UTIL
-   ============================================================ */
 function autoResizeTextarea() {
   els.userInput.style.height = "auto";
   els.userInput.style.height = Math.min(els.userInput.scrollHeight, 160) + "px";
@@ -608,9 +552,6 @@ function renderWelcomeChips() {
   });
 }
 
-/* ============================================================
-   EVENT LISTENERS
-   ============================================================ */
 function attachEventListeners() {
   els.menuToggle.onclick = openSidebarMobile;
   els.overlay.onclick = closeSidebarMobile;
@@ -693,22 +634,9 @@ function attachEventListeners() {
     }
   };
 
-  // Memory modal buttons — ab ye kabhi nahi khulega, lekin safe side
-  if (els.memoryAllowBtn) {
-    els.memoryAllowBtn.onclick = () => {
-      els.memoryModal.hidden = true;
-    };
-  }
-  if (els.memoryDenyBtn) {
-    els.memoryDenyBtn.onclick = () => {
-      els.memoryModal.hidden = true;
-    };
-  }
-
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      if (els.memoryModal) els.memoryModal.hidden = true;
-      else if (!els.settingsPanel.hidden) closeSettings();
+      if (!els.settingsPanel.hidden) closeSettings();
       else if (els.sidebar.classList.contains("open")) closeSidebarMobile();
     }
   });
