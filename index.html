@@ -250,6 +250,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   0%,80%,100%{opacity:.4;transform:translateY(0) scale(1)}
   40%{opacity:1;transform:translateY(-6px) scale(1.1)}
 }
+.cursor-blink{
+  display:inline-block;width:8px;height:16px;
+  background:var(--accent);margin-left:2px;
+  animation:cursorBlink 1s infinite;vertical-align:text-bottom;
+}
+@keyframes cursorBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
 
 .attachment-preview{
   position:absolute;bottom:96px;left:0;right:0;
@@ -315,6 +321,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .send-btn:disabled{opacity:.35;cursor:not-allowed;background:var(--bg-glass-2);box-shadow:none}
 .send-btn:not(:disabled):hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(16,163,127,0.6)}
 .send-btn:not(:disabled):active{transform:scale(0.95)}
+.send-btn.stop{background:linear-gradient(135deg,#e5484d,#ef4444);animation:pulse 1s infinite}
 
 .settings-panel{
   position:fixed;top:0;right:0;width:440px;max-width:100vw;height:100dvh;
@@ -583,19 +590,27 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <label class="settings-label" style="margin-top:16px">
         Model
         <select id="modelSelect">
-          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fast)</option>
-          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (best)</option>
-          <option value="openai/gpt-oss-20b">GPT OSS 20B (balanced)</option>
-          <option value="openai/gpt-oss-120b">GPT OSS 120B (powerful)</option>
-          <option value="gemma2-9b-it">Gemma 2 9B</option>
+          <option value="openai/gpt-oss-120b">GPT OSS 120B (best quality)</option>
+          <option value="openai/gpt-oss-20b">GPT OSS 20B (faster)</option>
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (versatile)</option>
+          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fastest)</option>
           <option value="qwen/qwen3-32b">Qwen 3 32B</option>
+          <option value="gemma2-9b-it">Gemma 2 9B</option>
+        </select>
+      </label>
+      <label class="settings-label" style="margin-top:12px">
+        AI Response Style
+        <select id="reasoningSelect">
+          <option value="low">⚡ Fast (low reasoning)</option>
+          <option value="medium" selected>⚖️ Balanced (medium)</option>
+          <option value="high">🧠 Deep thinking (high)</option>
         </select>
       </label>
     </section>
 
     <section class="settings-section">
       <h3>🌍 Reply Language</h3>
-      <p class="settings-desc"><b>Auto (recommended):</b> AI automatically replies in the same language you write — English, Urdu script, Roman Urdu, or Pashto.</p>
+      <p class="settings-desc"><b>Auto:</b> AI replies in the same language you write — English, Urdu script, Roman Urdu, or Pashto.</p>
       <label class="settings-label">
         Language Mode
         <select id="langSelect">
@@ -621,9 +636,9 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     <section class="settings-section">
       <h3>🔊 Voice &amp; Speech</h3>
       <label class="toggle-row"><span>Speak AI replies aloud</span><input type="checkbox" id="speakToggle"></label>
-      <p class="settings-desc" style="font-size:12px;margin-top:8px">Voice auto-matches the reply language. If you type Urdu, you'll hear Urdu (if installed). If English, English voice.</p>
+      <p class="settings-desc" style="font-size:12px;margin-top:8px">Voice auto-matches reply language. Install Google Neural voices for a more real, natural sound.</p>
       <label class="settings-label">
-        Manual Voice Override (optional)
+        Voice
         <select id="voiceSelect">
           <option value="">🌐 Auto (match language)</option>
         </select>
@@ -631,10 +646,19 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <label class="settings-label">
         Voice Speed
         <select id="rateSelect">
-          <option value="0.75">Slow (0.75x)</option>
-          <option value="0.85">Medium (0.85x)</option>
-          <option value="0.95" selected>Normal (0.95x)</option>
-          <option value="1.1">Fast (1.1x)</option>
+          <option value="0.85">Slow (0.85x)</option>
+          <option value="1.0" selected>Normal (1.0x)</option>
+          <option value="1.15">Fast (1.15x)</option>
+          <option value="1.3">Very Fast (1.3x)</option>
+        </select>
+      </label>
+      <label class="settings-label">
+        Voice Pitch
+        <select id="pitchSelect">
+          <option value="0.9">Lower</option>
+          <option value="1.0" selected>Normal</option>
+          <option value="1.1">Higher (feminine)</option>
+          <option value="1.2">Very High</option>
         </select>
       </label>
     </section>
@@ -647,7 +671,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>ℹ️ About</h3>
-      <p class="settings-desc">My Personal AI — Groq-powered. API key stays only in your browser.</p>
+      <p class="settings-desc">My Personal AI — Groq-powered with streaming. API key stays only in your browser.</p>
     </section>
 
   </div>
@@ -657,7 +681,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
 <script>
 /* ============================================================
-   MY PERSONAL AI — Full Auto Language + Auto Voice
+   MY PERSONAL AI — Streaming + Real Voice + Speed
    ============================================================ */
 
 const state = {
@@ -666,14 +690,18 @@ const state = {
     memoryEnabled: false, autoMemory: false,
     speakReplies: false, saveHistory: true,
     voiceURI: "", apiKey: "",
-    model: "llama-3.1-8b-instant",
+    model: "openai/gpt-oss-120b",
     lang: "auto",
-    rate: 0.95,
+    rate: 1.0,
+    pitch: 1.0,
+    reasoning: "medium",
   },
   pendingAttachments: [], isRecording: false,
+  isStreaming: false,
+  abortController: null,
 };
 
-const LS = { CONVOS: "mpai_c_v13", MEMS: "mpai_m_v13", SETTINGS: "mpai_s_v13" };
+const LS = { CONVOS: "mpai_c_v14", MEMS: "mpai_m_v14", SETTINGS: "mpai_s_v14" };
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -689,10 +717,12 @@ const els = {
   closeSettingsBtn: $("closeSettingsBtn"),
   apiKeyInput: $("apiKeyInput"), keyToggleBtn: $("keyToggleBtn"),
   keyStatus: $("keyStatus"), saveKeyBtn: $("saveKeyBtn"),
-  modelSelect: $("modelSelect"), langSelect: $("langSelect"),
+  modelSelect: $("modelSelect"), reasoningSelect: $("reasoningSelect"),
+  langSelect: $("langSelect"),
   memoryToggle: $("memoryToggle"), autoMemoryToggle: $("autoMemoryToggle"),
   speakToggle: $("speakToggle"), historyToggle: $("historyToggle"),
   voiceSelect: $("voiceSelect"), rateSelect: $("rateSelect"),
+  pitchSelect: $("pitchSelect"),
   memoriesList: $("memoriesList"),
   clearMemoriesBtn: $("clearMemoriesBtn"), clearHistoryBtn: $("clearHistoryBtn"),
 };
@@ -705,16 +735,12 @@ function detectLanguage(text) {
   const t = text.trim();
   if (!t) return "english";
 
-  // 1. Arabic/Urdu/Pashto script detection
   if (/[\u0600-\u06FF\u0750-\u077F]/.test(t)) {
-    // Pashto-specific letters
-    if (/[ځڅډړږښږګڼښۍې]/.test(t)) return "pashto";
-    // Urdu-specific
+    if (/[ځڅډړږښږګڼۍې]/.test(t)) return "pashto";
     if (/[ٹڈڑںھہیے]/.test(t)) return "urdu";
-    return "urdu"; // default Arabic script = Urdu
+    return "urdu";
   }
 
-  // 2. Roman Urdu detection (Hindi/Urdu words in English letters)
   const romanUrduWords = [
     "kya","kaise","kaisa","kaisi","hai","hain","ho","hun","tha","thi","the",
     "aap","tum","main","hum","wo","yeh","ye","is","us","ka","ki","ke",
@@ -731,24 +757,18 @@ function detectLanguage(text) {
   ];
   const words = t.toLowerCase().split(/\s+/).filter(w => w.length > 1);
   if (words.length === 0) return "english";
-  let romanUrduMatches = 0;
+  let matches = 0;
   words.forEach(w => {
     const clean = w.replace(/[^a-z]/g, "");
-    if (romanUrduWords.includes(clean)) romanUrduMatches++;
+    if (romanUrduWords.includes(clean)) matches++;
   });
-  const romanRatio = romanUrduMatches / words.length;
-  if (romanRatio >= 0.15 || romanUrduMatches >= 2) return "roman-urdu";
-
-  // 3. Default: English
+  if (matches / words.length >= 0.15 || matches >= 2) return "roman-urdu";
   return "english";
 }
 
-/* Check if text has Arabic script */
 function isArabicScript(text) {
   return /[\u0600-\u06FF\u0750-\u077F]/.test(text || "");
 }
-
-/* Apply RTL if Arabic script */
 function applyRTF(el, text) {
   if (isArabicScript(text)) el.classList.add("rtl");
   else el.classList.remove("rtl");
@@ -768,7 +788,7 @@ function init() {
   autoResizeTextarea();
   updateSendButton();
   updateKeyStatus();
-  console.log("✅ Ready. Lang:", state.settings.lang, "Model:", state.settings.model);
+  console.log("✅ Ready. Model:", state.settings.model, "Lang:", state.settings.lang);
 }
 
 function loadFromStorage() {
@@ -857,12 +877,13 @@ function renderMessage(role, text, attachments = [], animate = true) {
   avatar.textContent = role === "user" ? "🧑" : "🤖";
   const bubble = document.createElement("div");
   bubble.className = "bubble";
+  const textEl = document.createElement("div");
+  textEl.className = "msg-text";
   if (text) {
-    const t = document.createElement("div");
-    t.textContent = text;
-    applyRTF(t, text);
-    bubble.appendChild(t);
+    textEl.textContent = text;
+    applyRTF(textEl, text);
   }
+  bubble.appendChild(textEl);
   if (attachments && attachments.length) {
     attachments.forEach((att) => {
       if (att.type === "image" && att.dataUrl) {
@@ -875,7 +896,7 @@ function renderMessage(role, text, attachments = [], animate = true) {
   msg.appendChild(avatar); msg.appendChild(bubble);
   els.messages.appendChild(msg);
   if (animate) scrollToBottom();
-  return { msg, bubble };
+  return { msg, bubble, textEl };
 }
 function renderTyping() {
   const msg = document.createElement("div");
@@ -890,60 +911,103 @@ function removeTyping() { const el = document.getElementById("typingIndicator");
 function scrollToBottom() { requestAnimationFrame(() => { els.messages.scrollTop = els.messages.scrollHeight; }); }
 
 /* ============================================================
-   GROQ API with fallback proxies
+   GROQ API — Streaming
    ============================================================ */
-async function callGroqAPI(apiKey, model, messages) {
+async function* streamGroqAPI(apiKey, model, messages, reasoning, signal) {
   const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
   const reqBody = JSON.stringify({
-    model: model, messages: messages,
-    temperature: 0.7, max_tokens: 1024, stream: false,
+    model: model,
+    messages: messages,
+    temperature: 1,
+    max_completion_tokens: 2048,
+    top_p: 1,
+    reasoning_effort: reasoning || "medium",
+    stream: true,
+    stop: null,
   });
+
   const attempts = [
-    () => fetch(apiUrl, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: reqBody }),
-    () => fetch("https://corsproxy.io/?" + encodeURIComponent(apiUrl), { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: reqBody }),
-    () => fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(apiUrl), { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: reqBody }),
+    () => fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+      body: reqBody, signal,
+    }),
+    () => fetch("https://corsproxy.io/?" + encodeURIComponent(apiUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+      body: reqBody, signal,
+    }),
+    () => fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(apiUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+      body: reqBody, signal,
+    }),
   ];
-  let lastErr = null;
+
+  let response = null, lastErr = null;
   for (let i = 0; i < attempts.length; i++) {
     try {
-      console.log("Attempt " + (i + 1) + "...");
+      console.log("Stream attempt " + (i + 1));
       const res = await attempts[i]();
-      if (res) { console.log("Status " + res.status); return res; }
-    } catch (e) { console.warn("Failed " + (i + 1) + ":", e.message); lastErr = e; }
+      if (res && (res.ok || res.status < 500)) { response = res; break; }
+    } catch (e) {
+      if (e.name === "AbortError") throw e;
+      console.warn("Attempt " + (i + 1) + " failed:", e.message);
+      lastErr = e;
+    }
   }
-  throw new Error("Network error. " + (lastErr ? lastErr.message : ""));
+  if (!response) throw new Error("Network error. " + (lastErr ? lastErr.message : ""));
+
+  if (!response.ok) {
+    const errText = await response.text();
+    let errMsg = "API " + response.status;
+    try { const j = JSON.parse(errText); errMsg = (j.error && j.error.message) || errMsg; } catch (e) { errMsg += ": " + errText.slice(0,150); }
+    throw new Error(errMsg);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split("\n");
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || !trimmed.startsWith("data:")) continue;
+      const data = trimmed.slice(5).trim();
+      if (data === "[DONE]") return;
+      try {
+        const json = JSON.parse(data);
+        const delta = json.choices?.[0]?.delta?.content;
+        if (delta) yield delta;
+      } catch (e) {}
+    }
+  }
 }
 
 /* ============================================================
-   SYSTEM PROMPT — Full Auto Language
+   SYSTEM PROMPT
    ============================================================ */
 function getSystemPrompt(userText) {
   const mode = state.settings.lang;
-
   let prompt = "You are a helpful, warm, friendly personal AI assistant. ";
 
   if (mode === "auto") {
-    // Detect the user's language
     const detected = detectLanguage(userText);
-
-    if (detected === "english") {
-      prompt += "The user just wrote in ENGLISH. Reply ONLY in English. Do not use any other language.";
-    } else if (detected === "urdu") {
-      prompt += "The user just wrote in URDU (Arabic script: اردو). Reply ONLY in Urdu using proper Arabic/Urdu script. Do NOT use Roman Urdu. Do NOT reply in English. Use respectful tone (آپ).";
-    } else if (detected === "roman-urdu") {
-      prompt += "The user just wrote in ROMAN URDU (Urdu written in English letters, e.g., 'kya haal hai bhai'). Reply ONLY in Roman Urdu using English letters. Do NOT use Arabic script. Do NOT reply in pure English. Example reply style: 'Walaikum salam! Main theek hoon, aap kaise hain?'";
-    } else if (detected === "pashto") {
-      prompt += "The user just wrote in PASHTO (پښتو). Reply ONLY in Pashto using Arabic script. Do NOT reply in Urdu or English.";
-    }
-  } else if (mode === "english") {
-    prompt += "ALWAYS reply in English.";
-  } else if (mode === "urdu") {
-    prompt += "ALWAYS reply in Urdu (Arabic script: اردو). Do NOT use Roman Urdu. Do NOT reply in English.";
-  } else if (mode === "roman-urdu") {
-    prompt += "ALWAYS reply in Roman Urdu (Urdu written with English letters). Example: 'Aap kaise hain? Main theek hoon.' Do NOT use Arabic script.";
-  } else if (mode === "pashto") {
-    prompt += "ALWAYS reply in Pashto (پښتو) using Arabic script.";
-  }
+    if (detected === "english") prompt += "The user just wrote in ENGLISH. Reply ONLY in English. Do not use any other language.";
+    else if (detected === "urdu") prompt += "The user just wrote in URDU (Arabic script: اردو). Reply ONLY in Urdu using proper Arabic/Urdu script. Do NOT use Roman Urdu. Do NOT reply in English. Use respectful tone (آپ).";
+    else if (detected === "roman-urdu") prompt += "The user just wrote in ROMAN URDU (Urdu written in English letters, e.g., 'kya haal hai bhai'). Reply ONLY in Roman Urdu using English letters. Do NOT use Arabic script. Do NOT reply in pure English. Example: 'Walaikum salam! Main theek hoon, aap kaise hain?'";
+    else if (detected === "pashto") prompt += "The user just wrote in PASHTO (پښتو). Reply ONLY in Pashto using Arabic script. Do NOT reply in Urdu or English.";
+  } else if (mode === "english") prompt += "ALWAYS reply in English.";
+  else if (mode === "urdu") prompt += "ALWAYS reply in Urdu (Arabic script: اردو). Do NOT use Roman Urdu. Do NOT reply in English.";
+  else if (mode === "roman-urdu") prompt += "ALWAYS reply in Roman Urdu (Urdu written with English letters). Example: 'Aap kaise hain? Main theek hoon.' Do NOT use Arabic script.";
+  else if (mode === "pashto") prompt += "ALWAYS reply in Pashto (پښتو) using Arabic script.";
 
   prompt += " Keep replies warm, natural, and concise (2-4 sentences usually).";
 
@@ -955,9 +1019,18 @@ function getSystemPrompt(userText) {
 }
 
 /* ============================================================
-   HANDLE SEND
+   HANDLE SEND — with Streaming
    ============================================================ */
 async function handleSend() {
+  if (state.isStreaming) {
+    // Stop streaming
+    if (state.abortController) state.abortController.abort();
+    state.isStreaming = false;
+    els.sendBtn.classList.remove("stop");
+    els.sendBtn.textContent = "➤";
+    return;
+  }
+
   const text = els.userInput.value.trim();
   const attachments = [...state.pendingAttachments];
   if (!text && attachments.length === 0) return;
@@ -986,7 +1059,13 @@ async function handleSend() {
     return;
   }
 
+  // Real AI — streaming
   renderTyping();
+  state.isStreaming = true;
+  state.abortController = new AbortController();
+  els.sendBtn.classList.add("stop");
+  els.sendBtn.textContent = "■";
+
   try {
     const historyMessages = conv.messages
       .filter(m => m.text || (m.attachments && m.attachments.length))
@@ -1000,52 +1079,71 @@ async function handleSend() {
         return { role: m.role === "ai" ? "assistant" : "user", content };
       });
 
-    // System prompt is based on LATEST user text (auto detection)
     historyMessages.unshift({ role: "system", content: getSystemPrompt(text) });
 
-    const res = await callGroqAPI(state.settings.apiKey, state.settings.model, historyMessages);
-    if (!res.ok) {
-      const errText = await res.text();
-      let errMsg = "API " + res.status;
-      try { const j = JSON.parse(errText); errMsg = (j.error && j.error.message) || errMsg; } catch (e) { errMsg += ": " + errText.slice(0,150); }
+    // Start streaming
+    let fullReply = "";
+    let aiMsgEl = null;
+    let firstChunk = true;
 
-      if (errMsg.includes("model") && (errMsg.includes("not exist") || errMsg.includes("does not exist"))) {
+    for await (const chunk of streamGroqAPI(
+      state.settings.apiKey,
+      state.settings.model,
+      historyMessages,
+      state.settings.reasoning,
+      state.abortController.signal
+    )) {
+      if (firstChunk) {
         removeTyping();
-        renderMessage("ai", "⚠️ Model `" + state.settings.model + "` is not available.\n\nPlease open Settings → Model and select another model (try Llama 3.1 8B).");
-        return;
+        const rendered = renderMessage("ai", "", [], true);
+        aiMsgEl = rendered.textEl;
+        firstChunk = false;
       }
-      if (errMsg.includes("Invalid API Key") || errMsg.includes("invalid_api_key") || res.status === 401) {
-        removeTyping();
-        renderMessage("ai", "🔑 Invalid API key.\n\nPlease check Settings → Groq API Key.\nGet a free key: console.groq.com/keys");
-        return;
+      fullReply += chunk;
+      if (aiMsgEl) {
+        aiMsgEl.textContent = fullReply;
+        applyRTF(aiMsgEl, fullReply);
+        scrollToBottom();
       }
-      if (res.status === 429 || errMsg.includes("rate_limit")) {
-        removeTyping();
-        renderMessage("ai", "⏳ Rate limit reached. Please wait a moment (30 req/min on free tier).");
-        return;
-      }
-      throw new Error(errMsg);
     }
 
-    const data = await res.json();
-    const fullReply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "(empty)";
-
-    removeTyping();
-    renderMessage("ai", fullReply);
-    conv.messages.push({ role: "ai", text: fullReply, attachments: [], ts: Date.now() });
-    saveConversations();
-    if (state.settings.speakReplies) speakText(fullReply);
+    if (!fullReply) {
+      removeTyping();
+      renderMessage("ai", "(empty response)");
+    } else {
+      conv.messages.push({ role: "ai", text: fullReply, attachments: [], ts: Date.now() });
+      saveConversations();
+      if (state.settings.speakReplies) speakText(fullReply);
+    }
   } catch (err) {
     removeTyping();
-    const errMsg = "❌ Error: " + err.message + "\n\n• Check your internet\n• Turn off VPN/Ad blocker\n• Try switching WiFi/Mobile data";
-    renderMessage("ai", errMsg);
-    conv.messages.push({ role: "ai", text: errMsg, attachments: [], ts: Date.now() });
-    saveConversations();
+    if (err.name === "AbortError") {
+      console.log("Streaming stopped by user");
+    } else {
+      let errMsg = "❌ Error: " + err.message;
+      if (err.message.includes("Invalid API Key") || err.message.includes("401")) {
+        errMsg = "🔑 Invalid API key. Check Settings → Groq API Key.";
+      } else if (err.message.includes("model") && (err.message.includes("not exist") || err.message.includes("does not exist"))) {
+        errMsg = "⚠️ Model unavailable. Try Settings → Model → GPT OSS 20B or Llama 3.1 8B.";
+      } else if (err.message.includes("rate_limit") || err.message.includes("429")) {
+        errMsg = "⏳ Rate limit. Please wait a moment.";
+      } else {
+        errMsg += "\n\n• Check internet\n• Turn off VPN/Ad blocker";
+      }
+      renderMessage("ai", errMsg);
+      conv.messages.push({ role: "ai", text: errMsg, attachments: [], ts: Date.now() });
+      saveConversations();
+    }
+  } finally {
+    state.isStreaming = false;
+    state.abortController = null;
+    els.sendBtn.classList.remove("stop");
+    els.sendBtn.textContent = "➤";
   }
 }
 
 /* ============================================================
-   SMART DEMO REPLY
+   DEMO REPLY
    ============================================================ */
 function smartDemoReply(userText, attachments) {
   let reply = "";
@@ -1067,7 +1165,6 @@ function smartDemoReply(userText, attachments) {
   }
 
   const lower = (userText || "").toLowerCase();
-
   if (detected === "urdu") {
     if (/سلام|ہیلو|کیسے|کیا حال/.test(userText)) reply += "وعلیکم السلام! 🌙 میں ٹھیک ہوں، آپ کیسے ہیں؟";
     else if (userText) reply += "آپ نے کہا: \"" + userText + "\"\n\n💡 اصلی AI کے لیے سیٹنگز میں Groq API key ڈالیں۔";
@@ -1080,7 +1177,6 @@ function smartDemoReply(userText, attachments) {
   } else {
     if (/hello|hi|hey/.test(lower)) reply += "Hello! 👋 I'm doing well, how are you?";
     else if (/time|waqt/.test(lower)) reply += "Current time: " + new Date().toLocaleTimeString();
-    else if (/date|tareekh/.test(lower)) reply += "Today: " + new Date().toLocaleDateString();
     else if (userText) reply += "You said: \"" + userText + "\"\n\n💡 For real AI, add your Groq API key in Settings (free: console.groq.com/keys).";
   }
   return reply;
@@ -1166,25 +1262,21 @@ function toggleRecording() {
 }
 
 /* ============================================================
-   VOICES — Auto-match language
+   VOICES
    ============================================================ */
 function populateVoices() {
   if (!("speechSynthesis" in window)) return;
   const load = () => {
     const voices = speechSynthesis.getVoices();
     els.voiceSelect.innerHTML = "";
-
-    // Auto option first
     const autoOpt = document.createElement("option");
     autoOpt.value = "";
     autoOpt.textContent = "🌐 Auto (match language)";
     els.voiceSelect.appendChild(autoOpt);
 
-    // Sort by language priority
     const priority = { "ur": 1, "ur-pk": 1, "hi": 2, "hi-in": 2, "ps": 3, "en-in": 4, "en-gb": 5, "en-us": 5 };
     const sorted = [...voices].sort((a, b) => {
-      const aL = a.lang.toLowerCase();
-      const bL = b.lang.toLowerCase();
+      const aL = a.lang.toLowerCase(); const bL = b.lang.toLowerCase();
       const aP = priority[aL] || priority[aL.split("-")[0]] || 99;
       const bP = priority[bL] || priority[bL.split("-")[0]] || 99;
       return aP - bP;
@@ -1208,24 +1300,18 @@ function populateVoices() {
   speechSynthesis.onvoiceschanged = load;
 }
 
-/* ============================================================
-   SPEAK — Auto-select voice based on text language
-   ============================================================ */
-function findVoiceForLanguage(lang, text) {
+function findVoiceForLanguage(lang) {
   const all = speechSynthesis.getVoices();
   if (!all.length) return null;
 
-  // If user has manually selected a voice, use it
   if (state.settings.voiceURI) {
     const manual = all.find(x => x.voiceURI === state.settings.voiceURI);
     if (manual) return manual;
   }
 
-  // Auto-select based on detected language
   const femaleKeywords = ["female","woman","zira","samantha","victoria","karen","moira","tessa","google uk english female","google us english","en-in-x-ene"];
 
   if (lang === "urdu" || lang === "pashto") {
-    // For Urdu/Pashto script — try Urdu voice, then Hindi, then Pashto, then English-India
     return (
       all.find(v => v.lang.toLowerCase().startsWith("ur-pk")) ||
       all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
@@ -1239,7 +1325,6 @@ function findVoiceForLanguage(lang, text) {
   }
 
   if (lang === "roman-urdu") {
-    // Roman Urdu → use Hindi voice (pronounces Roman Urdu letters correctly)
     return (
       all.find(v => v.lang.toLowerCase().startsWith("hi-in")) ||
       all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
@@ -1250,12 +1335,8 @@ function findVoiceForLanguage(lang, text) {
     );
   }
 
-  // English
   return (
-    all.find(v => {
-      const n = (v.name + " " + v.voiceURI).toLowerCase();
-      return femaleKeywords.some(k => n.includes(k)) && v.lang.toLowerCase().startsWith("en");
-    }) ||
+    all.find(v => { const n = (v.name + " " + v.voiceURI).toLowerCase(); return femaleKeywords.some(k => n.includes(k)) && v.lang.toLowerCase().startsWith("en"); }) ||
     all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
     all.find(v => v.lang.toLowerCase().startsWith("en-gb")) ||
     all.find(v => v.lang.toLowerCase().startsWith("en")) ||
@@ -1276,34 +1357,17 @@ function speakText(text) {
 
   if (!clean) return;
 
-  // Detect language of the REPLY text
   const lang = detectLanguage(clean);
-  const voice = findVoiceForLanguage(lang, clean);
+  const voice = findVoiceForLanguage(lang);
 
   const utt = new SpeechSynthesisUtterance(clean);
-  if (voice) {
-    utt.voice = voice;
-    utt.lang = voice.lang;
-  } else if (lang === "urdu" || lang === "pashto") {
-    utt.lang = "ur-PK";
-  } else if (lang === "roman-urdu") {
-    utt.lang = "hi-IN";
-  } else {
-    utt.lang = "en-IN";
-  }
+  if (voice) { utt.voice = voice; utt.lang = voice.lang; }
+  else if (lang === "urdu" || lang === "pashto") utt.lang = "ur-PK";
+  else if (lang === "roman-urdu") utt.lang = "hi-IN";
+  else utt.lang = "en-IN";
 
-  // Speed/pitch tuned per language
-  const baseRate = parseFloat(state.settings.rate) || 0.95;
-  if (lang === "urdu" || lang === "pashto") {
-    utt.rate = Math.max(0.7, baseRate - 0.1);
-    utt.pitch = 1.1;
-  } else if (lang === "roman-urdu") {
-    utt.rate = baseRate - 0.05;
-    utt.pitch = 1.1;
-  } else {
-    utt.rate = baseRate;
-    utt.pitch = 1.1;
-  }
+  utt.rate = parseFloat(state.settings.rate) || 1.0;
+  utt.pitch = parseFloat(state.settings.pitch) || 1.0;
   utt.volume = 1.0;
 
   speechSynthesis.cancel();
@@ -1319,8 +1383,10 @@ function applySettingsToUI() {
   els.speakToggle.checked = state.settings.speakReplies;
   els.historyToggle.checked = state.settings.saveHistory;
   els.modelSelect.value = state.settings.model;
+  els.reasoningSelect.value = state.settings.reasoning;
   els.langSelect.value = state.settings.lang;
   els.rateSelect.value = String(state.settings.rate);
+  els.pitchSelect.value = String(state.settings.pitch);
   if (state.settings.apiKey) els.apiKeyInput.value = state.settings.apiKey;
   els.voiceSelect.value = state.settings.voiceURI || "";
 }
@@ -1338,15 +1404,10 @@ function closeSettings() { els.settingsPanel.classList.remove("open"); els.setti
 function openSidebarMobile() { els.sidebar.classList.add("open"); els.overlay.classList.add("show"); }
 function closeSidebarMobile() { els.sidebar.classList.remove("open"); els.overlay.classList.remove("show"); }
 function autoResizeTextarea() { els.userInput.style.height = "auto"; els.userInput.style.height = Math.min(els.userInput.scrollHeight, 160) + "px"; }
-function updateSendButton() { const h = els.userInput.value.trim().length > 0; const a = state.pendingAttachments.length > 0; els.sendBtn.disabled = !(h || a); }
+function updateSendButton() { const h = els.userInput.value.trim().length > 0; const a = state.pendingAttachments.length > 0; els.sendBtn.disabled = !(h || a) && !state.isStreaming; }
 function renderWelcomeChips() {
   document.querySelectorAll(".chip").forEach((chip) => {
-    chip.onclick = () => {
-      els.userInput.value = chip.dataset.prompt;
-      autoResizeTextarea();
-      updateSendButton();
-      els.userInput.focus();
-    };
+    chip.onclick = () => { els.userInput.value = chip.dataset.prompt; autoResizeTextarea(); updateSendButton(); els.userInput.focus(); };
   });
 }
 function attachEventListeners() {
@@ -1355,7 +1416,7 @@ function attachEventListeners() {
   els.newChatBtn.onclick = () => { createConversation(); els.userInput.focus(); closeSidebarMobile(); };
   els.historySearch.oninput = (e) => renderHistory(e.target.value);
   els.userInput.addEventListener("input", () => { autoResizeTextarea(); updateSendButton(); });
-  els.userInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!els.sendBtn.disabled) handleSend(); } });
+  els.userInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!els.sendBtn.disabled || state.isStreaming) handleSend(); } });
   els.sendBtn.onclick = handleSend;
   els.attachImageBtn.onclick = () => els.imageInput.click();
   els.attachDocBtn.onclick = () => els.docInput.click();
@@ -1378,8 +1439,10 @@ function attachEventListeners() {
     alert("✅ Key saved!");
   };
   els.modelSelect.onchange = (e) => { state.settings.model = e.target.value; saveSettings(); };
+  els.reasoningSelect.onchange = (e) => { state.settings.reasoning = e.target.value; saveSettings(); };
   els.langSelect.onchange = (e) => { state.settings.lang = e.target.value; saveSettings(); };
   els.rateSelect.onchange = (e) => { state.settings.rate = parseFloat(e.target.value); saveSettings(); };
+  els.pitchSelect.onchange = (e) => { state.settings.pitch = parseFloat(e.target.value); saveSettings(); };
   els.memoryToggle.onchange = (e) => { state.settings.memoryEnabled = e.target.checked; saveSettings(); };
   els.autoMemoryToggle.onchange = (e) => { state.settings.autoMemory = e.target.checked; saveSettings(); };
   els.speakToggle.onchange = (e) => { state.settings.speakReplies = e.target.checked; saveSettings(); };
