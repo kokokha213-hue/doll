@@ -31,7 +31,7 @@
 }
 html,body{
   height:100%;
-  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,"Noto Naskh Arabic","Urdu Typesetting",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,"Noto Naskh Arabic",sans-serif;
   background:var(--bg);color:var(--text);
   overflow:hidden;
   -webkit-tap-highlight-color:transparent;
@@ -55,15 +55,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .app{display:flex;height:100dvh;width:100vw;position:relative}
 
 .sidebar{
-  width:var(--sidebar-w);
-  background:var(--bg-elev);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
+  width:var(--sidebar-w);background:var(--bg-elev);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-right:1px solid var(--border);
   display:flex;flex-direction:column;
   padding:16px 12px;gap:14px;
-  z-index:30;
-  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  z-index:30;transition:transform .3s cubic-bezier(.4,0,.2,1);
   flex-shrink:0;
 }
 .new-chat-btn{
@@ -134,8 +131,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;
-  background:rgba(15,15,20,0.6);
+  padding:14px 20px;background:rgba(15,15,20,0.6);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
   flex-shrink:0;z-index:10;
@@ -215,21 +211,21 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 }
 .msg .bubble{
   padding:14px 18px;border-radius:var(--radius-lg);
-  font-size:15px;line-height:1.85;
+  font-size:15px;line-height:1.65;
   white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;
-  max-width:100%;
-  font-family:inherit;
+  max-width:100%;font-family:inherit;
 }
-/* RTL support for Urdu/Arabic */
-.msg .bubble.rtl{direction:rtl;text-align:right;font-size:17px;line-height:2;font-family:"Noto Naskh Arabic","Urdu Typesetting",-apple-system,sans-serif}
+.msg .bubble.rtl{
+  direction:rtl;text-align:right;font-size:17px;line-height:2;
+  font-family:"Noto Naskh Arabic",-apple-system,sans-serif;
+}
 .msg.user .bubble{
   background:linear-gradient(135deg,rgba(16,163,127,0.15) 0%,rgba(14,165,233,0.12) 100%);
   border:1px solid rgba(16,163,127,0.2);
   box-shadow:0 2px 12px rgba(16,163,127,0.15);
 }
 .msg.ai .bubble{
-  background:var(--bg-glass);
-  border:1px solid var(--border);
+  background:var(--bg-glass);border:1px solid var(--border);
   backdrop-filter:blur(10px);
 }
 .msg .bubble img.attachment-img{
@@ -286,8 +282,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border:1px solid var(--border);
   border-radius:26px;padding:8px 10px;
-  box-shadow:var(--shadow-md);
-  transition:all .3s ease;
+  box-shadow:var(--shadow-md);transition:all .3s ease;
 }
 .composer-inner:focus-within{
   border-color:var(--accent);
@@ -536,12 +531,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     <section class="messages" id="messages">
       <div class="welcome" id="welcome">
         <div class="welcome-logo">🤖</div>
-        <h2>السلام علیکم! میں آپ کا AI ہوں</h2>
-        <p>مجھ سے اردو، پشتو یا انگریزی میں بات کریں۔ تصویریں اور دستاویزات بھی بھیج سکتے ہیں۔</p>
+        <h2>Hi, I'm your Personal AI</h2>
+        <p>Ask me anything. I can chat in Urdu, Pashto, or English. Upload images or documents too.</p>
         <div class="welcome-chips">
           <button class="chip" data-prompt="السلام علیکم، آپ کیسے ہیں؟">السلام علیکم</button>
-          <button class="chip" data-prompt="مجھے ایک مختصر نظم لکھ کر دیں۔">نظم لکھیں</button>
-          <button class="chip" data-prompt="مجھے صحت مند کھانے کا منصوبہ بتائیں۔">کھانے کا منصوبہ</button>
+          <button class="chip" data-prompt="Explain quantum computing in simple terms.">Explain quantum computing</button>
+          <button class="chip" data-prompt="Help me plan a healthy weekly meal plan.">Meal plan ideas</button>
         </div>
       </div>
     </section>
@@ -554,7 +549,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <div class="composer-inner">
         <button class="composer-icon" id="attachImageBtn">🖼️</button>
         <button class="composer-icon" id="attachDocBtn">📄</button>
-        <textarea id="userInput" placeholder="اردو، پشتو یا انگریزی میں لکھیں..." rows="1"></textarea>
+        <textarea id="userInput" placeholder="Message your AI..." rows="1"></textarea>
         <button class="composer-icon" id="micBtn">🎤</button>
         <button class="send-btn" id="sendBtn" disabled>➤</button>
       </div>
@@ -599,16 +594,16 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     </section>
 
     <section class="settings-section">
-      <h3>🌍 AI Language / زبان</h3>
-      <p class="settings-desc">AI kis zabaan mein jawab de?</p>
+      <h3>🌍 Reply Language</h3>
+      <p class="settings-desc">AI kis zabaan mein jawab de. "Auto" matlab aapki zubaan match karega.</p>
       <label class="settings-label">
-        Reply Language
+        Language
         <select id="langSelect">
+          <option value="auto">🌐 Auto (match me)</option>
           <option value="urdu">🇵🇰 Urdu (اردو)</option>
           <option value="pashto">🏔️ Pashto (پښتو)</option>
           <option value="english">🇬🇧 English</option>
           <option value="roman-urdu">📝 Roman Urdu</option>
-          <option value="auto">🌐 Auto (match user)</option>
         </select>
       </label>
     </section>
@@ -627,7 +622,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <h3>🔊 Voice &amp; Speech</h3>
       <label class="toggle-row"><span>Speak AI replies aloud</span><input type="checkbox" id="speakToggle"></label>
       <label class="settings-label">
-        Voice / آواز
+        Voice
         <select id="voiceSelect"></select>
       </label>
       <label class="settings-label">
@@ -649,7 +644,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>ℹ️ About</h3>
-      <p class="settings-desc">My Personal AI — Groq-powered. API key sirf aapke browser mein save hoti hai. Kisi server pe nahi jaati.</p>
+      <p class="settings-desc">My Personal AI — Groq-powered. API key sirf aapke browser mein save hoti hai.</p>
     </section>
 
   </div>
@@ -658,10 +653,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 <div class="settings-overlay" id="settingsOverlay"></div>
 
 <script>
-/* ============================================================
-   MY PERSONAL AI — Urdu/Pashto Support + Groq AI
-   ============================================================ */
-
 const state = {
   conversations: [], currentId: null, memories: [],
   settings: {
@@ -669,13 +660,13 @@ const state = {
     speakReplies: false, saveHistory: true,
     voiceURI: null, apiKey: "",
     model: "llama-3.1-8b-instant",
-    lang: "urdu",
+    lang: "auto",
     rate: 0.95,
   },
   pendingAttachments: [], isRecording: false,
 };
 
-const LS = { CONVOS: "mpai_c_v11", MEMS: "mpai_m_v11", SETTINGS: "mpai_s_v11" };
+const LS = { CONVOS: "mpai_c_v12", MEMS: "mpai_m_v12", SETTINGS: "mpai_s_v12" };
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -699,18 +690,12 @@ const els = {
   clearMemoriesBtn: $("clearMemoriesBtn"), clearHistoryBtn: $("clearHistoryBtn"),
 };
 
-/* Detect Arabic/Urdu script */
 function isArabicScript(text) {
   return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
 }
-
-/* Apply RTL if Urdu/Arabic text */
 function applyRTF(el, text) {
-  if (isArabicScript(text)) {
-    el.classList.add("rtl");
-  } else {
-    el.classList.remove("rtl");
-  }
+  if (isArabicScript(text)) el.classList.add("rtl");
+  else el.classList.remove("rtl");
 }
 
 function init() {
@@ -724,7 +709,7 @@ function init() {
   autoResizeTextarea();
   updateSendButton();
   updateKeyStatus();
-  console.log("✅ Ready. Lang:", state.settings.lang);
+  console.log("✅ Ready. Lang:", state.settings.lang, "Model:", state.settings.model);
 }
 
 function loadFromStorage() {
@@ -743,7 +728,7 @@ function saveMemories() { try { localStorage.setItem(LS.MEMS, JSON.stringify(sta
 function saveSettings() { try { localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings)); } catch(e){} }
 
 function createConversation() {
-  const conv = { id: "c_" + Date.now(), title: "نیا چیٹ", messages: [], createdAt: Date.now() };
+  const conv = { id: "c_" + Date.now(), title: "New Chat", messages: [], createdAt: Date.now() };
   state.conversations.unshift(conv);
   state.currentId = conv.id;
   saveConversations(); renderHistory(); clearMessagesView();
@@ -762,7 +747,7 @@ function renderHistory(filter = "") {
   if (!list.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
-    empty.textContent = filter ? "No matches" : "ابھی کوئی چیٹ نہیں";
+    empty.textContent = filter ? "No matches" : "No conversations yet";
     els.historyList.appendChild(empty);
     return;
   }
@@ -866,17 +851,17 @@ async function callGroqAPI(apiKey, model, messages) {
 
 function getSystemPrompt() {
   const lang = state.settings.lang;
-  let prompt = "You are a helpful, warm, friendly personal AI assistant for a Pakistani user. ";
+  let prompt = "You are a helpful, warm, friendly personal AI assistant. ";
   if (lang === "urdu") {
-    prompt += "ALWAYS reply in Urdu (Arabic script: اردو). Do NOT use Roman Urdu. Do NOT reply in English. Write proper Urdu script. Keep replies warm, respectful (use آپ not تم), and concise.";
+    prompt += "ALWAYS reply in Urdu using Arabic script (اردو). Do NOT use Roman Urdu. Do NOT reply in English. Use proper Urdu script. Keep replies warm, respectful (use آپ not تم), and concise.";
   } else if (lang === "pashto") {
-    prompt += "ALWAYS reply in Pashto (پښتو - Arabic script). If the user writes in Urdu or English, still reply in Pashto. Keep replies warm, respectful, and concise.";
+    prompt += "ALWAYS reply in Pashto using Arabic script (پښتو). Even if user writes in Urdu or English, still reply in Pashto. Keep replies warm, respectful, and concise.";
   } else if (lang === "english") {
     prompt += "Reply in clear, friendly English. Keep replies concise and helpful.";
   } else if (lang === "roman-urdu") {
     prompt += "Reply in Roman Urdu (Urdu written in English letters, e.g. 'Aap kaise hain?'). Keep replies warm, respectful, and concise.";
   } else {
-    prompt += "Match the user's language. If they write Urdu, reply Urdu (Arabic script). If Pashto, reply Pashto. If English, reply English.";
+    prompt += "IMPORTANT: Match the user's language automatically. If they write in Urdu (Arabic script), reply in Urdu (Arabic script). If they write in Pashto, reply in Pashto. If they write Roman Urdu, reply Roman Urdu. If they write English, reply English. Always use the same script and style as the user.";
   }
   if (state.memories.length) {
     const memText = state.memories.map(m => "- " + m.text).join("\n");
@@ -893,11 +878,8 @@ async function handleSend() {
   let conv = getCurrentConversation();
   if (!conv) conv = createConversation();
   conv.messages.push({ role: "user", text, attachments, ts: Date.now() });
-  if (conv.title === "نیا چیٹ" || conv.title === "New Chat") {
-    if (text) {
-      const firstLine = text.split("\n")[0].slice(0, 40);
-      conv.title = firstLine + (text.length > 40 ? "…" : "");
-    }
+  if (conv.title === "New Chat" && text) {
+    conv.title = text.slice(0, 40) + (text.length > 40 ? "…" : "");
   }
 
   renderMessage("user", text, attachments);
@@ -940,17 +922,17 @@ async function handleSend() {
 
       if (errMsg.includes("model") && (errMsg.includes("not exist") || errMsg.includes("does not exist"))) {
         removeTyping();
-        renderMessage("ai", "⚠️ یہ ماڈل دستیاب نہیں۔ سیٹنگز → ماڈل میں دوسرا ماڈل منتخب کریں۔");
+        renderMessage("ai", "⚠️ Model `" + state.settings.model + "` is not available.\n\nPlease open Settings → Model and select another model (try Llama 3.1 8B).");
         return;
       }
       if (errMsg.includes("Invalid API Key") || errMsg.includes("invalid_api_key") || res.status === 401) {
         removeTyping();
-        renderMessage("ai", "🔑 API key غلط ہے۔ سیٹنگز میں صحیح key ڈالیں۔ نئی key: console.groq.com/keys");
+        renderMessage("ai", "🔑 Invalid API key.\n\nPlease check Settings → Groq API Key.\nGet a free key: console.groq.com/keys");
         return;
       }
       if (res.status === 429 || errMsg.includes("rate_limit")) {
         removeTyping();
-        renderMessage("ai", "⏳ تھوڑی دیر انتظار کریں — rate limit ہے۔");
+        renderMessage("ai", "⏳ Rate limit reached. Please wait a moment (30 req/min on free tier).");
         return;
       }
       throw new Error(errMsg);
@@ -966,7 +948,7 @@ async function handleSend() {
     if (state.settings.speakReplies) speakText(fullReply);
   } catch (err) {
     removeTyping();
-    const errMsg = "❌ خرابی: " + err.message + "\n\n• انٹرنیٹ چیک کریں\n• VPN/Ad blocker بند کریں\n• WiFi/موبائل ڈیٹا تبدیل کریں";
+    const errMsg = "❌ Error: " + err.message + "\n\n• Check your internet\n• Turn off VPN/Ad blocker\n• Try switching WiFi/Mobile data";
     renderMessage("ai", errMsg);
     conv.messages.push({ role: "ai", text: errMsg, attachments: [], ts: Date.now() });
     saveConversations();
@@ -978,14 +960,16 @@ function smartDemoReply(userText, attachments) {
   if (attachments && attachments.length) {
     const imgs = attachments.filter(a => a.type === "image").length;
     const docs = attachments.filter(a => a.type === "file").length;
-    if (imgs) reply += "آپ نے " + imgs + " تصویر بھیجی۔ 📷\n\n";
-    if (docs) reply += "آپ نے " + docs + " دستاویز بھیجی۔ 📄\n\n";
+    if (imgs) reply += "Got " + imgs + " image(s). 📷\n\n";
+    if (docs) reply += "Got " + docs + " document(s). 📄\n\n";
   }
   const lower = (userText || "").toLowerCase();
   if (/salam|hello|hi|hey|assalam|السلام/.test(lower)) reply += "وعلیکم السلام! 🌙 میں ٹھیک ہوں، آپ کیسے ہیں؟";
+  else if (/time|waqt/.test(lower)) reply += "Abhi waqt hai: " + new Date().toLocaleTimeString();
+  else if (/date|tareekh/.test(lower)) reply += "Aaj hai: " + new Date().toLocaleDateString();
   else if (userText) {
-    reply += "آپ نے کہا: \"" + userText + "\"\n\n";
-    reply += "💡 اصلی AI کے لیے سیٹنگز میں Groq API key ڈالیں۔ مفت key: console.groq.com/keys";
+    reply += "You said: \"" + userText + "\"\n\n";
+    reply += "💡 For real AI, add your Groq API key in Settings. Free key: console.groq.com/keys";
   }
   return reply;
 }
@@ -994,7 +978,7 @@ function renderMemories() {
   els.memoriesList.innerHTML = "";
   if (!state.memories.length) {
     const empty = document.createElement("div"); empty.className = "empty-state";
-    empty.textContent = "ابھی کوئی یادداشت محفوظ نہیں"; els.memoriesList.appendChild(empty); return;
+    empty.textContent = "No memories saved yet."; els.memoriesList.appendChild(empty); return;
   }
   state.memories.forEach((mem) => {
     const div = document.createElement("div"); div.className = "memory-item";
@@ -1047,10 +1031,10 @@ function initSpeechRecognition() {
   if (!SR) return null;
   const rec = new SR();
   rec.continuous = false; rec.interimResults = false;
-  rec.lang = "ur-PK";  // Urdu Pakistan
+  rec.lang = "en-IN";  // Will work for Urdu/Pashto too (Web Speech API handles it)
   rec.onresult = (e) => { const t = e.results[0][0].transcript; els.userInput.value = (els.userInput.value + " " + t).trim(); autoResizeTextarea(); updateSendButton(); };
   rec.onend = () => { state.isRecording = false; els.micBtn.classList.remove("recording"); };
-  rec.onerror = (e) => { state.isRecording = false; els.micBtn.classList.remove("recording"); if (e.error === "not-allowed") alert("مائیک کی اجازت دیں"); };
+  rec.onerror = (e) => { state.isRecording = false; els.micBtn.classList.remove("recording"); if (e.error === "not-allowed") alert("Microphone blocked."); };
   return rec;
 }
 function toggleRecording() {
@@ -1065,34 +1049,19 @@ function populateVoices() {
     const voices = speechSynthesis.getVoices();
     els.voiceSelect.innerHTML = "";
 
-    // Priority: Urdu voices first, then Hindi, then English female
-    const priority = {
-      "ur": 1, "ur-pk": 1, "ur-in": 1,
-      "hi": 2, "hi-in": 2,
-      "ps": 3,
-      "en-in": 4, "en-gb": 5, "en-us": 5,
-    };
+    // Priority order for auto-selection
+    const priority = { "ur": 1, "ur-pk": 1, "hi": 2, "hi-in": 2, "ps": 3, "en-in": 4, "en-gb": 5, "en-us": 5 };
     const sorted = [...voices].sort((a, b) => {
       const aL = a.lang.toLowerCase();
       const bL = b.lang.toLowerCase();
       const aP = priority[aL] || priority[aL.split("-")[0]] || 99;
       const bP = priority[bL] || priority[bL.split("-")[0]] || 99;
-      if (aP !== bP) return aP - bP;
-      // Female first
-      const aN = (a.name + " " + a.voiceURI).toLowerCase();
-      const bN = (b.name + " " + b.voiceURI).toLowerCase();
-      const female = ["female","woman","zira","samantha","victoria","karen","moira","tessa","en-in-x-ene","ur-pk"];
-      const aF = female.some(k => aN.includes(k));
-      const bF = female.some(k => bN.includes(k));
-      if (aF && !bF) return -1;
-      if (!aF && bF) return 1;
-      return 0;
+      return aP - bP;
     });
 
     sorted.forEach((v) => {
       const opt = document.createElement("option");
       opt.value = v.voiceURI;
-      // Group label
       let label = v.name + " (" + v.lang + ")";
       if (v.lang.toLowerCase().startsWith("ur")) label = "🇵🇰 " + label;
       else if (v.lang.toLowerCase().startsWith("hi")) label = "🇮🇳 " + label;
@@ -1102,11 +1071,6 @@ function populateVoices() {
       els.voiceSelect.appendChild(opt);
     });
 
-    if (!state.settings.voiceURI && sorted.length) {
-      const best = sorted[0];
-      state.settings.voiceURI = best.voiceURI;
-      saveSettings();
-    }
     if (state.settings.voiceURI) els.voiceSelect.value = state.settings.voiceURI;
   };
   load();
@@ -1135,12 +1099,15 @@ function speakText(text) {
     voice = all.find(x => x.voiceURI === state.settings.voiceURI);
   }
 
-  // If text is Urdu/Arabic but selected voice is English → find Urdu
-  if (hasArabicScript && voice && !voice.lang.toLowerCase().startsWith("ur") && !voice.lang.toLowerCase().startsWith("hi") && !voice.lang.toLowerCase().startsWith("ps")) {
-    const urduVoice = all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
-                      all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
-                      all.find(v => v.lang.toLowerCase().startsWith("ps"));
-    if (urduVoice) voice = urduVoice;
+  // If text is Urdu script but selected voice is not Urdu/Hindi/Pashto — auto-switch
+  if (hasArabicScript && voice) {
+    const vLang = voice.lang.toLowerCase();
+    if (!vLang.startsWith("ur") && !vLang.startsWith("hi") && !vLang.startsWith("ps")) {
+      const urduVoice = all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
+                        all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
+                        all.find(v => v.lang.toLowerCase().startsWith("ps"));
+      if (urduVoice) voice = urduVoice;
+    }
   }
 
   if (!voice) {
@@ -1183,10 +1150,10 @@ function applySettingsToUI() {
 }
 function updateKeyStatus() {
   if (state.settings.apiKey && state.settings.apiKey.startsWith("gsk_")) {
-    els.keyStatus.textContent = "✅ Key saved — اصلی AI چالو ہے";
+    els.keyStatus.textContent = "✅ Key saved — real AI is active";
     els.keyStatus.className = "key-status ok";
   } else {
-    els.keyStatus.textContent = "❌ Key nahi hai — demo mode";
+    els.keyStatus.textContent = "❌ No key — demo mode";
     els.keyStatus.className = "key-status missing";
   }
 }
@@ -1230,9 +1197,9 @@ function attachEventListeners() {
   };
   els.saveKeyBtn.onclick = () => {
     const key = els.apiKeyInput.value.trim();
-    if (!key) { alert("Key khaali hai."); return; }
+    if (!key) { alert("Key is empty. Get one from console.groq.com/keys"); return; }
     state.settings.apiKey = key; saveSettings(); updateKeyStatus();
-    alert("✅ Key save ho gayi!");
+    alert("✅ Key saved!");
   };
   els.modelSelect.onchange = (e) => { state.settings.model = e.target.value; saveSettings(); };
   els.langSelect.onchange = (e) => { state.settings.lang = e.target.value; saveSettings(); };
@@ -1242,9 +1209,9 @@ function attachEventListeners() {
   els.speakToggle.onchange = (e) => { state.settings.speakReplies = e.target.checked; saveSettings(); };
   els.historyToggle.onchange = (e) => { state.settings.saveHistory = e.target.checked; saveSettings(); };
   els.voiceSelect.onchange = (e) => { state.settings.voiceURI = e.target.value; saveSettings(); };
-  els.clearMemoriesBtn.onclick = () => { if (confirm("تمام یادداشتیں حذف کریں؟")) { state.memories = []; saveMemories(); renderMemories(); } };
+  els.clearMemoriesBtn.onclick = () => { if (confirm("Delete ALL memories?")) { state.memories = []; saveMemories(); renderMemories(); } };
   els.clearHistoryBtn.onclick = () => {
-    if (confirm("تمام چیٹس حذف کریں؟")) {
+    if (confirm("Delete ALL conversations?")) {
       state.conversations = []; state.currentId = null; saveConversations();
       renderHistory(); clearMessagesView(); els.welcome.style.display = "flex";
     }
