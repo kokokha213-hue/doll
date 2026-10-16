@@ -9,29 +9,23 @@
 </head>
 <body>
 
-  <div class="app" id="app">
-
-    <!-- SIDEBAR -->
+  <div class="app">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <button class="new-chat-btn" id="newChatBtn">
           <span class="plus-icon">+</span> New Chat
         </button>
       </div>
-
       <div class="sidebar-search">
         <input type="text" id="historySearch" placeholder="Search conversations..." autocomplete="off" />
       </div>
-
       <div class="history-list" id="historyList"></div>
-
       <div class="sidebar-footer">
         <button class="sidebar-btn" id="openSettingsBtn">⚙️ Settings</button>
         <div class="privacy-badge">🔒 Local &amp; Private</div>
       </div>
     </aside>
 
-    <!-- MAIN -->
     <main class="main">
       <header class="topbar">
         <button class="icon-btn" id="menuToggle" aria-label="Open menu">☰</button>
@@ -60,13 +54,10 @@
         <div class="composer-inner">
           <button class="composer-icon" id="attachImageBtn" title="Upload image">🖼️</button>
           <button class="composer-icon" id="attachDocBtn" title="Upload document">📄</button>
-
           <textarea id="userInput" placeholder="Message your AI..." rows="1" autocomplete="off"></textarea>
-
           <button class="composer-icon mic" id="micBtn" title="Voice input">🎤</button>
           <button class="send-btn" id="sendBtn" title="Send" disabled>➤</button>
         </div>
-
         <input type="file" id="imageInput" accept="image/*" hidden />
         <input type="file" id="docInput" accept=".pdf,.txt,.md,.doc,.docx" hidden />
       </footer>
@@ -75,34 +66,27 @@
     <div class="overlay" id="overlay" hidden></div>
   </div>
 
-  <!-- SETTINGS PANEL (hidden by default) -->
   <div class="settings-panel" id="settingsPanel" hidden>
     <div class="settings-header">
       <h2>Settings</h2>
-      <button class="icon-btn" id="closeSettingsBtn" aria-label="Close">✕</button>
+      <button class="icon-btn" id="closeSettingsBtn">✕</button>
     </div>
-
     <div class="settings-body">
-
       <section class="settings-section">
         <h3>🧠 Personal Memory</h3>
         <p class="settings-desc">Your AI saves things you tell it, only when you give permission.</p>
-
         <label class="toggle-row">
           <span>Allow AI to ask to save memories</span>
           <input type="checkbox" id="memoryToggle" checked />
         </label>
-
         <label class="toggle-row">
           <span>Auto-save important facts (no prompt)</span>
           <input type="checkbox" id="autoMemoryToggle" />
         </label>
-
-        <h4 class="memories-heading">Saved Memories</h4>
+        <h4>Saved Memories</h4>
         <div class="memories-list" id="memoriesList"></div>
         <button class="danger-btn" id="clearMemoriesBtn">Delete All Memories</button>
       </section>
-
       <section class="settings-section">
         <h3>🔊 Voice &amp; Speech</h3>
         <label class="toggle-row">
@@ -114,7 +98,6 @@
           <select id="voiceSelect"></select>
         </label>
       </section>
-
       <section class="settings-section">
         <h3>🔒 Privacy</h3>
         <label class="toggle-row">
@@ -123,17 +106,12 @@
         </label>
         <button class="danger-btn" id="clearHistoryBtn">Delete All Conversations</button>
       </section>
-
       <section class="settings-section">
         <h3>ℹ️ About</h3>
-        <p class="settings-desc">My Personal AI — Phase 1 (Frontend). Runs entirely in your browser.</p>
+        <p class="settings-desc">My Personal AI — Phase 1. Runs entirely in your browser.</p>
       </section>
-
     </div>
   </div>
-
-  <!-- Settings overlay (mobile backdrop) -->
-  <div class="settings-overlay" id="settingsOverlay" hidden></div>
 
   <script src="script.js"></script>
 </body>
