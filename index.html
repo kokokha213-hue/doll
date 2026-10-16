@@ -532,11 +532,11 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <div class="welcome" id="welcome">
         <div class="welcome-logo">🤖</div>
         <h2>Hi, I'm your Personal AI</h2>
-        <p>Ask me anything. I can chat in Urdu, Pashto, or English. Upload images or documents too.</p>
+        <p>Chat in any language — English, Urdu, Roman Urdu, or Pashto. I'll reply in the same language automatically.</p>
         <div class="welcome-chips">
+          <button class="chip" data-prompt="Hello! How are you?">Hello!</button>
           <button class="chip" data-prompt="السلام علیکم، آپ کیسے ہیں؟">السلام علیکم</button>
-          <button class="chip" data-prompt="Explain quantum computing in simple terms.">Explain quantum computing</button>
-          <button class="chip" data-prompt="Help me plan a healthy weekly meal plan.">Meal plan ideas</button>
+          <button class="chip" data-prompt="Assalam o alaikum, kya haal hai?">Assalam o alaikum</button>
         </div>
       </div>
     </section>
@@ -549,7 +549,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
       <div class="composer-inner">
         <button class="composer-icon" id="attachImageBtn">🖼️</button>
         <button class="composer-icon" id="attachDocBtn">📄</button>
-        <textarea id="userInput" placeholder="Message your AI..." rows="1"></textarea>
+        <textarea id="userInput" placeholder="Message in any language..." rows="1"></textarea>
         <button class="composer-icon" id="micBtn">🎤</button>
         <button class="send-btn" id="sendBtn" disabled>➤</button>
       </div>
@@ -570,7 +570,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>🤖 AI Provider</h3>
-      <p class="settings-desc">Apni Groq API key yahan paste karo. Free key: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+      <p class="settings-desc">Paste your Groq API key here. Free key: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
       <label class="settings-label">
         Groq API Key
         <div class="api-key-row">
@@ -578,7 +578,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
           <button class="key-toggle" id="keyToggleBtn" type="button">👁</button>
         </div>
       </label>
-      <div class="key-status missing" id="keyStatus">❌ Key nahi hai — demo mode</div>
+      <div class="key-status missing" id="keyStatus">❌ No key — demo mode</div>
       <button class="save-btn" id="saveKeyBtn">Save Key</button>
       <label class="settings-label" style="margin-top:16px">
         Model
@@ -595,15 +595,15 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>🌍 Reply Language</h3>
-      <p class="settings-desc">AI kis zabaan mein jawab de. "Auto" matlab aapki zubaan match karega.</p>
+      <p class="settings-desc"><b>Auto (recommended):</b> AI automatically replies in the same language you write — English, Urdu script, Roman Urdu, or Pashto.</p>
       <label class="settings-label">
-        Language
+        Language Mode
         <select id="langSelect">
-          <option value="auto">🌐 Auto (match me)</option>
-          <option value="urdu">🇵🇰 Urdu (اردو)</option>
-          <option value="pashto">🏔️ Pashto (پښتو)</option>
-          <option value="english">🇬🇧 English</option>
-          <option value="roman-urdu">📝 Roman Urdu</option>
+          <option value="auto">🌐 Auto (match my language)</option>
+          <option value="english">🇬🇧 Always English</option>
+          <option value="urdu">🇵🇰 Always Urdu (اردو)</option>
+          <option value="roman-urdu">📝 Always Roman Urdu</option>
+          <option value="pashto">🏔️ Always Pashto (پښتو)</option>
         </select>
       </label>
     </section>
@@ -621,9 +621,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     <section class="settings-section">
       <h3>🔊 Voice &amp; Speech</h3>
       <label class="toggle-row"><span>Speak AI replies aloud</span><input type="checkbox" id="speakToggle"></label>
+      <p class="settings-desc" style="font-size:12px;margin-top:8px">Voice auto-matches the reply language. If you type Urdu, you'll hear Urdu (if installed). If English, English voice.</p>
       <label class="settings-label">
-        Voice
-        <select id="voiceSelect"></select>
+        Manual Voice Override (optional)
+        <select id="voiceSelect">
+          <option value="">🌐 Auto (match language)</option>
+        </select>
       </label>
       <label class="settings-label">
         Voice Speed
@@ -644,7 +647,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>ℹ️ About</h3>
-      <p class="settings-desc">My Personal AI — Groq-powered. API key sirf aapke browser mein save hoti hai.</p>
+      <p class="settings-desc">My Personal AI — Groq-powered. API key stays only in your browser.</p>
     </section>
 
   </div>
@@ -653,12 +656,16 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 <div class="settings-overlay" id="settingsOverlay"></div>
 
 <script>
+/* ============================================================
+   MY PERSONAL AI — Full Auto Language + Auto Voice
+   ============================================================ */
+
 const state = {
   conversations: [], currentId: null, memories: [],
   settings: {
     memoryEnabled: false, autoMemory: false,
     speakReplies: false, saveHistory: true,
-    voiceURI: null, apiKey: "",
+    voiceURI: "", apiKey: "",
     model: "llama-3.1-8b-instant",
     lang: "auto",
     rate: 0.95,
@@ -666,7 +673,7 @@ const state = {
   pendingAttachments: [], isRecording: false,
 };
 
-const LS = { CONVOS: "mpai_c_v12", MEMS: "mpai_m_v12", SETTINGS: "mpai_s_v12" };
+const LS = { CONVOS: "mpai_c_v13", MEMS: "mpai_m_v13", SETTINGS: "mpai_s_v13" };
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -690,14 +697,66 @@ const els = {
   clearMemoriesBtn: $("clearMemoriesBtn"), clearHistoryBtn: $("clearHistoryBtn"),
 };
 
-function isArabicScript(text) {
-  return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
+/* ============================================================
+   LANGUAGE DETECTION
+   ============================================================ */
+function detectLanguage(text) {
+  if (!text) return "english";
+  const t = text.trim();
+  if (!t) return "english";
+
+  // 1. Arabic/Urdu/Pashto script detection
+  if (/[\u0600-\u06FF\u0750-\u077F]/.test(t)) {
+    // Pashto-specific letters
+    if (/[ځڅډړږښږګڼښۍې]/.test(t)) return "pashto";
+    // Urdu-specific
+    if (/[ٹڈڑںھہیے]/.test(t)) return "urdu";
+    return "urdu"; // default Arabic script = Urdu
+  }
+
+  // 2. Roman Urdu detection (Hindi/Urdu words in English letters)
+  const romanUrduWords = [
+    "kya","kaise","kaisa","kaisi","hai","hain","ho","hun","tha","thi","the",
+    "aap","tum","main","hum","wo","yeh","ye","is","us","ka","ki","ke",
+    "aur","ya","lekin","magar","phir","bhi","nahi","nahin","haan","ji",
+    "salam","alaikum","assalam","shukriya","meherbani","khuda","hafiz",
+    "acha","achha","theek","thik","bura","bohat","bahut","zyada","kam",
+    "khana","pani","ghar","kaam","dost","bhai","behen","maa","baap",
+    "kab","kahan","kyun","kyu","kaun","konsa","kitna","kitne",
+    "batao","bata","suno","dekho","dekha","karo","kar","karna","karunga",
+    "raha","rahi","rahe","gaya","gayi","gaye","chala","chali","chale",
+    "mujhe","tujhe","humein","tumhein","apko","aapko","unhe","inhe",
+    "mera","meri","mere","tera","teri","tere","hamara","hamari","hamare",
+    "aapka","aapki","aapke","tumhara","tumhari","tumhare"
+  ];
+  const words = t.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+  if (words.length === 0) return "english";
+  let romanUrduMatches = 0;
+  words.forEach(w => {
+    const clean = w.replace(/[^a-z]/g, "");
+    if (romanUrduWords.includes(clean)) romanUrduMatches++;
+  });
+  const romanRatio = romanUrduMatches / words.length;
+  if (romanRatio >= 0.15 || romanUrduMatches >= 2) return "roman-urdu";
+
+  // 3. Default: English
+  return "english";
 }
+
+/* Check if text has Arabic script */
+function isArabicScript(text) {
+  return /[\u0600-\u06FF\u0750-\u077F]/.test(text || "");
+}
+
+/* Apply RTL if Arabic script */
 function applyRTF(el, text) {
   if (isArabicScript(text)) el.classList.add("rtl");
   else el.classList.remove("rtl");
 }
 
+/* ============================================================
+   INIT
+   ============================================================ */
 function init() {
   loadFromStorage();
   applySettingsToUI();
@@ -727,6 +786,9 @@ function saveConversations() {
 function saveMemories() { try { localStorage.setItem(LS.MEMS, JSON.stringify(state.memories)); } catch(e){} }
 function saveSettings() { try { localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings)); } catch(e){} }
 
+/* ============================================================
+   CONVERSATIONS
+   ============================================================ */
 function createConversation() {
   const conv = { id: "c_" + Date.now(), title: "New Chat", messages: [], createdAt: Date.now() };
   state.conversations.unshift(conv);
@@ -827,6 +889,9 @@ function renderTyping() {
 function removeTyping() { const el = document.getElementById("typingIndicator"); if (el) el.remove(); }
 function scrollToBottom() { requestAnimationFrame(() => { els.messages.scrollTop = els.messages.scrollHeight; }); }
 
+/* ============================================================
+   GROQ API with fallback proxies
+   ============================================================ */
 async function callGroqAPI(apiKey, model, messages) {
   const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
   const reqBody = JSON.stringify({
@@ -849,20 +914,39 @@ async function callGroqAPI(apiKey, model, messages) {
   throw new Error("Network error. " + (lastErr ? lastErr.message : ""));
 }
 
-function getSystemPrompt() {
-  const lang = state.settings.lang;
+/* ============================================================
+   SYSTEM PROMPT — Full Auto Language
+   ============================================================ */
+function getSystemPrompt(userText) {
+  const mode = state.settings.lang;
+
   let prompt = "You are a helpful, warm, friendly personal AI assistant. ";
-  if (lang === "urdu") {
-    prompt += "ALWAYS reply in Urdu using Arabic script (اردو). Do NOT use Roman Urdu. Do NOT reply in English. Use proper Urdu script. Keep replies warm, respectful (use آپ not تم), and concise.";
-  } else if (lang === "pashto") {
-    prompt += "ALWAYS reply in Pashto using Arabic script (پښتو). Even if user writes in Urdu or English, still reply in Pashto. Keep replies warm, respectful, and concise.";
-  } else if (lang === "english") {
-    prompt += "Reply in clear, friendly English. Keep replies concise and helpful.";
-  } else if (lang === "roman-urdu") {
-    prompt += "Reply in Roman Urdu (Urdu written in English letters, e.g. 'Aap kaise hain?'). Keep replies warm, respectful, and concise.";
-  } else {
-    prompt += "IMPORTANT: Match the user's language automatically. If they write in Urdu (Arabic script), reply in Urdu (Arabic script). If they write in Pashto, reply in Pashto. If they write Roman Urdu, reply Roman Urdu. If they write English, reply English. Always use the same script and style as the user.";
+
+  if (mode === "auto") {
+    // Detect the user's language
+    const detected = detectLanguage(userText);
+
+    if (detected === "english") {
+      prompt += "The user just wrote in ENGLISH. Reply ONLY in English. Do not use any other language.";
+    } else if (detected === "urdu") {
+      prompt += "The user just wrote in URDU (Arabic script: اردو). Reply ONLY in Urdu using proper Arabic/Urdu script. Do NOT use Roman Urdu. Do NOT reply in English. Use respectful tone (آپ).";
+    } else if (detected === "roman-urdu") {
+      prompt += "The user just wrote in ROMAN URDU (Urdu written in English letters, e.g., 'kya haal hai bhai'). Reply ONLY in Roman Urdu using English letters. Do NOT use Arabic script. Do NOT reply in pure English. Example reply style: 'Walaikum salam! Main theek hoon, aap kaise hain?'";
+    } else if (detected === "pashto") {
+      prompt += "The user just wrote in PASHTO (پښتو). Reply ONLY in Pashto using Arabic script. Do NOT reply in Urdu or English.";
+    }
+  } else if (mode === "english") {
+    prompt += "ALWAYS reply in English.";
+  } else if (mode === "urdu") {
+    prompt += "ALWAYS reply in Urdu (Arabic script: اردو). Do NOT use Roman Urdu. Do NOT reply in English.";
+  } else if (mode === "roman-urdu") {
+    prompt += "ALWAYS reply in Roman Urdu (Urdu written with English letters). Example: 'Aap kaise hain? Main theek hoon.' Do NOT use Arabic script.";
+  } else if (mode === "pashto") {
+    prompt += "ALWAYS reply in Pashto (پښتو) using Arabic script.";
   }
+
+  prompt += " Keep replies warm, natural, and concise (2-4 sentences usually).";
+
   if (state.memories.length) {
     const memText = state.memories.map(m => "- " + m.text).join("\n");
     prompt += "\n\nThings you remember about the user:\n" + memText;
@@ -870,6 +954,9 @@ function getSystemPrompt() {
   return prompt;
 }
 
+/* ============================================================
+   HANDLE SEND
+   ============================================================ */
 async function handleSend() {
   const text = els.userInput.value.trim();
   const attachments = [...state.pendingAttachments];
@@ -886,6 +973,7 @@ async function handleSend() {
   els.userInput.value = ""; autoResizeTextarea(); clearAttachments(); updateSendButton();
   saveConversations(); renderHistory(els.historySearch.value);
 
+  // Demo mode
   if (!state.settings.apiKey) {
     renderTyping();
     const demoReply = smartDemoReply(text, attachments);
@@ -912,7 +1000,8 @@ async function handleSend() {
         return { role: m.role === "ai" ? "assistant" : "user", content };
       });
 
-    historyMessages.unshift({ role: "system", content: getSystemPrompt() });
+    // System prompt is based on LATEST user text (auto detection)
+    historyMessages.unshift({ role: "system", content: getSystemPrompt(text) });
 
     const res = await callGroqAPI(state.settings.apiKey, state.settings.model, historyMessages);
     if (!res.ok) {
@@ -955,25 +1044,51 @@ async function handleSend() {
   }
 }
 
+/* ============================================================
+   SMART DEMO REPLY
+   ============================================================ */
 function smartDemoReply(userText, attachments) {
   let reply = "";
+  const detected = detectLanguage(userText);
+
   if (attachments && attachments.length) {
     const imgs = attachments.filter(a => a.type === "image").length;
     const docs = attachments.filter(a => a.type === "file").length;
-    if (imgs) reply += "Got " + imgs + " image(s). 📷\n\n";
-    if (docs) reply += "Got " + docs + " document(s). 📄\n\n";
+    if (detected === "urdu") {
+      if (imgs) reply += imgs + " تصویر موصول ہوئی۔ 📷\n\n";
+      if (docs) reply += docs + " دستاویز موصول ہوئی۔ 📄\n\n";
+    } else if (detected === "roman-urdu") {
+      if (imgs) reply += imgs + " image mil gayi. 📷\n\n";
+      if (docs) reply += docs + " document mil gaya. 📄\n\n";
+    } else {
+      if (imgs) reply += "Got " + imgs + " image(s). 📷\n\n";
+      if (docs) reply += "Got " + docs + " document(s). 📄\n\n";
+    }
   }
+
   const lower = (userText || "").toLowerCase();
-  if (/salam|hello|hi|hey|assalam|السلام/.test(lower)) reply += "وعلیکم السلام! 🌙 میں ٹھیک ہوں، آپ کیسے ہیں؟";
-  else if (/time|waqt/.test(lower)) reply += "Abhi waqt hai: " + new Date().toLocaleTimeString();
-  else if (/date|tareekh/.test(lower)) reply += "Aaj hai: " + new Date().toLocaleDateString();
-  else if (userText) {
-    reply += "You said: \"" + userText + "\"\n\n";
-    reply += "💡 For real AI, add your Groq API key in Settings. Free key: console.groq.com/keys";
+
+  if (detected === "urdu") {
+    if (/سلام|ہیلو|کیسے|کیا حال/.test(userText)) reply += "وعلیکم السلام! 🌙 میں ٹھیک ہوں، آپ کیسے ہیں؟";
+    else if (userText) reply += "آپ نے کہا: \"" + userText + "\"\n\n💡 اصلی AI کے لیے سیٹنگز میں Groq API key ڈالیں۔";
+  } else if (detected === "roman-urdu") {
+    if (/salam|assalam|hello|hi|kaise|haal/.test(lower)) reply += "Walaikum Assalam! 🌙 Main theek hoon, aap kaise hain?";
+    else if (userText) reply += "Aapne kaha: \"" + userText + "\"\n\n💡 Asli AI ke liye Settings mein Groq API key daalein.";
+  } else if (detected === "pashto") {
+    if (/سلام|salam/.test(lower)) reply += "وعلیکم السلام! 🌙 زه ښه یم، تاسو څنګه یاست؟";
+    else if (userText) reply += "تاسو وویل: \"" + userText + "\"\n\n💡 د اصلي AI لپاره په Settings کې Groq API key کیږدئ.";
+  } else {
+    if (/hello|hi|hey/.test(lower)) reply += "Hello! 👋 I'm doing well, how are you?";
+    else if (/time|waqt/.test(lower)) reply += "Current time: " + new Date().toLocaleTimeString();
+    else if (/date|tareekh/.test(lower)) reply += "Today: " + new Date().toLocaleDateString();
+    else if (userText) reply += "You said: \"" + userText + "\"\n\n💡 For real AI, add your Groq API key in Settings (free: console.groq.com/keys).";
   }
   return reply;
 }
 
+/* ============================================================
+   MEMORY
+   ============================================================ */
 function renderMemories() {
   els.memoriesList.innerHTML = "";
   if (!state.memories.length) {
@@ -990,6 +1105,10 @@ function renderMemories() {
     els.memoriesList.appendChild(div);
   });
 }
+
+/* ============================================================
+   ATTACHMENTS
+   ============================================================ */
 function handleImageUpload(files) {
   [...files].forEach((file) => {
     if (!file.type.startsWith("image/")) return;
@@ -1025,13 +1144,16 @@ function renderAttachmentPreview() {
 }
 function clearAttachments() { state.pendingAttachments = []; renderAttachmentPreview(); }
 
+/* ============================================================
+   VOICE INPUT
+   ============================================================ */
 let recognition = null;
 function initSpeechRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return null;
   const rec = new SR();
   rec.continuous = false; rec.interimResults = false;
-  rec.lang = "en-IN";  // Will work for Urdu/Pashto too (Web Speech API handles it)
+  rec.lang = "en-IN";
   rec.onresult = (e) => { const t = e.results[0][0].transcript; els.userInput.value = (els.userInput.value + " " + t).trim(); autoResizeTextarea(); updateSendButton(); };
   rec.onend = () => { state.isRecording = false; els.micBtn.classList.remove("recording"); };
   rec.onerror = (e) => { state.isRecording = false; els.micBtn.classList.remove("recording"); if (e.error === "not-allowed") alert("Microphone blocked."); };
@@ -1043,13 +1165,22 @@ function toggleRecording() {
   else { try { recognition.start(); state.isRecording = true; els.micBtn.classList.add("recording"); } catch (e) {} }
 }
 
+/* ============================================================
+   VOICES — Auto-match language
+   ============================================================ */
 function populateVoices() {
   if (!("speechSynthesis" in window)) return;
   const load = () => {
     const voices = speechSynthesis.getVoices();
     els.voiceSelect.innerHTML = "";
 
-    // Priority order for auto-selection
+    // Auto option first
+    const autoOpt = document.createElement("option");
+    autoOpt.value = "";
+    autoOpt.textContent = "🌐 Auto (match language)";
+    els.voiceSelect.appendChild(autoOpt);
+
+    // Sort by language priority
     const priority = { "ur": 1, "ur-pk": 1, "hi": 2, "hi-in": 2, "ps": 3, "en-in": 4, "en-gb": 5, "en-us": 5 };
     const sorted = [...voices].sort((a, b) => {
       const aL = a.lang.toLowerCase();
@@ -1071,10 +1202,65 @@ function populateVoices() {
       els.voiceSelect.appendChild(opt);
     });
 
-    if (state.settings.voiceURI) els.voiceSelect.value = state.settings.voiceURI;
+    els.voiceSelect.value = state.settings.voiceURI || "";
   };
   load();
   speechSynthesis.onvoiceschanged = load;
+}
+
+/* ============================================================
+   SPEAK — Auto-select voice based on text language
+   ============================================================ */
+function findVoiceForLanguage(lang, text) {
+  const all = speechSynthesis.getVoices();
+  if (!all.length) return null;
+
+  // If user has manually selected a voice, use it
+  if (state.settings.voiceURI) {
+    const manual = all.find(x => x.voiceURI === state.settings.voiceURI);
+    if (manual) return manual;
+  }
+
+  // Auto-select based on detected language
+  const femaleKeywords = ["female","woman","zira","samantha","victoria","karen","moira","tessa","google uk english female","google us english","en-in-x-ene"];
+
+  if (lang === "urdu" || lang === "pashto") {
+    // For Urdu/Pashto script — try Urdu voice, then Hindi, then Pashto, then English-India
+    return (
+      all.find(v => v.lang.toLowerCase().startsWith("ur-pk")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("ps")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("hi-in")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("en")) ||
+      all[0]
+    );
+  }
+
+  if (lang === "roman-urdu") {
+    // Roman Urdu → use Hindi voice (pronounces Roman Urdu letters correctly)
+    return (
+      all.find(v => v.lang.toLowerCase().startsWith("hi-in")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("en-gb")) ||
+      all.find(v => v.lang.toLowerCase().startsWith("en")) ||
+      all[0]
+    );
+  }
+
+  // English
+  return (
+    all.find(v => {
+      const n = (v.name + " " + v.voiceURI).toLowerCase();
+      return femaleKeywords.some(k => n.includes(k)) && v.lang.toLowerCase().startsWith("en");
+    }) ||
+    all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
+    all.find(v => v.lang.toLowerCase().startsWith("en-gb")) ||
+    all.find(v => v.lang.toLowerCase().startsWith("en")) ||
+    all[0]
+  );
 }
 
 function speakText(text) {
@@ -1090,53 +1276,43 @@ function speakText(text) {
 
   if (!clean) return;
 
-  const hasArabicScript = isArabicScript(clean);
+  // Detect language of the REPLY text
+  const lang = detectLanguage(clean);
+  const voice = findVoiceForLanguage(lang, clean);
+
   const utt = new SpeechSynthesisUtterance(clean);
-  const all = speechSynthesis.getVoices();
-
-  let voice = null;
-  if (state.settings.voiceURI) {
-    voice = all.find(x => x.voiceURI === state.settings.voiceURI);
+  if (voice) {
+    utt.voice = voice;
+    utt.lang = voice.lang;
+  } else if (lang === "urdu" || lang === "pashto") {
+    utt.lang = "ur-PK";
+  } else if (lang === "roman-urdu") {
+    utt.lang = "hi-IN";
+  } else {
+    utt.lang = "en-IN";
   }
 
-  // If text is Urdu script but selected voice is not Urdu/Hindi/Pashto — auto-switch
-  if (hasArabicScript && voice) {
-    const vLang = voice.lang.toLowerCase();
-    if (!vLang.startsWith("ur") && !vLang.startsWith("hi") && !vLang.startsWith("ps")) {
-      const urduVoice = all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
-                        all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
-                        all.find(v => v.lang.toLowerCase().startsWith("ps"));
-      if (urduVoice) voice = urduVoice;
-    }
-  }
-
-  if (!voice) {
-    if (hasArabicScript) {
-      voice = all.find(v => v.lang.toLowerCase().startsWith("ur")) ||
-              all.find(v => v.lang.toLowerCase().startsWith("hi")) ||
-              all.find(v => v.lang.toLowerCase().startsWith("ps")) ||
-              all.find(v => v.lang.toLowerCase().startsWith("en"));
-    } else {
-      voice = all.find(v => v.lang.toLowerCase().startsWith("en-in")) ||
-              all.find(v => v.lang.toLowerCase().startsWith("en")) ||
-              all[0];
-    }
-  }
-
-  if (voice) utt.voice = voice;
-  if (voice && voice.lang) utt.lang = voice.lang;
-  else if (hasArabicScript) utt.lang = "ur-PK";
-  else utt.lang = "en-US";
-
+  // Speed/pitch tuned per language
   const baseRate = parseFloat(state.settings.rate) || 0.95;
-  utt.rate = hasArabicScript ? Math.max(0.7, baseRate - 0.1) : baseRate;
-  utt.pitch = 1.1;
+  if (lang === "urdu" || lang === "pashto") {
+    utt.rate = Math.max(0.7, baseRate - 0.1);
+    utt.pitch = 1.1;
+  } else if (lang === "roman-urdu") {
+    utt.rate = baseRate - 0.05;
+    utt.pitch = 1.1;
+  } else {
+    utt.rate = baseRate;
+    utt.pitch = 1.1;
+  }
   utt.volume = 1.0;
 
   speechSynthesis.cancel();
   setTimeout(() => speechSynthesis.speak(utt), 50);
 }
 
+/* ============================================================
+   SETTINGS UI
+   ============================================================ */
 function applySettingsToUI() {
   els.memoryToggle.checked = state.settings.memoryEnabled;
   els.autoMemoryToggle.checked = state.settings.autoMemory;
@@ -1146,7 +1322,7 @@ function applySettingsToUI() {
   els.langSelect.value = state.settings.lang;
   els.rateSelect.value = String(state.settings.rate);
   if (state.settings.apiKey) els.apiKeyInput.value = state.settings.apiKey;
-  if (state.settings.voiceURI) els.voiceSelect.value = state.settings.voiceURI;
+  els.voiceSelect.value = state.settings.voiceURI || "";
 }
 function updateKeyStatus() {
   if (state.settings.apiKey && state.settings.apiKey.startsWith("gsk_")) {
