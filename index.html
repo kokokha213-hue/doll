@@ -437,7 +437,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
           <button class="key-toggle" id="keyToggleBtn" type="button">👁</button>
         </div>
       </label>
-      <div class="key-status missing" id="keyStatus">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</div>
+      <div class="key-status missing" id="keyStatus">❌ Key nahi hai — demo mode</div>
       <button class="save-btn" id="saveKeyBtn">Save Key</button>
 
       <label class="settings-label" style="margin-top:16px">
@@ -816,7 +816,7 @@ function smartDemoReply(userText, attachments) {
     reply += "Aaj hai: " + new Date().toLocaleDateString();
   } else if (userText) {
     reply += "Aapne kaha: \"" + userText + "\"\n\n";
-    reply += "💡 Asli AI jawab ke liye Settings mein apni Groq API key daalo. Free key: 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";
+    reply += "💡 Asli AI jawab ke liye Settings mein apni Groq API key daalo. Free key: console.groq.com/keys";
   }
   return reply;
 }
@@ -1019,7 +1019,7 @@ function updateKeyStatus() {
     els.keyStatus.textContent = "✅ Key saved — asli AI chalu hai";
     els.keyStatus.className = "key-status ok";
   } else {
-    els.keyStatus.textContent = "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";
+    els.keyStatus.textContent = "❌ Key nahi hai — demo mode";
     els.keyStatus.className = "key-status missing";
   }
 }
