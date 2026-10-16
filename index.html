@@ -30,10 +30,8 @@ html,body{
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
-/* ===== APP LAYOUT ===== */
 .app{display:flex;height:100dvh;width:100vw;position:relative}
 
-/* ===== SIDEBAR ===== */
 .sidebar{
   width:var(--sidebar-w);
   background:var(--bg-elev);
@@ -80,7 +78,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .sidebar-btn:hover{background:var(--bg-elev-2);color:var(--text)}
 .privacy-badge{font-size:11px;color:var(--text-dim);text-align:center;padding:4px}
 
-/* ===== MAIN ===== */
 .main{
   flex:1;display:flex;flex-direction:column;
   min-width:0;position:relative;
@@ -96,7 +93,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .icon-btn:hover{background:var(--bg-elev-2)}
 #menuToggle{display:none}
 
-/* ===== MESSAGES ===== */
 .messages{
   flex:1;overflow-y:auto;
   padding:24px 16px 180px;
@@ -155,7 +151,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   40%{opacity:1;transform:translateY(-3px)}
 }
 
-/* ===== ATTACHMENT PREVIEW ===== */
 .attachment-preview{
   position:absolute;bottom:92px;left:0;right:0;
   padding:0 16px;z-index:5;
@@ -172,7 +167,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .att-chip img{width:32px;height:32px;object-fit:cover;border-radius:6px}
 .att-chip .remove-att{color:var(--text-dim);font-size:14px;cursor:pointer}
 
-/* ===== COMPOSER ===== */
 .composer{
   position:absolute;bottom:0;left:0;right:0;
   padding:12px 16px 20px;
@@ -216,7 +210,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .send-btn:disabled{opacity:.35;cursor:not-allowed}
 .send-btn:not(:disabled):hover{background:var(--accent-hover)}
 
-/* ===== SETTINGS PANEL (hidden by default, slides in) ===== */
 .settings-panel{
   position:fixed;top:0;right:0;
   width:420px;max-width:100vw;height:100dvh;
@@ -242,6 +235,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 .settings-section h3{font-size:15px;margin-bottom:8px}
 .settings-section h4{font-size:13px;color:var(--text-dim);margin:12px 0 6px}
 .settings-desc{font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:12px}
+.settings-desc a{color:var(--accent);text-decoration:none}
 .toggle-row{
   display:flex;justify-content:space-between;align-items:center;
   padding:10px 0;font-size:14px;gap:12px;
@@ -268,11 +262,29 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   display:flex;flex-direction:column;gap:6px;
   font-size:13px;color:var(--text-dim);margin-top:8px;
 }
-.settings-label select{
+.settings-label select,
+.settings-label input[type="text"],
+.settings-label input[type="password"]{
   padding:10px;background:var(--bg-elev-2);
   border:1px solid var(--border);border-radius:8px;
   font-size:13px;outline:none;
 }
+.settings-label input[type="password"]:focus{border-color:var(--accent)}
+.api-key-row{
+  display:flex;gap:6px;align-items:center;
+}
+.api-key-row input{flex:1}
+.key-toggle{
+  padding:10px 12px;background:var(--bg-elev-2);
+  border:1px solid var(--border);border-radius:8px;
+  font-size:14px;flex-shrink:0;
+}
+.key-status{
+  font-size:12px;margin-top:6px;padding:6px 10px;
+  border-radius:6px;text-align:center;
+}
+.key-status.ok{background:rgba(16,163,127,.15);color:var(--accent)}
+.key-status.missing{background:rgba(229,72,77,.15);color:var(--danger)}
 .memories-list{
   display:flex;flex-direction:column;gap:6px;
   max-height:220px;overflow-y:auto;margin-bottom:10px;
@@ -295,8 +307,12 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   border-radius:8px;font-size:13px;font-weight:500;
 }
 .danger-btn:hover{background:rgba(229,72,77,.1)}
+.save-btn{
+  width:100%;padding:10px;background:var(--accent);color:#fff;
+  border-radius:8px;font-size:13px;font-weight:500;margin-top:8px;
+}
+.save-btn:hover{background:var(--accent-hover)}
 
-/* ===== OVERLAYS ===== */
 .overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.5);
   z-index:25;opacity:0;pointer-events:none;
@@ -310,12 +326,10 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 }
 .settings-overlay.show{opacity:1;pointer-events:auto}
 
-/* ===== SCROLLBARS ===== */
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:#3a3a44}
 
-/* ===== MOBILE (Android + iPhone) ===== */
 @media (max-width:768px){
   .sidebar{
     position:fixed;top:0;left:0;bottom:0;
@@ -337,8 +351,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   .composer-icon{width:36px;height:36px;font-size:16px}
   .send-btn{width:36px;height:36px}
 }
-
-/* ===== VERY SMALL SCREENS ===== */
 @media (max-width:360px){
   .msg .bubble{font-size:13px;padding:10px 12px}
   .composer-icon{width:34px;height:34px;font-size:15px}
@@ -351,7 +363,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
 <div class="app">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <button class="new-chat-btn" id="newChatBtn">
@@ -368,7 +379,6 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
     <header class="topbar">
       <button class="icon-btn" id="menuToggle" aria-label="Menu">☰</button>
@@ -409,13 +419,37 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
   <div class="overlay" id="overlay"></div>
 </div>
 
-<!-- SETTINGS PANEL -->
 <div class="settings-panel" id="settingsPanel">
   <div class="settings-header">
     <h2>Settings</h2>
     <button class="icon-btn" id="closeSettingsBtn">✕</button>
   </div>
   <div class="settings-body">
+
+    <section class="settings-section">
+      <h3>🤖 AI Provider</h3>
+      <p class="settings-desc">Apni Groq API key yahan paste karo. Free key yahan se milti hai: <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+
+      <label class="settings-label">
+        Groq API Key
+        <div class="api-key-row">
+          <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off">
+          <button class="key-toggle" id="keyToggleBtn" type="button">👁</button>
+        </div>
+      </label>
+      <div class="key-status missing" id="keyStatus">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</div>
+      <button class="save-btn" id="saveKeyBtn">Save Key</button>
+
+      <label class="settings-label" style="margin-top:16px">
+        Model
+        <select id="modelSelect">
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (best)</option>
+          <option value="llama-3.1-8b-instant">Llama 3.1 8B (fastest)</option>
+          <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+          <option value="gemma2-9b-it">Gemma 2 9B</option>
+        </select>
+      </label>
+    </section>
 
     <section class="settings-section">
       <h3>🧠 Personal Memory</h3>
@@ -456,7 +490,7 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
     <section class="settings-section">
       <h3>ℹ️ About</h3>
-      <p class="settings-desc">My Personal AI — Phase 1. Runs entirely in your browser.</p>
+      <p class="settings-desc">My Personal AI — Groq-powered. Aapki API key sirf aapke browser mein save hoti hai. Kisi server pe nahi jaati.</p>
     </section>
 
   </div>
@@ -466,19 +500,27 @@ input,textarea,select{font-family:inherit;color:inherit;font-size:16px}
 
 <script>
 /* ============================================================
-   MY PERSONAL AI — All-in-one (HTML + CSS + JS in one file)
+   MY PERSONAL AI — Groq API powered
    ============================================================ */
 
 const state = {
   conversations: [],
   currentId: null,
   memories: [],
-  settings: { memoryEnabled: false, autoMemory: false, speakReplies: false, saveHistory: true, voiceURI: null },
+  settings: {
+    memoryEnabled: false,
+    autoMemory: false,
+    speakReplies: false,
+    saveHistory: true,
+    voiceURI: null,
+    apiKey: "",
+    model: "llama-3.3-70b-versatile",
+  },
   pendingAttachments: [],
   isRecording: false,
 };
 
-const LS = { CONVOS: "mpai_c_v6", MEMS: "mpai_m_v6", SETTINGS: "mpai_s_v6" };
+const LS = { CONVOS: "mpai_c_v7", MEMS: "mpai_m_v7", SETTINGS: "mpai_s_v7" };
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -492,6 +534,9 @@ const els = {
   openSettingsBtn: $("openSettingsBtn"), topbarSettings: $("topbarSettings"),
   settingsPanel: $("settingsPanel"), settingsOverlay: $("settingsOverlay"),
   closeSettingsBtn: $("closeSettingsBtn"),
+  apiKeyInput: $("apiKeyInput"), keyToggleBtn: $("keyToggleBtn"),
+  keyStatus: $("keyStatus"), saveKeyBtn: $("saveKeyBtn"),
+  modelSelect: $("modelSelect"),
   memoryToggle: $("memoryToggle"), autoMemoryToggle: $("autoMemoryToggle"),
   speakToggle: $("speakToggle"), historyToggle: $("historyToggle"),
   voiceSelect: $("voiceSelect"), memoriesList: $("memoriesList"),
@@ -508,6 +553,7 @@ function init() {
   attachEventListeners();
   autoResizeTextarea();
   updateSendButton();
+  updateKeyStatus();
   console.log("✅ My Personal AI ready.");
 }
 
@@ -526,7 +572,6 @@ function saveConversations() {
 function saveMemories() { try { localStorage.setItem(LS.MEMS, JSON.stringify(state.memories)); } catch(e){} }
 function saveSettings() { try { localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings)); } catch(e){} }
 
-/* CONVERSATIONS */
 function createConversation() {
   const conv = { id: "c_" + Date.now(), title: "New Chat", messages: [], createdAt: Date.now() };
   state.conversations.unshift(conv);
@@ -594,7 +639,6 @@ function deleteConversation(id) {
   renderHistory(els.historySearch.value);
 }
 
-/* MESSAGES */
 function renderMessage(role, text, attachments = [], animate = true) {
   els.welcome.style.display = "none";
   const msg = document.createElement("div");
@@ -627,7 +671,7 @@ function renderMessage(role, text, attachments = [], animate = true) {
   msg.appendChild(avatar); msg.appendChild(bubble);
   els.messages.appendChild(msg);
   if (animate) scrollToBottom();
-  return msg;
+  return { msg, bubble };
 }
 function renderTyping() {
   const msg = document.createElement("div");
@@ -642,6 +686,7 @@ function renderTyping() {
   msg.appendChild(avatar); msg.appendChild(bubble);
   els.messages.appendChild(msg);
   scrollToBottom();
+  return bubble;
 }
 function removeTyping() {
   const el = document.getElementById("typingIndicator");
@@ -651,17 +696,19 @@ function scrollToBottom() {
   requestAnimationFrame(() => { els.messages.scrollTop = els.messages.scrollHeight; });
 }
 
-/* SEND */
 async function handleSend() {
   const text = els.userInput.value.trim();
   const attachments = [...state.pendingAttachments];
   if (!text && attachments.length === 0) return;
+
   let conv = getCurrentConversation();
   if (!conv) conv = createConversation();
+
   conv.messages.push({ role: "user", text, attachments, ts: Date.now() });
   if (conv.title === "New Chat" && text) {
     conv.title = text.slice(0, 40) + (text.length > 40 ? "…" : "");
   }
+
   renderMessage("user", text, attachments);
   els.userInput.value = "";
   autoResizeTextarea();
@@ -669,35 +716,111 @@ async function handleSend() {
   updateSendButton();
   saveConversations();
   renderHistory(els.historySearch.value);
-  renderTyping();
-  const reply = await fakeAIResponse(text, attachments);
-  removeTyping();
-  renderMessage("ai", reply);
-  conv.messages.push({ role: "ai", text: reply, attachments: [], ts: Date.now() });
-  saveConversations();
-  if (state.settings.speakReplies) speakText(reply);
+
+  // If no API key — use smart demo
+  if (!state.settings.apiKey) {
+    renderTyping();
+    const demoReply = smartDemoReply(text, attachments);
+    await new Promise(r => setTimeout(r, 600));
+    removeTyping();
+    renderMessage("ai", demoReply);
+    conv.messages.push({ role: "ai", text: demoReply, attachments: [], ts: Date.now() });
+    saveConversations();
+    if (state.settings.speakReplies) speakText(demoReply);
+    return;
+  }
+
+  // Real AI via Groq
+  const bubble = renderTyping();
+  let fullReply = "";
+
+  try {
+    // Build messages array with history
+    const historyMessages = conv.messages
+      .filter(m => m.text || (m.attachments && m.attachments.length))
+      .slice(-10)
+      .map(m => {
+        let content = m.text || "";
+        if (m.attachments && m.attachments.length) {
+          const names = m.attachments.map(a => a.name).join(", ");
+          content += (content ? "\n" : "") + "[Attached: " + names + "]";
+        }
+        return { role: m.role === "ai" ? "assistant" : "user", content };
+      });
+
+    // Add memory context
+    if (state.memories.length) {
+      const memText = state.memories.map(m => "- " + m.text).join("\n");
+      historyMessages.unshift({
+        role: "system",
+        content: "You are a helpful personal AI assistant. Reply in a friendly, natural tone. If the user writes in Hindi/Urdu (Roman), reply in the same. Here are things you remember about the user:\n" + memText
+      });
+    } else {
+      historyMessages.unshift({
+        role: "system",
+        content: "You are a helpful personal AI assistant. Reply in a friendly, natural tone. If the user writes in Hindi/Urdu (Roman), reply in the same language/style."
+      });
+    }
+
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + state.settings.apiKey,
+      },
+      body: JSON.stringify({
+        model: state.settings.model,
+        messages: historyMessages,
+        temperature: 0.7,
+        max_tokens: 1024,
+        stream: false,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error("API " + res.status + ": " + errText.slice(0, 200));
+    }
+
+    const data = await res.json();
+    fullReply = data.choices[0].message.content || "(empty reply)";
+
+    removeTyping();
+    renderMessage("ai", fullReply);
+    conv.messages.push({ role: "ai", text: fullReply, attachments: [], ts: Date.now() });
+    saveConversations();
+    if (state.settings.speakReplies) speakText(fullReply);
+  } catch (err) {
+    removeTyping();
+    const errMsg = "❌ AI error: " + err.message + "\n\nApni API key check karo (Settings → Groq API Key).";
+    renderMessage("ai", errMsg);
+    conv.messages.push({ role: "ai", text: errMsg, attachments: [], ts: Date.now() });
+    saveConversations();
+  }
 }
 
-function fakeAIResponse(userText, attachments) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      let reply = "";
-      if (attachments.length) {
-        const imgs = attachments.filter((a) => a.type === "image").length;
-        const docs = attachments.filter((a) => a.type === "file").length;
-        const parts = [];
-        if (imgs) parts.push(imgs + " image(s)");
-        if (docs) parts.push(docs + " document(s)");
-        reply += "Got it — I received " + parts.join(" and ") + ".\n\n";
-      }
-      if (userText) reply += 'You said: "' + userText + '"\n\n';
-      reply += "Main aapka Phase 1 frontend demo hun. Jald hi local Ollama model se connect ho jaunga.";
-      resolve(reply);
-    }, 700 + Math.random() * 500);
-  });
+function smartDemoReply(userText, attachments) {
+  let reply = "";
+  if (attachments && attachments.length) {
+    const imgs = attachments.filter(a => a.type === "image").length;
+    const docs = attachments.filter(a => a.type === "file").length;
+    if (imgs) reply += "Aapne " + imgs + " image bheji. 📷\n\n";
+    if (docs) reply += "Aapne " + docs + " document bheja. 📄\n\n";
+  }
+  const lower = (userText || "").toLowerCase();
+  if (/salam|hello|hi|hey|kaise ho|kya haal/.test(lower)) {
+    reply += "Walaikum Assalam! 🌙 Main theek hun. Aap kaise ho?";
+  } else if (/time|waqt/.test(lower)) {
+    reply += "Abhi waqt hai: " + new Date().toLocaleTimeString();
+  } else if (/date|tareekh/.test(lower)) {
+    reply += "Aaj hai: " + new Date().toLocaleDateString();
+  } else if (userText) {
+    reply += "Aapne kaha: \"" + userText + "\"\n\n";
+    reply += "💡 Asli AI jawab ke liye Settings mein apni Groq API key daalo. Free key: console.groq.com/keys";
+  }
+  return reply;
 }
 
-/* MEMORY */
 function renderMemories() {
   els.memoriesList.innerHTML = "";
   if (!state.memories.length) {
@@ -726,7 +849,6 @@ function renderMemories() {
   });
 }
 
-/* ATTACHMENTS */
 function handleImageUpload(files) {
   [...files].forEach((file) => {
     if (!file.type.startsWith("image/")) return;
@@ -785,7 +907,6 @@ function clearAttachments() {
   renderAttachmentPreview();
 }
 
-/* VOICE INPUT */
 let recognition = null;
 function initSpeechRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -805,18 +926,14 @@ function initSpeechRecognition() {
     els.micBtn.classList.remove("recording");
   };
   rec.onerror = (e) => {
-    console.warn("Speech error:", e.error);
     state.isRecording = false;
     els.micBtn.classList.remove("recording");
-    if (e.error === "not-allowed") alert("Microphone blocked. Please allow it in browser settings.");
+    if (e.error === "not-allowed") alert("Microphone blocked. Please allow it.");
   };
   return rec;
 }
 function toggleRecording() {
-  if (!recognition) {
-    alert("Voice input not supported. Try Chrome or Edge.");
-    return;
-  }
+  if (!recognition) { alert("Voice input not supported. Try Chrome."); return; }
   if (state.isRecording) {
     recognition.stop();
     state.isRecording = false;
@@ -826,46 +943,87 @@ function toggleRecording() {
       recognition.start();
       state.isRecording = true;
       els.micBtn.classList.add("recording");
-    } catch (e) { console.warn(e); }
+    } catch (e) {}
   }
 }
 
-/* SPEECH OUTPUT */
 function populateVoices() {
   if (!("speechSynthesis" in window)) return;
   const load = () => {
     const voices = speechSynthesis.getVoices();
     els.voiceSelect.innerHTML = "";
-    voices.forEach((v) => {
+    const femaleKeywords = ["female", "woman", "zira", "samantha", "victoria", "karen", "moira", "tessa", "google uk english female", "google us english"];
+    const sorted = [...voices].sort((a, b) => {
+      const aN = (a.name + " " + a.voiceURI).toLowerCase();
+      const bN = (b.name + " " + b.voiceURI).toLowerCase();
+      const aF = femaleKeywords.some(k => aN.includes(k));
+      const bF = femaleKeywords.some(k => bN.includes(k));
+      if (aF && !bF) return -1;
+      if (!aF && bF) return 1;
+      const aE = a.lang.toLowerCase().startsWith("en");
+      const bE = b.lang.toLowerCase().startsWith("en");
+      if (aE && !bE) return -1;
+      if (!aE && bE) return 1;
+      return 0;
+    });
+    sorted.forEach((v) => {
       const opt = document.createElement("option");
       opt.value = v.voiceURI;
       opt.textContent = v.name + " (" + v.lang + ")";
-      if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
       els.voiceSelect.appendChild(opt);
     });
+    if (!state.settings.voiceURI && sorted.length) {
+      const best = sorted.find(v => {
+        const n = (v.name + " " + v.voiceURI).toLowerCase();
+        return femaleKeywords.some(k => n.includes(k)) && v.lang.toLowerCase().startsWith("en");
+      }) || sorted[0];
+      state.settings.voiceURI = best.voiceURI;
+      saveSettings();
+    }
+    if (state.settings.voiceURI) els.voiceSelect.value = state.settings.voiceURI;
   };
   load();
   speechSynthesis.onvoiceschanged = load;
 }
 function speakText(text) {
   if (!("speechSynthesis" in window)) return;
-  const utt = new SpeechSynthesisUtterance(text);
+  const clean = text
+    .replace(/[*_`#]/g, "")
+    .replace(/[\u{1F300}-\u{1F9FF}]/gu, "")
+    .replace(/[\u{2600}-\u{26FF}]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const utt = new SpeechSynthesisUtterance(clean);
   if (state.settings.voiceURI) {
     const v = speechSynthesis.getVoices().find((x) => x.voiceURI === state.settings.voiceURI);
     if (v) utt.voice = v;
   }
+  utt.rate = 0.92;
+  utt.pitch = 1.15;
+  utt.volume = 1.0;
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
 }
 
-/* SETTINGS PANEL */
 function applySettingsToUI() {
   els.memoryToggle.checked = state.settings.memoryEnabled;
   els.autoMemoryToggle.checked = state.settings.autoMemory;
   els.speakToggle.checked = state.settings.speakReplies;
   els.historyToggle.checked = state.settings.saveHistory;
+  els.modelSelect.value = state.settings.model;
+  if (state.settings.apiKey) els.apiKeyInput.value = state.settings.apiKey;
   if (state.settings.voiceURI) els.voiceSelect.value = state.settings.voiceURI;
 }
+function updateKeyStatus() {
+  if (state.settings.apiKey && state.settings.apiKey.startsWith("gsk_")) {
+    els.keyStatus.textContent = "✅ Key saved — asli AI chalu hai";
+    els.keyStatus.className = "key-status ok";
+  } else {
+    els.keyStatus.textContent = "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";
+    els.keyStatus.className = "key-status missing";
+  }
+}
+
 function openSettings() {
   els.settingsPanel.classList.add("open");
   els.settingsOverlay.classList.add("show");
@@ -876,7 +1034,6 @@ function closeSettings() {
   els.settingsOverlay.classList.remove("show");
 }
 
-/* MOBILE SIDEBAR */
 function openSidebarMobile() {
   els.sidebar.classList.add("open");
   els.overlay.classList.add("show");
@@ -886,7 +1043,6 @@ function closeSidebarMobile() {
   els.overlay.classList.remove("show");
 }
 
-/* UTIL */
 function autoResizeTextarea() {
   els.userInput.style.height = "auto";
   els.userInput.style.height = Math.min(els.userInput.scrollHeight, 160) + "px";
@@ -907,7 +1063,6 @@ function renderWelcomeChips() {
   });
 }
 
-/* EVENT LISTENERS */
 function attachEventListeners() {
   els.menuToggle.onclick = openSidebarMobile;
   els.overlay.onclick = closeSidebarMobile;
@@ -945,6 +1100,33 @@ function attachEventListeners() {
   els.topbarSettings.onclick = openSettings;
   els.closeSettingsBtn.onclick = closeSettings;
   els.settingsOverlay.onclick = closeSettings;
+
+  // API key handling
+  els.keyToggleBtn.onclick = () => {
+    if (els.apiKeyInput.type === "password") {
+      els.apiKeyInput.type = "text";
+      els.keyToggleBtn.textContent = "🙈";
+    } else {
+      els.apiKeyInput.type = "password";
+      els.keyToggleBtn.textContent = "👁";
+    }
+  };
+  els.saveKeyBtn.onclick = () => {
+    const key = els.apiKeyInput.value.trim();
+    if (!key) {
+      alert("Key khaali hai. Pehle Groq se key banao: console.groq.com/keys");
+      return;
+    }
+    if (!key.startsWith("gsk_")) {
+      if (!confirm("Key 'gsk_' se shuru nahi hoti. Kya phir bhi save karna hai?")) return;
+    }
+    state.settings.apiKey = key;
+    saveSettings();
+    updateKeyStatus();
+    alert("✅ Key save ho gayi! Ab asli AI chalu hai.");
+  };
+
+  els.modelSelect.onchange = (e) => { state.settings.model = e.target.value; saveSettings(); };
 
   els.memoryToggle.onchange = (e) => { state.settings.memoryEnabled = e.target.checked; saveSettings(); };
   els.autoMemoryToggle.onchange = (e) => { state.settings.autoMemory = e.target.checked; saveSettings(); };
