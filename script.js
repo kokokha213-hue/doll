@@ -1,14 +1,12 @@
 /* ============================================================
-   MY PERSONAL AI — Phase 1 Frontend Logic
-   Everything is stored in browser localStorage.
-   No server, no AI yet — we fake replies.
+   MY PERSONAL AI — Phase 1 (Fully Working)
    ============================================================ */
 
 /* ---------- STATE ---------- */
 const state = {
-  conversations: [],      // [{ id, title, messages: [{role, text, attachments, ts}], createdAt }]
+  conversations: [],
   currentId: null,
-  memories: [],           // [{ id, text, ts }]
+  memories: [],
   settings: {
     memoryEnabled: true,
     autoMemory: false,
@@ -16,18 +14,18 @@ const state = {
     saveHistory: true,
     voiceURI: null,
   },
-  pendingAttachments: [], // { type:'image'|'file', name, dataUrl?, textContent? }
+  pendingAttachments: [],
   isRecording: false,
+  memoryDialogOpen: false,
+  pendingMemoryText: null,
 };
 
-/* ---------- STORAGE KEYS ---------- */
 const LS = {
-  CONVOS: "mpai_conversations",
-  MEMS: "mpai_memories",
-  SETTINGS: "mpai_settings",
+  CONVOS: "mpai_conversations_v2",
+  MEMS: "mpai_memories_v2",
+  SETTINGS: "mpai_settings_v2",
 };
 
-/* ---------- DOM REFS ---------- */
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -52,7 +50,6 @@ const els = {
   topbarSettings: $("topbarSettings"),
   settingsPanel: $("settingsPanel"),
   closeSettingsBtn: $("closeSettingsBtn"),
-  // settings controls
   memoryToggle: $("memoryToggle"),
   autoMemoryToggle: $("autoMemoryToggle"),
   speakToggle: $("speakToggle"),
@@ -61,7 +58,6 @@ const els = {
   memoriesList: $("memoriesList"),
   clearMemoriesBtn: $("clearMemoriesBtn"),
   clearHistoryBtn: $("clearHistoryBtn"),
-  // memory modal
   memoryModal: $("memoryModal"),
   memoryModalText: $("memoryModalText"),
   memoryAllowBtn: $("memoryAllowBtn"),
@@ -69,7 +65,7 @@ const els = {
 };
 
 /* ============================================================
-   INITIALIZATION
+   INIT
    ============================================================ */
 function init() {
   loadFromStorage();
@@ -80,14 +76,16 @@ function init() {
   populateVoices();
   attachEventListeners();
   autoResizeTextarea();
+  updateSendButton();
+  console.log("✅ My Personal AI ready.");
 }
 
 function loadFromStorage() {
   try {
     state.conversations = JSON.parse(localStorage.getItem(LS.CONVOS) || "[]");
     state.memories = JSON.parse(localStorage.getItem(LS.MEMS) || "[]");
-    const savedSettings = JSON.parse(localStorage.getItem(LS.SETTINGS) || "null");
-    if (savedSettings) Object.assign(state.settings, savedSettings);
+    const s = JSON.parse(localStorage.getItem(LS.SETTINGS) || "null");
+    if (s) Object.assign(state.settings, s);
   } catch (e) {
     console.warn("Storage load failed:", e);
   }
@@ -95,13 +93,13 @@ function loadFromStorage() {
 
 function saveConversations() {
   if (!state.settings.saveHistory) return;
-  localStorage.setItem(LS.CONVOS, JSON.stringify(state.conversations));
+  try { localStorage.setItem(LS.CONVOS, JSON.stringify(state.conversations)); } catch(e){}
 }
 function saveMemories() {
-  localStorage.setItem(LS.MEMS, JSON.stringify(state.memories));
+  try { localStorage.setItem(LS.MEMS, JSON.stringify(state.memories)); } catch(e){}
 }
 function saveSettings() {
-  localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings));
+  try { localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings)); } catch(e){}
 }
 
 /* ============================================================
@@ -119,6 +117,7 @@ function createConversation() {
   saveConversations();
   renderHistory();
   clearMessagesView();
+  els.welcome.hidden = false;
   return conv;
 }
 
@@ -127,9 +126,7 @@ function getCurrentConversation() {
 }
 
 function clearMessagesView() {
-  // Remove all message elements but keep welcome
   [...els.messages.querySelectorAll(".msg")].forEach((el) => el.remove());
-  els.welcome.hidden = false;
 }
 
 function renderHistory(filter = "") {
@@ -176,9 +173,13 @@ function openConversation(id) {
   if (!conv) return;
 
   clearMessagesView();
-  if (conv.messages.length) els.welcome.hidden = true;
-  conv.messages.forEach((m) => renderMessage(m.role, m.text, m.attachments, false));
-  scrollToBottom();
+  if (conv.messages.length) {
+    els.welcome.hidden = true;
+    conv.messages.forEach((m) => renderMessage(m.role, m.text, m.attachments, false));
+    scrollToBottom();
+  } else {
+    els.welcome.hidden = false;
+  }
   closeSidebarMobile();
 }
 
@@ -209,14 +210,12 @@ function renderMessage(role, text, attachments = [], animate = true) {
   const bubble = document.createElement("div");
   bubble.className = "bubble";
 
-  // Text
   if (text) {
     const textNode = document.createElement("div");
     textNode.textContent = text;
     bubble.appendChild(textNode);
   }
 
-  // Attachments
   if (attachments && attachments.length) {
     attachments.forEach((att) => {
       if (att.type === "image" && att.dataUrl) {
@@ -252,7 +251,7 @@ function renderTyping() {
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
-  bubble.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+  bubble.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
 
   msg.appendChild(avatar);
   msg.appendChild(bubble);
@@ -272,32 +271,22 @@ function scrollToBottom() {
 }
 
 /* ============================================================
-   SENDING MESSAGES
+   SEND
    ============================================================ */
 async function handleSend() {
   const text = els.userInput.value.trim();
   const attachments = [...state.pendingAttachments];
   if (!text && attachments.length === 0) return;
 
-  // Ensure conversation exists
   let conv = getCurrentConversation();
   if (!conv) conv = createConversation();
 
-  // Save to conversation
-  const userMsg = {
-    role: "user",
-    text,
-    attachments,
-    ts: Date.now(),
-  };
-  conv.messages.push(userMsg);
+  conv.messages.push({ role: "user", text, attachments, ts: Date.now() });
 
-  // Title = first user message
   if (conv.title === "New Chat" && text) {
     conv.title = text.slice(0, 40) + (text.length > 40 ? "…" : "");
   }
 
-  // Render
   renderMessage("user", text, attachments);
   els.userInput.value = "";
   autoResizeTextarea();
@@ -307,226 +296,99 @@ async function handleSend() {
   saveConversations();
   renderHistory(els.historySearch.value);
 
-  // Show typing
   renderTyping();
-
-  // Fake AI reply (Phase 1 only)
-  const reply = await fakeAIResponse(text, attachments, conv);
-
+  const reply = await fakeAIResponse(text, attachments);
   removeTyping();
-  renderMessage("ai", reply);
 
+  renderMessage("ai", reply);
   conv.messages.push({ role: "ai", text: reply, attachments: [], ts: Date.now() });
   saveConversations();
 
-  // Speak if enabled
   if (state.settings.speakReplies) speakText(reply);
 
-  // Check for memory-worthy content
   maybeOfferMemory(text);
 }
 
 /* ============================================================
-   FAKE AI (replaced in Phase 2 with Ollama)
+   FAKE AI (Phase 2 mein Ollama se replace hoga)
    ============================================================ */
-function fakeAIResponse(userText, attachments, conv) {
+function fakeAIResponse(userText, attachments) {
   return new Promise((resolve) => {
     setTimeout(() => {
       let reply = "";
 
       if (attachments.length) {
-        const imgCount = attachments.filter((a) => a.type === "image").length;
-        const docCount = attachments.filter((a) => a.type === "file").length;
-        reply += `Got it — I received `;
+        const imgs = attachments.filter((a) => a.type === "image").length;
+        const docs = attachments.filter((a) => a.type === "file").length;
         const parts = [];
-        if (imgCount) parts.push(`${imgCount} image(s)`);
-        if (docCount) parts.push(`${docCount} document(s)`);
-        reply += parts.join(" and ") + ". ";
-        reply += `(In Phase 3 I'll actually read them with a vision model.)\n\n`;
+        if (imgs) parts.push(`${imgs} image(s)`);
+        if (docs) parts.push(`${docs} document(s)`);
+        reply += `Got it — I received ${parts.join(" and ")}. (Phase 3 mein main innhe actually read karunga.)\n\n`;
       }
 
       if (userText) {
         reply += `You said: "${userText}"\n\n`;
       }
 
-      reply += `I'm your Phase 1 frontend demo. Right now I reply with placeholder text. Soon I'll connect to a local Ollama model so I can truly understand you. Everything you see here is saved locally in your browser.`;
-
-      // Simple memory hint
-      if (/\b(my name is|i am|i'm|remember that|my favorite)\b/i.test(userText)) {
-        reply += `\n\n💡 Tip: You just shared something personal. When I detect that, I'll ask permission to save it to memory (see the modal in later phases).`;
-      }
+      reply += `Main aapka Phase 1 frontend demo hun. Abhi placeholder reply de raha hun. Jald hi local Ollama model se connect ho jaunga.`;
 
       resolve(reply);
-    }, 900 + Math.random() * 600);
+    }, 700 + Math.random() * 500);
   });
 }
 
 /* ============================================================
-   ATTACHMENTS
+   MEMORY (FIXED — no more annoying dialogs)
    ============================================================ */
-function handleImageUpload(files) {
-  [...files].forEach((file) => {
-    if (!file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      state.pendingAttachments.push({
-        type: "image",
-        name: file.name,
-        dataUrl: e.target.result,
-      });
-      renderAttachmentPreview();
-    };
-    reader.readAsDataURL(file);
-  });
-}
+function maybeOfferMemory(userText) {
+  if (!state.settings.memoryEnabled) return;
+  if (!userText || !userText.trim()) return;
 
-function handleDocUpload(files) {
-  [...files].forEach((file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      state.pendingAttachments.push({
-        type: "file",
-        name: file.name,
-        textContent: e.target.result,
-      });
-      renderAttachmentPreview();
-    };
-    // Read text for txt/md, else just keep name (Phase 3 will parse PDFs)
-    if (/\.(txt|md)$/i.test(file.name)) {
-      reader.readAsText(file);
-    } else {
-      reader.readAsArrayBuffer(file);
-    }
-  });
-}
+  // Sirf YAQEENI personal baaton pe trigger
+  const patterns = [
+    /\bmy name is\b/i,
+    /\bremember that\b/i,
+    /\bmy favorite (color|food|movie|song|book|place|sport) is\b/i,
+    /\bi live in\b/i,
+  ];
+  const matched = patterns.some((p) => p.test(userText));
+  if (!matched) return;
 
-function renderAttachmentPreview() {
-  els.attachmentItems.innerHTML = "";
-  if (!state.pendingAttachments.length) {
-    els.attachmentPreview.hidden = true;
-    updateSendButton();
+  // Agar same baat pehle se saved hai, skip
+  const already = state.memories.some(
+    (m) => m.text.trim().toLowerCase() === userText.trim().toLowerCase()
+  );
+  if (already) return;
+
+  // Agar dialog pehle se khula hai, skip
+  if (state.memoryDialogOpen) return;
+
+  if (state.settings.autoMemory) {
+    addMemory(userText.trim());
     return;
   }
-  els.attachmentPreview.hidden = false;
-
-  state.pendingAttachments.forEach((att, i) => {
-    const chip = document.createElement("div");
-    chip.className = "att-chip";
-
-    if (att.type === "image") {
-      const img = document.createElement("img");
-      img.src = att.dataUrl;
-      chip.appendChild(img);
-    }
-
-    const label = document.createElement("span");
-    label.textContent =
-      att.type === "image" ? "🖼 " + att.name : "📄 " + att.name;
-    chip.appendChild(label);
-
-    const remove = document.createElement("span");
-    remove.className = "remove-att";
-    remove.textContent = "✕";
-    remove.onclick = () => {
-      state.pendingAttachments.splice(i, 1);
-      renderAttachmentPreview();
-    };
-    chip.appendChild(remove);
-
-    els.attachmentItems.appendChild(chip);
-  });
-
-  updateSendButton();
+  askMemoryPermission(userText.trim());
 }
 
-function clearAttachments() {
-  state.pendingAttachments = [];
-  renderAttachmentPreview();
+function askMemoryPermission(text) {
+  state.memoryDialogOpen = true;
+  state.pendingMemoryText = text;
+  els.memoryModalText.textContent = `"${text}"`;
+  els.memoryModal.hidden = false;
 }
 
-/* ============================================================
-   VOICE INPUT (Web Speech API)
-   ============================================================ */
-let recognition = null;
-function initSpeechRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return null;
-  const rec = new SR();
-  rec.continuous = false;
-  rec.interimResults = false;
-  rec.lang = "en-US";
-
-  rec.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    els.userInput.value = (els.userInput.value + " " + transcript).trim();
-    autoResizeTextarea();
-    updateSendButton();
-  };
-  rec.onend = () => {
-    state.isRecording = false;
-    els.micBtn.classList.remove("recording");
-  };
-  rec.onerror = (e) => {
-    console.warn("Speech error:", e.error);
-    state.isRecording = false;
-    els.micBtn.classList.remove("recording");
-    if (e.error === "not-allowed") {
-      alert("Microphone access was blocked. Please allow it in your browser settings.");
-    }
-  };
-  return rec;
+function closeMemoryDialog() {
+  state.memoryDialogOpen = false;
+  state.pendingMemoryText = null;
+  els.memoryModal.hidden = true;
 }
 
-function toggleRecording() {
-  if (!recognition) {
-    alert("Voice input is not supported in this browser. Try Chrome or Edge.");
-    return;
-  }
-  if (state.isRecording) {
-    recognition.stop();
-    state.isRecording = false;
-    els.micBtn.classList.remove("recording");
-  } else {
-    recognition.start();
-    state.isRecording = true;
-    els.micBtn.classList.add("recording");
-  }
+function addMemory(text) {
+  state.memories.unshift({ id: "m_" + Date.now(), text, ts: Date.now() });
+  saveMemories();
+  renderMemories();
 }
 
-/* ============================================================
-   SPEECH OUTPUT (SpeechSynthesis)
-   ============================================================ */
-function populateVoices() {
-  if (!("speechSynthesis" in window)) return;
-  const load = () => {
-    const voices = speechSynthesis.getVoices();
-    els.voiceSelect.innerHTML = "";
-    voices.forEach((v) => {
-      const opt = document.createElement("option");
-      opt.value = v.voiceURI;
-      opt.textContent = `${v.name} (${v.lang})`;
-      if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
-      els.voiceSelect.appendChild(opt);
-    });
-  };
-  load();
-  speechSynthesis.onvoiceschanged = load;
-}
-
-function speakText(text) {
-  if (!("speechSynthesis" in window)) return;
-  const utt = new SpeechSynthesisUtterance(text);
-  if (state.settings.voiceURI) {
-    const v = speechSynthesis.getVoices().find((x) => x.voiceURI === state.settings.voiceURI);
-    if (v) utt.voice = v;
-  }
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utt);
-}
-
-/* ============================================================
-   MEMORY
-   ============================================================ */
 function renderMemories() {
   els.memoriesList.innerHTML = "";
   if (!state.memories.length) {
@@ -560,39 +422,170 @@ function renderMemories() {
   });
 }
 
-function addMemory(text) {
-  state.memories.unshift({ id: "m_" + Date.now(), text, ts: Date.now() });
-  saveMemories();
-  renderMemories();
+/* ============================================================
+   ATTACHMENTS
+   ============================================================ */
+function handleImageUpload(files) {
+  [...files].forEach((file) => {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.pendingAttachments.push({
+        type: "image",
+        name: file.name,
+        dataUrl: e.target.result,
+      });
+      renderAttachmentPreview();
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
-// In Phase 1, we only detect memory-worthy phrases and offer a modal example.
-function maybeOfferMemory(userText) {
-  if (!state.settings.memoryEnabled) return;
-  const patterns = [
-    /\bmy name is\b/i,
-    /\bi am\b/i,
-    /\bi'm\b/i,
-    /\bmy favorite\b/i,
-    /\bi like\b/i,
-    /\bi live in\b/i,
-    /\bremember that\b/i,
-  ];
-  const matched = patterns.some((p) => p.test(userText));
-  if (!matched) return;
+function handleDocUpload(files) {
+  [...files].forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.pendingAttachments.push({
+        type: "file",
+        name: file.name,
+        textContent: e.target.result,
+      });
+      renderAttachmentPreview();
+    };
+    if (/\.(txt|md)$/i.test(file.name)) {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
+  });
+}
 
-  if (state.settings.autoMemory) {
-    addMemory(userText);
+function renderAttachmentPreview() {
+  els.attachmentItems.innerHTML = "";
+  if (!state.pendingAttachments.length) {
+    els.attachmentPreview.hidden = true;
+    updateSendButton();
     return;
   }
-  askMemoryPermission(userText);
+  els.attachmentPreview.hidden = false;
+
+  state.pendingAttachments.forEach((att, i) => {
+    const chip = document.createElement("div");
+    chip.className = "att-chip";
+
+    if (att.type === "image") {
+      const img = document.createElement("img");
+      img.src = att.dataUrl;
+      chip.appendChild(img);
+    }
+
+    const label = document.createElement("span");
+    label.textContent = att.type === "image" ? "🖼 " + att.name : "📄 " + att.name;
+    chip.appendChild(label);
+
+    const remove = document.createElement("span");
+    remove.className = "remove-att";
+    remove.textContent = "✕";
+    remove.onclick = () => {
+      state.pendingAttachments.splice(i, 1);
+      renderAttachmentPreview();
+    };
+    chip.appendChild(remove);
+
+    els.attachmentItems.appendChild(chip);
+  });
+
+  updateSendButton();
 }
 
-let pendingMemoryText = null;
-function askMemoryPermission(text) {
-  pendingMemoryText = text;
-  els.memoryModalText.textContent = `"${text}"`;
-  els.memoryModal.hidden = false;
+function clearAttachments() {
+  state.pendingAttachments = [];
+  renderAttachmentPreview();
+}
+
+/* ============================================================
+   VOICE INPUT
+   ============================================================ */
+let recognition = null;
+
+function initSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const rec = new SR();
+  rec.continuous = false;
+  rec.interimResults = false;
+  rec.lang = "en-US";
+
+  rec.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    els.userInput.value = (els.userInput.value + " " + transcript).trim();
+    autoResizeTextarea();
+    updateSendButton();
+  };
+  rec.onend = () => {
+    state.isRecording = false;
+    els.micBtn.classList.remove("recording");
+  };
+  rec.onerror = (e) => {
+    console.warn("Speech error:", e.error);
+    state.isRecording = false;
+    els.micBtn.classList.remove("recording");
+    if (e.error === "not-allowed") {
+      alert("Microphone blocked. Please allow it in browser settings.");
+    }
+  };
+  return rec;
+}
+
+function toggleRecording() {
+  if (!recognition) {
+    alert("Voice input not supported. Try Chrome or Edge.");
+    return;
+  }
+  if (state.isRecording) {
+    recognition.stop();
+    state.isRecording = false;
+    els.micBtn.classList.remove("recording");
+  } else {
+    try {
+      recognition.start();
+      state.isRecording = true;
+      els.micBtn.classList.add("recording");
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+}
+
+/* ============================================================
+   SPEECH OUTPUT
+   ============================================================ */
+function populateVoices() {
+  if (!("speechSynthesis" in window)) return;
+  const load = () => {
+    const voices = speechSynthesis.getVoices();
+    els.voiceSelect.innerHTML = "";
+    voices.forEach((v) => {
+      const opt = document.createElement("option");
+      opt.value = v.voiceURI;
+      opt.textContent = `${v.name} (${v.lang})`;
+      if (v.voiceURI === state.settings.voiceURI) opt.selected = true;
+      els.voiceSelect.appendChild(opt);
+    });
+  };
+  load();
+  speechSynthesis.onvoiceschanged = load;
+}
+
+function speakText(text) {
+  if (!("speechSynthesis" in window)) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  if (state.settings.voiceURI) {
+    const v = speechSynthesis.getVoices().find((x) => x.voiceURI === state.settings.voiceURI);
+    if (v) utt.voice = v;
+  }
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utt);
 }
 
 /* ============================================================
@@ -627,7 +620,7 @@ function closeSidebarMobile() {
 }
 
 /* ============================================================
-   TEXTAREA UTILITIES
+   UTIL
    ============================================================ */
 function autoResizeTextarea() {
   els.userInput.style.height = "auto";
@@ -655,21 +648,17 @@ function renderWelcomeChips() {
    EVENT LISTENERS
    ============================================================ */
 function attachEventListeners() {
-  // Sidebar / mobile
   els.menuToggle.onclick = openSidebarMobile;
   els.overlay.onclick = closeSidebarMobile;
 
-  // New chat
   els.newChatBtn.onclick = () => {
     createConversation();
     els.userInput.focus();
     closeSidebarMobile();
   };
 
-  // History search
   els.historySearch.oninput = (e) => renderHistory(e.target.value);
 
-  // Input
   els.userInput.addEventListener("input", () => {
     autoResizeTextarea();
     updateSendButton();
@@ -681,10 +670,8 @@ function attachEventListeners() {
     }
   });
 
-  // Send
   els.sendBtn.onclick = handleSend;
 
-  // Attachments
   els.attachImageBtn.onclick = () => els.imageInput.click();
   els.attachDocBtn.onclick = () => els.docInput.click();
   els.imageInput.onchange = (e) => {
@@ -696,16 +683,13 @@ function attachEventListeners() {
     e.target.value = "";
   };
 
-  // Mic
   recognition = initSpeechRecognition();
   els.micBtn.onclick = toggleRecording;
 
-  // Settings open/close
   els.openSettingsBtn.onclick = openSettings;
   els.topbarSettings.onclick = openSettings;
   els.closeSettingsBtn.onclick = closeSettings;
 
-  // Settings toggles
   els.memoryToggle.onchange = (e) => {
     state.settings.memoryEnabled = e.target.checked;
     saveSettings();
@@ -727,16 +711,15 @@ function attachEventListeners() {
     saveSettings();
   };
 
-  // Clear buttons
   els.clearMemoriesBtn.onclick = () => {
-    if (confirm("Delete ALL saved memories? This cannot be undone.")) {
+    if (confirm("Delete ALL saved memories?")) {
       state.memories = [];
       saveMemories();
       renderMemories();
     }
   };
   els.clearHistoryBtn.onclick = () => {
-    if (confirm("Delete ALL conversations? This cannot be undone.")) {
+    if (confirm("Delete ALL conversations?")) {
       state.conversations = [];
       state.currentId = null;
       saveConversations();
@@ -746,28 +729,34 @@ function attachEventListeners() {
     }
   };
 
-  // Memory modal
-  els.memoryAllowBtn.onclick = () => {
-    if (pendingMemoryText) addMemory(pendingMemoryText);
-    pendingMemoryText = null;
-    els.memoryModal.hidden = true;
-  };
-  els.memoryDenyBtn.onclick = () => {
-    pendingMemoryText = null;
-    els.memoryModal.hidden = true;
-  };
+  // MEMORY MODAL — FIXED
+  els.memoryAllowBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (state.pendingMemoryText) {
+      addMemory(state.pendingMemoryText);
+    }
+    closeMemoryDialog();
+  });
 
-  // Global ESC to close things
+  els.memoryDenyBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    closeMemoryDialog();
+  });
+
+  // Modal ke bahar click karne pe band
+  els.memoryModal.addEventListener("click", (e) => {
+    if (e.target === els.memoryModal) closeMemoryDialog();
+  });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      if (!els.memoryModal.hidden) els.memoryModal.hidden = true;
+      if (!els.memoryModal.hidden) closeMemoryDialog();
       else if (!els.settingsPanel.hidden) closeSettings();
       else if (els.sidebar.classList.contains("open")) closeSidebarMobile();
     }
   });
 }
 
-/* ============================================================
-   BOOT
-   ============================================================ */
 document.addEventListener("DOMContentLoaded", init);
